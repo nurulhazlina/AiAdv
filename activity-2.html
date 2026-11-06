@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity 2 · How ML Learns — AI Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Color tokens (matches AI Adventure LMS) ── */
+:root{
+  --primary:#0891B2;--primary-dark:#0C4A6E;--primary-mid:#0E7490;
+  --nav-bg:#071B2E;--blue:#2563EB;--blue-light:#DBEAFE;
+  --red:#DC2626;--red-light:#FEE2E2;--orange:#F59E0B;--orange-light:#FEF3C7;
+  --green:#059669;--green-light:#D1FAE5;--purple:#7C3AED;--purple-light:#EDE9FE;
+  /* Activity theme — warm cream, dark ink */
+  --ink:#1C1917;--muted:#78716C;--bg:#FEFCF0;--card:#FFFFFF;--line:#E8DFCC;
+  --act:#D97706;--act-dark:#92400E;--act-mid:#B45309;--act-light:#FEF3C7;--act-xlight:#FFFBEB;
+  --nav-bg:#2C1A08;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1C1708;--card:#251E0A;--line:#3D3315;--ink:#FEF9E7;--muted:#A8956A;
+  --nav-bg:#160D04;
+  --act-light:#451A03;--act-xlight:#2D1200;
+  --blue-light:#1E3A5F;--red-light:#450A0A;--orange-light:#451A03;
+  --green-light:#022C22;--purple-light:#2E1065;color-scheme:dark;
+}}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Poppins','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65}
+
+.chev-strip{display:flex;height:34px;}
+.chev-strip span{flex:1;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fff;user-select:none;}
+.chev-strip span:nth-child(1){background:var(--blue);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);}
+.chev-strip span:nth-child(2){background:var(--red);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(3){background:var(--orange);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(4){background:var(--act);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);}
+.sitenav{background:var(--nav-bg);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.5);}
+.sitenav-inner{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));height:54px;display:flex;align-items:center;gap:1rem;}
+.brand{display:flex;align-items:baseline;gap:.5rem;text-decoration:none;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:900;color:#fff;flex-shrink:0;}
+.brand .brand-sub{font-size:.52em;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.sitenav nav{margin-left:auto;display:flex;align-items:center;gap:1.4rem;}
+.sitenav nav a{text-decoration:none;font-size:.83rem;font-weight:500;color:rgba(255,255,255,.62);transition:color .15s;}
+.sitenav nav a:hover{color:var(--primary);}
+.sitenav nav a.active{color:#fff;font-weight:600;}
+.nav-drop-wrap{position:relative;display:inline-block;}
+.nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;letter-spacing:.01em;}
+.nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(217,119,6,.25);border-color:var(--act);color:#fff;}
+.nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+.nav-drop-btn.open .arr{transform:rotate(180deg);}
+.nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+.nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+.nav-drop-menu a:hover{background:rgba(217,119,6,.22);color:#fff;}
+.nav-drop-menu a.cur{color:var(--act);font-weight:700;}
+.nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+.nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+.lang-toggle-btn{background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.22);color:#e2e8f0;border-radius:20px;padding:3px 12px;font-size:.78rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .2s,border-color .2s;white-space:nowrap;align-self:center;}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);}
+/* ── Footer ── */
+footer{background:var(--nav-bg);margin-top:4rem;padding:2.5rem max(16px,env(safe-area-inset-left,0px)) 2rem;text-align:center;}
+.footer-inner{max-width:880px;margin:0 auto;}
+.footer-title{font-family:'Poppins',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin:0 0 .4rem;}
+.footer-sub{font-size:.85rem;color:rgba(255,255,255,.42);letter-spacing:.03em;margin:0 0 1.6rem;}
+.footer-copy{font-size:.78rem;color:rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.55rem;}
+
+/* ── Progress bar ── */
+.progress-bar{background:var(--act-xlight);padding:.6rem 1rem;display:flex;gap:.35rem;align-items:center;flex-wrap:wrap;border-bottom:2px solid #FDE68A;}
+.pb-step{font-size:.7rem;font-weight:600;padding:.22rem .6rem;border-radius:99px;background:#FDE68A;color:#92400E;white-space:nowrap;transition:all .3s}
+.pb-step.done{background:var(--green);color:#fff}
+.pb-step.active{background:var(--act);color:#fff;box-shadow:0 0 0 2px #FDE68A,0 0 0 4px var(--act)}
+.pb-arrow{color:#4a6b8a;font-size:.75rem}
+
+/* ── Page hero ── */
+.hero{background:linear-gradient(135deg,#FEF3C7 0%,#FDE68A 60%,#FCD34D 100%);color:#1C1917;padding:2.5rem 1.5rem 2rem;text-align:center;border-bottom:3px solid #F59E0B;}
+.hero .module-tag{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--act-mid);margin-bottom:.5rem;opacity:1;}
+.hero h1{margin:.3rem 0 .6rem;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;color:#1C1917;}
+.hero p{opacity:.8;max-width:520px;margin:0 auto;font-size:.95rem;color:#44403C;}
+
+/* ── Container ── */
+.wrap{max-width:820px;margin:0 auto;padding:1.5rem 1rem 4rem}
+
+/* ── Section cards ── */
+.section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1.4rem;transition:opacity .4s,transform .4s}
+.section.locked{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+.section h2{margin:0 0 .9rem;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.section h2 .tag{font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+.tag-blue{background:var(--blue-light);color:var(--blue)}
+.tag-orange{background:var(--orange-light);color:#B45309}
+.tag-green{background:var(--green-light);color:#065F46}
+.tag-purple{background:var(--purple-light);color:var(--purple)}
+.tag-primary{background:#CFFAFE;color:var(--primary-dark)}
+
+/* ── Form elements ── */
+label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.3rem;color:var(--ink)}
+input[type=text],input[type=number],input[type=email],select,textarea{
+  width:100%;padding:.6rem .8rem;border:1.5px solid var(--line);border-radius:8px;
+  font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);
+  transition:border .2s;margin-bottom:.9rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)}
+textarea{resize:vertical;min-height:80px}
+
+/* ── Slider ── */
+.slider-wrap{margin-bottom:1rem}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--primary)}
+.slider-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-top:.2rem}
+.slider-val{font-weight:700;color:var(--primary);font-size:1.1rem;text-align:center;margin:.25rem 0}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.3rem;border:none;border-radius:8px;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-mid)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{filter:brightness(1.1)}
+.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}.btn-outline:hover{background:var(--primary);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}
+
+/* ── Identity grid ── */
+.id-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem}
+@media(max-width:540px){.id-grid{grid-template-columns:1fr}}
+
+/* ── T1 redesign: 4-format concept questions ── */
+.q-card{border:1.5px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.9rem}
+.q-hdr{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.q-num{background:var(--primary);color:#fff;border-radius:50%;width:1.6rem;height:1.6rem;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.77rem;flex-shrink:0}
+.q-fmt{font-size:.7rem;font-weight:700;padding:.18rem .55rem;border-radius:99px}
+.q-stem{font-size:.91rem;margin:0 0 .75rem;line-height:1.6}
+.radio-grp{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.5rem}
+.r-opt{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .75rem;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;font-size:.86rem;line-height:1.5;user-select:none;transition:border .15s,background .15s}
+.r-opt:hover{border-color:var(--primary)}
+.r-dot{width:.85rem;height:.85rem;border:2px solid var(--muted);border-radius:50%;flex-shrink:0;margin-top:.22rem;transition:all .15s}
+.r-opt.sel .r-dot{border-color:var(--primary);background:var(--primary)}
+.r-opt.sel{border-color:var(--primary);background:rgba(8,145,178,.06)}
+.r-opt.ok{border-color:var(--green)!important;background:var(--green-light)!important}
+.r-opt.ok .r-dot{border-color:var(--green);background:var(--green)}
+.r-opt.ng{border-color:var(--red)!important;background:var(--red-light)!important}
+.r-opt.ng .r-dot{border-color:var(--red);background:var(--red)}
+.q-fb{font-size:.82rem;min-height:1rem;margin:.25rem 0 .1rem}
+.justify{margin-top:.65rem}
+.justify>label{font-size:.8rem;color:var(--muted);font-weight:500;margin-bottom:.3rem}
+.justify textarea{margin-bottom:.25rem}
+.wc-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.1rem}
+.wc{font-size:.74rem;font-weight:600;color:var(--muted)}.wc.ok{color:var(--green)}
+.wc-hint{font-size:.7rem;color:var(--muted)}
+.tf-grp{display:flex;gap:.6rem;margin-bottom:.5rem}
+.tf-btn{padding:.5rem 1.2rem;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer;background:var(--bg);color:var(--ink);transition:all .15s}
+.tf-btn:hover{border-color:var(--primary)}
+.tf-btn.sel{border-color:var(--primary);background:var(--primary);color:#fff}
+.tf-btn.ok{border-color:var(--green)!important;background:var(--green)!important;color:#fff!important}
+.tf-btn.ng{border-color:var(--red)!important;background:var(--red)!important;color:#fff!important}
+.rank-card{display:flex;align-items:flex-start;gap:.65rem;padding:.55rem .75rem;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;font-size:.86rem;line-height:1.5;margin-bottom:.45rem;user-select:none;transition:border .15s,background .15s}
+.rank-card:hover{border-color:var(--primary)}
+.rank-card.ranked{border-color:var(--primary);background:rgba(8,145,178,.06)}
+.rank-card.ok{border-color:var(--green)!important;background:var(--green-light)!important}
+.rank-card.ng{border-color:var(--orange)!important;background:var(--orange-light)!important}
+.rank-badge{min-width:1.4rem;height:1.4rem;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:var(--muted);flex-shrink:0;margin-top:.12rem;transition:all .15s}
+.rank-card.ranked .rank-badge,.rank-card.ok .rank-badge{background:var(--primary);color:#fff}
+.feedback-row{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
+.fb-chip{font-size:.78rem;padding:.2rem .55rem;border-radius:6px;font-weight:600}
+.fb-ok{background:var(--green-light);color:#065F46}
+.fb-err{background:var(--red-light);color:var(--red)}
+
+/* ── Bug cards ── */
+.bug-card{border:1.5px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.9rem}
+.bug-card h3{margin:0 0 .5rem;font-size:.92rem;color:var(--red);font-weight:700}
+.bug-stmt{background:var(--red-light);border-radius:6px;padding:.6rem .9rem;font-size:.9rem;margin-bottom:.6rem;color:var(--red)}
+.bug-card p{font-size:.85rem;color:var(--muted);margin:.3rem 0 .6rem}
+.hint-toggle{background:none;border:none;color:var(--primary);font-size:.82rem;cursor:pointer;font-family:inherit;font-weight:600;padding:0}
+.hint-box{background:var(--orange-light);border-radius:6px;padding:.5rem .8rem;font-size:.83rem;margin-top:.4rem;display:none}
+.hint-box.show{display:block}
+.bug-card input{margin-bottom:0}
+.bug-card input.correct{border-color:var(--green);background:var(--green-light)}
+.bug-card input.wrong{border-color:var(--red);background:var(--red-light)}
+
+/* ── MCQ ── */
+.mcq-q{border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem}
+.mcq-q p{font-weight:600;margin:0 0 .7rem;font-size:.93rem}
+.mcq-opt{display:flex;align-items:flex-start;gap:.6rem;padding:.4rem .5rem;border-radius:7px;cursor:pointer;font-size:.88rem;transition:background .15s;margin-bottom:.25rem}
+.mcq-opt:hover{background:var(--blue-light)}
+.mcq-opt input{margin-top:.15rem;accent-color:var(--primary)}
+.mcq-opt.correct-ans{background:var(--green-light);color:#065F46}
+.mcq-opt.wrong-ans{background:var(--red-light);color:var(--red)}
+.mcq-explain{font-size:.8rem;margin:.4rem 0 0;padding:.4rem .6rem;border-radius:6px;background:var(--blue-light);display:none}
+.mcq-explain.show{display:block}
+.mcq-score{font-size:1.1rem;font-weight:700;text-align:center;padding:.8rem;border-radius:8px;margin:.7rem 0}
+.score-pass{background:var(--green-light);color:#065F46}
+.score-fail{background:var(--red-light);color:var(--red)}
+.score-info{background:var(--orange-light);color:#B45309}
+
+/* ── Journal ── */
+.journal-prompt{margin-bottom:1rem}
+.journal-prompt .jp-label{font-size:.82rem;font-weight:700;color:var(--primary);margin-bottom:.3rem}
+.journal-prompt textarea{min-height:90px}
+
+/* ── Completion banner ── */
+.complete-banner{background:linear-gradient(135deg,var(--primary-dark),#065F46);border-radius:14px;color:#fff;text-align:center;padding:2.2rem 1.5rem;display:none}
+.complete-banner.show{display:block}
+.complete-banner h2{font-size:1.8rem;margin:.4rem 0 .6rem}
+.complete-banner p{opacity:.9;margin-bottom:1.4rem}
+.btn-continue{display:inline-block;background:#fff;color:var(--primary-dark);padding:.7rem 1.8rem;border-radius:8px;font-weight:700;text-decoration:none;font-size:1rem;transition:all .2s}
+.btn-continue:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
+/* ── Tier label ── */
+.tier-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.tier-number{width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+
+/* ── Word count ── */
+.wc{font-size:.75rem;color:var(--muted);text-align:right;margin-top:-.6rem;margin-bottom:.6rem}
+.wc.ok{color:var(--green)}
+
+/* ── Export ── */
+.export-panel{background:var(--card);border:2px dashed var(--line);border-radius:12px;padding:1.2rem;margin-top:2rem;display:none}
+.export-panel.show{display:block}
+.export-panel h3{margin:0 0 .8rem;color:var(--muted);font-size:.9rem}
+
+/* ── Utility ── */
+.mt1{margin-top:1rem}.mt2{margin-top:2rem}
+.text-muted{color:var(--muted);font-size:.85rem}
+.divider{border:none;border-top:1px solid var(--line);margin:1.2rem 0}
+.word-count{font-size:.75rem;color:var(--muted);text-align:right}
+.word-count.ok{color:var(--green)}
+
+.module-nav{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:2rem auto 0;max-width:900px;padding:0 max(16px,env(safe-area-inset-left,0px));}
+.module-nav .mn-card{display:block;padding:1.1rem 1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:background .2s;}
+.module-nav .mn-card:hover{background:rgba(255,255,255,.13);}
+.module-nav .mn-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.3rem;}
+.module-nav .mn-title{font-size:.97rem;font-weight:700;color:#fff;}
+.module-nav .mn-next{text-align:right;}
+
+/* ── Active student chip ── */
+#activeStudentChip{display:none;align-items:center;gap:.4rem;background:rgba(8,145,178,.18);border:1px solid rgba(8,145,178,.4);border-radius:999px;padding:.22rem .75rem .22rem .5rem;font-size:.72rem;color:#67e8f9;white-space:nowrap;max-width:180px;}
+#activeStudentChip .chip-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0;}
+#activeStudentChip .chip-name{overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+</style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+
+<!-- ── CHEVRON STRIP ── -->
+<div class="chev-strip" aria-label="UMPSA STEM Lab">
+  <span id="see-egg">See</span><span>Think</span><span>Explore</span><span>Marvel</span>
+</div>
+
+<!-- ── SITE NAV ── -->
+<header class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand"><em>AI</em>&nbsp;Adventure<span class="brand-sub">UMPSA STEM Lab</span></a>
+    <nav>
+      <div class="nav-drop-wrap"><button class="nav-drop-btn" id="modDropBtn">Modules <span class="arr">▾</span></button><div class="nav-drop-menu" id="modDropMenu"><a href="module-1.html"><span class="mn">M1</span>Why AI?</a>
+<a href="activity-2.html" class="cur"><span class="mn">↳</span>Activity 2</a>
+<a href="module-2.html"><span class="mn">M2</span>Supervised Learning</a>
+<a href="module-3.html"><span class="mn">M3</span>Unsupervised Learning</a>
+<a href="module-4.html"><span class="mn">M4</span>Reinforcement Learning</a>
+<a href="module-5.html"><span class="mn">M5</span>Build Your Own AI</a>
+<a href="module-6.html"><span class="mn">M6</span>What's Next in AI?</a>
+<div class="sep-line"></div>
+<a href="index.html"><span class="mn">🏠</span>Home</a></div></div>
+        <div id="activeStudentChip"><div class="chip-avatar" id="chipAvatar"></div><span class="chip-name" id="chipName"></span></div>
+  <button id="langToggle" class="lang-toggle-btn" onclick="setLang(document.documentElement.lang==='ms'?'en':'ms')" title="Tukar Bahasa / Switch Language">BM</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ── ACTIVITY EYEBROW ── -->
+<div style="background:var(--act-xlight);border-bottom:1.5px solid #FDE68A;padding:.38rem max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:.6rem;">
+  <span style="background:var(--act);color:#fff;font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .6rem;border-radius:99px;flex-shrink:0;">Activity</span>
+  <span style="font-size:.78rem;font-weight:600;color:var(--act-dark);"><span data-en="Module 2 · How ML Learns — Hands-On Practice" data-ms="Modul 2 · Cara PM Belajar — Amali Interaktif">Module 2 · How ML Learns — Hands-On Practice</span></span>
+</div>
+
+<!-- ── CHROME FILE:// WARNING BANNER ── -->
+<div id="chromeBanner" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:.78rem;text-align:center;padding:.45rem 1rem;line-height:1.5;">
+  ⚠️ <strong>Chrome restricts local file navigation.</strong> For the best experience, open this file in <strong>Firefox</strong> — or right-click the file → <em>Open With → Firefox</em>.
+  <button onclick="document.getElementById('chromeBanner').style.display='none'" style="margin-left:.8rem;background:rgba(255,255,255,.15);border:none;color:#fca5a5;border-radius:4px;padding:1px 8px;cursor:pointer;font-size:.78rem;">✕</button>
+</div>
+<script>
+(function(){
+  var isChrome=/Chrome/.test(navigator.userAgent)&&!/Edg|OPR|Firefox/.test(navigator.userAgent);
+  var isFile=location.protocol==='file:';
+  if(isChrome&&isFile)document.getElementById('chromeBanner').style.display='block';
+})();
+</script>
+
+<!-- Progress bar -->
+<div class="progress-bar">
+  <span class="pb-step active" id="pb-cal" data-en="🎯 Calibrate" data-ms="🎯 Kalibrasi">🎯 Calibrate</span>
+  <span class="pb-arrow">›</span>
+  <span class="pb-step" id="pb-t1" data-en="1 Concepts" data-ms="1 Konsep">1 Concepts</span>
+  <span class="pb-arrow">›</span>
+  <span class="pb-step" id="pb-t2" data-en="2 Fix" data-ms="2 Baiki">2 Fix</span>
+  <span class="pb-arrow">›</span>
+  <span class="pb-step" id="pb-t3" data-en="3 Extend" data-ms="3 Kembang">3 Extend</span>
+  <span class="pb-arrow">›</span>
+  <span class="pb-step" id="pb-t4" data-en="4 Create" data-ms="4 Cipta">4 Create</span>
+  <span class="pb-arrow">›</span>
+  <span class="pb-step" id="pb-mcq" data-en="🧠 Concept" data-ms="🧠 Konsep">🧠 Concept</span>
+  <span class="pb-arrow">›</span>
+  <span class="pb-step" id="pb-ref" data-en="📓 Reflect" data-ms="📓 Refleksi">📓 Reflect</span>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="module-tag" data-en="Module 2 · Activity" data-ms="Modul 2 · Aktiviti">Module 2 · Activity</div>
+  <h1 data-en="How Machines Learn: Data, Patterns &amp; Models" data-ms="Cara Mesin Belajar: Data, Corak &amp; Model">How Machines Learn: Data, Patterns &amp; Models</h1>
+  <p data-en="Explore the shift from traditional rule-based programming to machines that learn from data — and discover AI all around you." data-ms="Terokai peralihan daripada pengaturcaraan tradisional kepada mesin yang belajar daripada data — dan temui AI di sekeliling kamu.">Explore the shift from traditional rule-based programming to machines that learn from data — and discover AI all around you.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- ══ IDENTITY ══ -->
+  <div class="section" id="sec-identity">
+    <h2>👤 <span data-en="Student Identity" data-ms="Maklumat Pelajar">Student Identity</span> <span class="tag tag-blue" data-en="Required first" data-ms="Wajib dahulu">Required first</span></h2>
+    <p class="text-muted" data-en="Fill in your details to begin. All fields marked ✱ are required." data-ms="Isi maklumat anda untuk bermula. Semua medan bertanda ✱ adalah wajib.">Fill in your details to begin. All fields marked ✱ are required.</p>
+    <div class="id-grid">
+      <div><label data-en="Full Name ✱" data-ms="Nama Penuh ✱">Full Name ✱</label><input type="text" id="id-name" placeholder="cth. Ahmad bin Hassan" data-en-placeholder="e.g. Ahmad bin Hassan" data-ms-placeholder="cth. Ahmad bin Hassan"></div>
+      <div><label data-en="Matric / Student No. ✱" data-ms="No. Matrik / Pelajar ✱">Matric / Student No. ✱</label><input type="text" id="id-matric" placeholder="cth. 240001" data-en-placeholder="e.g. 240001" data-ms-placeholder="cth. 240001"></div>
+      <div><label data-en="MyKid / IC No. ✱" data-ms="No. MyKid / IC ✱">MyKid / IC No. ✱</label><input type="text" id="id-mykid" placeholder="cth. 100201-14-1234" data-en-placeholder="e.g. 100201-14-1234" data-ms-placeholder="cth. 100201-14-1234"></div>
+      <div><label data-en="Gender ✱" data-ms="Jantina ✱">Gender ✱</label><select id="id-gender"><option value="">— pilih —</option><option value="Male" data-en="Male" data-ms="Lelaki">Male</option><option value="Female" data-en="Female" data-ms="Perempuan">Female</option></select></div>
+      <div><label data-en="Age ✱" data-ms="Umur ✱">Age ✱</label><input type="number" id="id-age" min="10" max="99" placeholder="cth. 16" data-en-placeholder="e.g. 16" data-ms-placeholder="cth. 16"></div>
+      <div><label data-en="Home State (Negeri) ✱" data-ms="Negeri Asal ✱">Home State (Negeri) ✱</label><select id="id-state"><option value="">— select —</option>
+        <option>Johor</option><option>Kedah</option><option>Kelantan</option><option>Melaka</option>
+        <option>Negeri Sembilan</option><option>Pahang</option><option>Perak</option><option>Perlis</option>
+        <option>Pulau Pinang</option><option>Sabah</option><option>Sarawak</option><option>Selangor</option>
+        <option>Terengganu</option><option>W.P. Kuala Lumpur</option><option>W.P. Labuan</option><option>W.P. Putrajaya</option>
+      </select></div>
+      <div><label data-en="Class / Section ✱" data-ms="Kelas / Seksyen ✱">Class / Section ✱</label><input type="text" id="id-class" placeholder="cth. 4 Sains 2" data-en-placeholder="e.g. 4 Sains 2" data-ms-placeholder="cth. 4 Sains 2"></div>
+      <div><label data-en="School Code ✱" data-ms="Kod Sekolah ✱">School Code ✱</label><input type="text" id="id-school" placeholder="cth. BEA1234" data-en-placeholder="e.g. BEA1234" data-ms-placeholder="cth. BEA1234"></div>
+      <div><label data-en="Institution / School Name ✱" data-ms="Nama Institusi / Sekolah ✱">Institution / School Name ✱</label><input type="text" id="id-institution" placeholder="e.g. SMK Dato Ahmad Maher" data-en-placeholder="e.g. SMK Dato Ahmad Maher" data-ms-placeholder="cth. SMK Dato Ahmad Maher"></div>
+      <div><label data-en="Phone No. ✱" data-ms="No. Telefon ✱">Phone No. ✱</label><input type="tel" id="id-phone" placeholder="cth. 011-12345678" data-en-placeholder="e.g. 011-12345678" data-ms-placeholder="cth. 011-12345678"></div>
+      <div><label data-en="Email ✱" data-ms="E-mel ✱">Email ✱</label><input type="email" id="id-email" placeholder="cth. ahmad@student.edu.my" data-en-placeholder="e.g. ahmad@student.edu.my" data-ms-placeholder="cth. ahmad@student.edu.my"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="confirmIdentity()"><span data-en="✓ Confirm Identity &amp; Begin" data-ms="✓ Sahkan Maklumat &amp; Mula">✓ Confirm Identity &amp; Begin</span></button>
+    </div>
+    <p id="id-err" style="color:var(--red);font-size:.84rem;display:none" data-en="⚠ Please fill in all required fields (✱)." data-ms="⚠ Sila isi semua medan wajib (✱).">⚠ Please fill in all required fields (✱).</p>
+  </div>
+
+  <!-- ══ CALIBRATION ══ -->
+  <div class="section locked" id="sec-cal">
+    <h2>🎯 <span data-en="Before You Begin" data-ms="Sebelum Bermula">Before You Begin</span> <span class="tag tag-orange" data-en="Calibration" data-ms="Kalibrasi">Calibration</span></h2>
+    <p class="text-muted" data-en="Take a moment to check what you already know — before the activity. Be honest; there are no wrong answers here!" data-ms="Ambil masa untuk semak apa yang anda sudah tahu — sebelum aktiviti bermula. Jujurlah; tiada jawapan yang salah di sini!">Take a moment to check what you already know — before the activity. Be honest; there are no wrong answers here!</p>
+
+    <div class="slider-wrap">
+      <label data-en="How confident are you about AI &amp; Machine Learning right now? (1 = Not at all, 10 = Very confident)" data-ms="Seberapa yakin anda tentang AI &amp; Pembelajaran Mesin sekarang? (1 = Langsung tidak, 10 = Sangat yakin)">How confident are you about AI &amp; Machine Learning <em>right now</em>? (1 = Not at all, 10 = Very confident)</label>
+      <div class="slider-val" id="conf-val">5</div>
+      <input type="range" min="1" max="10" value="5" id="conf-slider" oninput="document.getElementById('conf-val').textContent=this.value">
+      <div class="slider-label"><span data-en="Not confident" data-ms="Tidak yakin">Not confident</span><span data-en="Very confident" data-ms="Sangat yakin">Very confident</span></div>
+    </div>
+
+    <label data-en="What score (%) do you predict you'll get on Tier 1 — Fill in the Blanks?" data-ms="Apakah skor (%) yang anda jangkakan untuk Tahap 1 — Isi Tempat Kosong?">What score (%) do you predict you'll get on Tier 1 — Fill in the Blanks?</label>
+    <input type="number" id="pred-score" min="0" max="100" placeholder="e.g. 60" style="max-width:160px">
+
+    <label data-en="What do you already know about Artificial Intelligence? (Write at least 10 words)" data-ms="Apakah yang anda sudah tahu tentang Kecerdasan Buatan? (Tulis sekurang-kurangnya 10 perkataan)">What do you already know about Artificial Intelligence? (Write at least 10 words)</label>
+    <textarea id="prior-know" rows="3" placeholder="e.g. I know that AI can recognise faces and recommend videos…" oninput="countWords('prior-know','wc-prior',10)"></textarea>
+    <div class="word-count" id="wc-prior">0 / 10 words minimum</div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitCalibration()"><span data-en="Submit &amp; Start Activity →" data-ms="Hantar &amp; Mulakan Aktiviti →">Submit &amp; Start Activity →</span></button>
+    </div>
+    <p id="cal-err" style="color:var(--red);font-size:.84rem;display:none" data-en="⚠ Please complete all fields and write at least 10 words." data-ms="⚠ Sila lengkapkan semua medan dan tulis sekurang-kurangnya 10 perkataan.">⚠ Please complete all fields and write at least 10 words.</p>
+  </div>
+
+  <!-- ══ TIER 1 ══ -->
+  <div class="section locked" id="sec-t1">
+    <div class="tier-header">
+      <div class="tier-number">1</div>
+      <h2 style="margin:0"><span data-en="Concept Questions" data-ms="Soalan Konsep">Concept Questions</span> <span class="tag tag-blue" data-en="Understand &amp; Explain" data-ms="Fahami &amp; Terangkan">Understand &amp; Explain</span></h2>
+    </div>
+    <p class="text-muted" data-en="Four short activities — select your answer and write one sentence explaining your thinking. Both parts required for each question." data-ms="Empat aktiviti ringkas — pilih jawapan anda dan tulis satu ayat menerangkan pemikiran anda. Kedua-dua bahagian diperlukan bagi setiap soalan.">Four short activities — select your answer <strong>and</strong> write one sentence explaining your thinking. Both parts required for each question.</p>
+
+    <!-- Q1: Concept + Justify -->
+    <div class="q-card">
+      <div class="q-hdr"><span class="q-num">Q1</span><span class="q-fmt" style="background:var(--blue-light);color:var(--blue)" data-en="Concept + Justify" data-ms="Konsep + Justifikasi">Concept + Justify</span></div>
+      <p class="q-stem" data-en="An education app learns from millions of student answers, each tagged 'correct' or 'incorrect', to recommend personalised exercises. What type of ML is this?" data-ms="Sebuah aplikasi pendidikan belajar daripada jutaan jawapan pelajar, setiap satu berlabel 'betul' atau 'salah', untuk mencadangkan latihan bersesuaian. Apakah jenis PM ini?">An education app learns from millions of student answers, each tagged 'correct' or 'incorrect', to recommend personalised exercises. What type of ML is this?</p>
+      <div class="radio-grp" id="q1-opts">
+        <label class="r-opt" onclick="pickOpt('q1',this,'supervised')"><span class="r-dot"></span><span data-en="Supervised learning — each answer is tagged 'correct' or 'incorrect' (a label)" data-ms="Pembelajaran diselia — setiap jawapan dilabel 'betul' atau 'salah'">Supervised learning — each answer is tagged 'correct' or 'incorrect' (a label)</span></label>
+        <label class="r-opt" onclick="pickOpt('q1',this,'unsupervised')"><span class="r-dot"></span><span data-en="Unsupervised learning — the AI clusters answers with no labels given" data-ms="Pembelajaran tidak diselia — AI mengelompok jawapan tanpa label">Unsupervised learning — the AI clusters answers with no labels given</span></label>
+        <label class="r-opt" onclick="pickOpt('q1',this,'reinforcement')"><span class="r-dot"></span><span data-en="Reinforcement learning — the app earns points each time a student improves" data-ms="Pembelajaran pengukuhan — aplikasi mendapat mata setiap kali pelajar bertambah baik">Reinforcement learning — the app earns points each time a student improves</span></label>
+      </div>
+      <div class="q-fb" id="q1-fb"></div>
+      <div class="justify">
+        <label data-en="✍ In one sentence, explain why you chose that answer:" data-ms="✍ Dalam satu ayat, terangkan mengapa anda memilih jawapan itu:">✍ In one sentence, explain why you chose that answer:</label>
+        <textarea id="q1-just" rows="2" placeholder="Because…" oninput="updateWC('q1-just','q1-wc',8)"></textarea>
+        <div class="wc-row"><span id="q1-wc" class="wc">0 words</span><span class="wc-hint" data-en="min 8 words" data-ms="min 8 perkataan">min 8 words</span></div>
+      </div>
+    </div>
+
+    <!-- Q2: Rank + Reason -->
+    <div class="q-card">
+      <div class="q-hdr"><span class="q-num">Q2</span><span class="q-fmt" style="background:var(--green-light);color:#065F46" data-en="Rank + Reason" data-ms="Susun + Sebab">Rank + Reason</span></div>
+      <p class="q-stem" data-en="Rank these 3 tasks from most to least suitable for machine learning. Click each card in order — first click = most suitable." data-ms="Susun 3 tugasan ini dari paling sesuai ke paling tidak sesuai untuk pembelajaran mesin. Klik setiap kad mengikut urutan — klik pertama = paling sesuai.">Rank these 3 tasks from <strong>most</strong> to <strong>least</strong> suitable for machine learning. Click each card in order — first click = most suitable.</p>
+      <div id="q2-items">
+        <div class="rank-card" data-id="A" onclick="rankClick(this)"><div class="rank-badge" id="rnk-A"></div><span data-en="Predicting a student's exam grade based on past homework scores and attendance patterns" data-ms="Meramalkan gred peperiksaan pelajar berdasarkan skor kerja rumah dan corak kehadiran lepas">Predicting a student's exam grade based on past homework scores and attendance patterns</span></div>
+        <div class="rank-card" data-id="B" onclick="rankClick(this)"><div class="rank-badge" id="rnk-B"></div><span data-en="Converting temperature from Celsius to Fahrenheit using the formula F = C × 9/5 + 32" data-ms="Menukar suhu daripada Celsius ke Fahrenheit menggunakan formula F = C × 9/5 + 32">Converting temperature from Celsius to Fahrenheit using the formula F = C × 9/5 + 32</span></div>
+        <div class="rank-card" data-id="C" onclick="rankClick(this)"><div class="rank-badge" id="rnk-C"></div><span data-en="Detecting fraudulent bank transactions by learning patterns from millions of past fraud cases" data-ms="Mengesan transaksi bank penipuan dengan mempelajari corak daripada jutaan kes penipuan lepas">Detecting fraudulent bank transactions by learning patterns from millions of past fraud cases</span></div>
+      </div>
+      <p style="font-size:.77rem;color:var(--muted);margin:.35rem 0 .5rem" data-en="Click a ranked card again to deselect it." data-ms="Klik kad yang telah disusun semula untuk menyahpilihnya.">Click a ranked card again to deselect it.</p>
+      <div class="q-fb" id="q2-fb"></div>
+      <div class="justify">
+        <label data-en="✍ In one sentence, explain why your top-ranked task suits ML better than a fixed formula:" data-ms="✍ Dalam satu ayat, terangkan mengapa tugasan pertama anda lebih sesuai untuk PM berbanding formula tetap:">✍ In one sentence, explain why your top-ranked task suits ML better than a fixed formula:</label>
+        <textarea id="q2-rsn" rows="2" placeholder="My top choice suits ML because…" oninput="updateWC('q2-rsn','q2-wc',8)"></textarea>
+        <div class="wc-row"><span id="q2-wc" class="wc">0 words</span><span class="wc-hint" data-en="min 8 words" data-ms="min 8 perkataan">min 8 words</span></div>
+      </div>
+    </div>
+
+    <!-- Q3: True/False + Justify -->
+    <div class="q-card">
+      <div class="q-hdr"><span class="q-num">Q3</span><span class="q-fmt" style="background:var(--orange-light);color:#B45309" data-en="True / False + Justify" data-ms="Betul / Salah + Justifikasi">True / False + Justify</span></div>
+      <p class="q-stem"><span class="lang-en"><em>"A model that scores 100% accuracy on its training data is perfect and will definitely perform just as well on new, unseen data."</em></span><span class="lang-ms" style="display:none"><em>"Model yang mencapai ketepatan 100% pada data latihan adalah sempurna dan pasti akan berprestasi sama baik pada data baharu yang belum pernah dilihat."</em></span></p>
+      <div class="tf-grp">
+        <button class="tf-btn" id="tf-true" onclick="pickTF('true')" data-en="✅ True" data-ms="✅ Betul">✅ True</button>
+        <button class="tf-btn" id="tf-false" onclick="pickTF('false')" data-en="❌ False" data-ms="❌ Salah">❌ False</button>
+      </div>
+      <div class="q-fb" id="q3-fb"></div>
+      <div class="justify">
+        <label data-en="✍ In one sentence, explain what overfitting means and why 100% training accuracy can be a warning sign:" data-ms="✍ Dalam satu ayat, terangkan maksud pemasangan berlebihan dan mengapa ketepatan latihan 100% boleh menjadi tanda amaran:">✍ In one sentence, explain what overfitting means and why 100% training accuracy can be a warning sign:</label>
+        <textarea id="q3-just" rows="2" placeholder="100% training accuracy is a warning because…" oninput="updateWC('q3-just','q3-wc',8)"></textarea>
+        <div class="wc-row"><span id="q3-wc" class="wc">0 words</span><span class="wc-hint" data-en="min 8 words" data-ms="min 8 perkataan">min 8 words</span></div>
+      </div>
+    </div>
+
+    <!-- Q4: Analogy Selection -->
+    <div class="q-card">
+      <div class="q-hdr"><span class="q-num">Q4</span><span class="q-fmt" style="background:var(--purple-light);color:var(--purple)" data-en="Analogy Selection" data-ms="Pilihan Analogi">Analogy Selection</span></div>
+      <p class="q-stem" data-en="Which analogy best describes how an ML model improves as it sees more training examples?" data-ms="Analogi manakah yang paling tepat menggambarkan bagaimana model PM bertambah baik apabila melihat lebih banyak contoh latihan?">Which analogy <strong>best</strong> describes how an ML model improves as it sees more training examples?</p>
+      <div class="radio-grp" id="q4-opts">
+        <label class="r-opt" onclick="pickOpt('q4',this,'calculator')"><span class="r-dot"></span><strong>A —</strong> <span data-en="A calculator that applies a fixed formula and always gives the same output for the same input" data-ms="Sebuah kalkulator yang menggunakan formula tetap dan sentiasa memberi output yang sama untuk input yang sama">A calculator that applies a fixed formula and always gives the same output for the same input</span></label>
+        <label class="r-opt" onclick="pickOpt('q4',this,'puppy')"><span class="r-dot"></span><strong>B —</strong> <span data-en="A puppy learning tricks — it gets a reward when correct, gradually improving with each repetition" data-ms="Anak anjing belajar helah — ia mendapat ganjaran apabila betul, bertambah baik secara beransur dengan setiap ulangan">A puppy learning tricks — it gets a reward when correct, gradually improving with each repetition</span></label>
+        <label class="r-opt" onclick="pickOpt('q4',this,'library')"><span class="r-dot"></span><strong>C —</strong> <span data-en="A library that stores every book but never changes — it only retrieves, never learns" data-ms="Sebuah perpustakaan yang menyimpan setiap buku tetapi tidak pernah berubah — ia hanya mendapatkan semula, tidak pernah belajar">A library that stores every book but never changes — it only retrieves, never learns</span></label>
+      </div>
+      <div class="q-fb" id="q4-fb"></div>
+      <div class="justify">
+        <label data-en="✍ In one sentence, explain why your chosen analogy captures how ML models improve through examples:" data-ms="✍ Dalam satu ayat, terangkan mengapa analogi pilihan anda menggambarkan cara model PM bertambah baik melalui contoh:">✍ In one sentence, explain why your chosen analogy captures how ML models improve through examples:</label>
+        <textarea id="q4-just" rows="2" placeholder="This analogy fits because…" oninput="updateWC('q4-just','q4-wc',8)"></textarea>
+        <div class="wc-row"><span id="q4-wc" class="wc">0 words</span><span class="wc-hint" data-en="min 8 words" data-ms="min 8 perkataan">min 8 words</span></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkTier1()"><span data-en="Submit &amp; Check Answers" data-ms="Hantar &amp; Semak Jawapan">Submit &amp; Check Answers</span></button>
+    </div>
+    <div id="t1-feedback"></div>
+    <p id="t1-retry" style="color:var(--red);font-size:.84rem;display:none">⚠ Review your concept choices (marked in red) and correct them before continuing.</p>
+  </div>
+
+  <!-- ══ TIER 2 ══ -->
+  <div class="section locked" id="sec-t2">
+    <div class="tier-header">
+      <div class="tier-number">2</div>
+      <h2 style="margin:0"><span data-en="Find &amp; Fix the Mistakes" data-ms="Cari &amp; Betulkan Kesilapan">Find &amp; Fix the Mistakes</span> <span class="tag tag-orange" data-en="Diagnose &amp; Correct" data-ms="Kenal Pasti &amp; Perbetulkan">Diagnose &amp; Correct</span></h2>
+    </div>
+    <p class="text-muted" data-en="Each card below contains a wrong statement about AI or Machine Learning. Read it carefully, spot the error, and type the corrected version." data-ms="Setiap kad di bawah mengandungi kenyataan yang salah tentang AI atau Pembelajaran Mesin. Baca dengan teliti, kenal pasti kesilapan, dan taip versi yang betul.">Each card below contains a <strong>wrong statement</strong> about AI or Machine Learning. Read it carefully, spot the error, and type the corrected version.</p>
+
+    <!-- Bug 1 -->
+    <div class="bug-card">
+      <h3 data-en="Mistake 1 — Confused terms" data-ms="Kesilapan 1 — Istilah Keliru">Mistake 1 — Confused terms</h3>
+      <div class="bug-stmt" data-en='❌ "In unsupervised learning, every training example must be labelled — the model cannot learn anything without being told the correct answer."' data-ms='❌ "Dalam pembelajaran tidak diselia, setiap contoh latihan mesti berlabel — model tidak boleh belajar apa-apa tanpa diberitahu jawapan betul."'>❌ "In unsupervised learning, every training example must be labelled — the model cannot learn anything without being told the correct answer."</div>
+      <p data-en="This describes supervised learning, not unsupervised. What makes unsupervised learning different?" data-ms="Ini menggambarkan pembelajaran diselia, bukan tidak diselia. Apakah yang membezakan pembelajaran tidak diselia?">This describes <em>supervised</em> learning, not unsupervised. What makes unsupervised learning different?</p>
+      <button class="hint-toggle" onclick="toggleHint('h1')" data-en="💡 Show Hint" data-ms="💡 Tunjuk Petua">💡 Show Hint</button>
+      <div class="hint-box" id="h1"><span class="lang-en">The clue is in the name: "un-supervised" means no <em>supervision</em> — so what key ingredient is missing?</span><span class="lang-ms" style="display:none">Petunjuknya ada pada namanya: "tidak diselia" bermakna tiada <em>penyeliaan</em> — jadi apakah bahan utama yang tiada?</span></div>
+      <label style="margin-top:.6rem" data-en="Type the corrected statement:" data-ms="Taip kenyataan yang betul:">Type the corrected statement:</label>
+      <input type="text" id="fix1" placeholder="In unsupervised learning…" oninput="resetBugStyle(1)">
+    </div>
+
+    <!-- Bug 2 -->
+    <div class="bug-card">
+      <h3 data-en="Mistake 2 — Wrong concept" data-ms="Kesilapan 2 — Konsep Salah">Mistake 2 — Wrong concept</h3>
+      <div class="bug-stmt" data-en='❌ "A model that achieves 100% accuracy on training data has been trained perfectly and will work flawlessly on any new data it encounters."' data-ms='❌ "Model yang mencapai 100% ketepatan pada data latihan telah dilatih dengan sempurna dan akan berfungsi tanpa cela pada mana-mana data baharu."'>❌ "A model that achieves 100% accuracy on training data has been trained perfectly and will work flawlessly on any new data it encounters."</div>
+      <p data-en="100% training accuracy is a red flag, not a celebration. What is the name for this problem, and what does it mean?" data-ms="Ketepatan latihan 100% adalah tanda amaran, bukan perayaan. Apakah nama masalah ini, dan apakah maksudnya?">100% training accuracy is a red flag, not a celebration. What is the name for this problem, and what does it mean?</p>
+      <button class="hint-toggle" onclick="toggleHint('h2')" data-en="💡 Show Hint" data-ms="💡 Tunjuk Petua">💡 Show Hint</button>
+      <div class="hint-box" id="h2"><span class="lang-en">When a student memorises every answer in the textbook but can't solve a new problem — what do we call that? ML has the same problem.</span><span class="lang-ms" style="display:none">Apabila pelajar menghafal setiap jawapan dalam buku teks tetapi tidak dapat menyelesaikan masalah baharu — apakah kita panggil itu? PM menghadapi masalah yang sama.</span></div>
+      <label style="margin-top:.6rem" data-en="Type the corrected statement:" data-ms="Taip kenyataan yang betul:">Type the corrected statement:</label>
+      <input type="text" id="fix2" placeholder="100% training accuracy is actually a problem called…" oninput="resetBugStyle(2)">
+    </div>
+
+    <!-- Bug 3 -->
+    <div class="bug-card">
+      <h3 data-en="Mistake 3 — Wrong process" data-ms="Kesilapan 3 — Proses Salah">Mistake 3 — Wrong process</h3>
+      <div class="bug-stmt" data-en='❌ "In machine learning, the model first defines its own rules, then checks whether the training data matches those rules."' data-ms='❌ "Dalam pembelajaran mesin, model terlebih dahulu menentukan peraturannya sendiri, kemudian menyemak sama ada data latihan sepadan dengan peraturan tersebut."'>❌ "In machine learning, the model first defines its own rules, then checks whether the training data matches those rules."</div>
+      <p data-en="ML works the other way around — it starts with data, not rules. How does the ML learning process actually work?" data-ms="PM berfungsi sebaliknya — ia bermula dengan data, bukan peraturan. Bagaimanakah proses pembelajaran PM sebenarnya berfungsi?">ML works the other way around — it starts with data, not rules. How does the ML learning process actually work?</p>
+      <button class="hint-toggle" onclick="toggleHint('h3')" data-en="💡 Show Hint" data-ms="💡 Tunjuk Petua">💡 Show Hint</button>
+      <div class="hint-box" id="h3"><span class="lang-en">In ML, does the programmer write rules first, or does the model <em>discover</em> patterns by seeing thousands of examples?</span><span class="lang-ms" style="display:none">Dalam PM, adakah pengaturcara menulis peraturan dahulu, atau model <em>menemui</em> corak dengan melihat ribuan contoh?</span></div>
+      <label style="margin-top:.6rem" data-en="Type the corrected statement:" data-ms="Taip kenyataan yang betul:">Type the corrected statement:</label>
+      <input type="text" id="fix3" placeholder="In machine learning, the model actually…" oninput="resetBugStyle(3)">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkTier2()"><span data-en="Check All Fixes" data-ms="Semak Semua Pembetulan">Check All Fixes</span></button>
+    </div>
+    <p id="t2-feedback" style="font-size:.85rem;margin-top:.5rem"></p>
+  </div>
+
+  <!-- ══ TIER 3 ══ -->
+  <div class="section locked" id="sec-t3">
+    <div class="tier-header">
+      <div class="tier-number">3</div>
+      <h2 style="margin:0"><span data-en="Extend the Concept" data-ms="Kembangkan Konsep">Extend the Concept</span> <span class="tag tag-green" data-en="Apply" data-ms="Aplikasi">Apply</span></h2>
+    </div>
+    <p class="text-muted" data-en="Read the starter scenario below, then complete the extension task in your own words." data-ms="Baca senario permulaan di bawah, kemudian lengkapkan tugasan lanjutan dengan perkataan anda sendiri.">Read the starter scenario below, then complete the extension task in your own words.</p>
+
+    <div class="concept-block" style="background:var(--green-light);border-color:var(--green)">
+      <div class="lang-en">
+        <strong>Starter Scenario:</strong> A hospital trains a model on 50,000 patient records to predict whether a patient will be readmitted within 30 days. After training, it achieves 97% accuracy — but when tested on new patients it has never seen, accuracy drops to 61%.<br><br>
+        <strong>Your Task:</strong> Explain what went wrong with this model. Describe (1) the specific problem this represents, (2) how the hospital could fix it (think about the data or the model), and (3) why a lower training accuracy might actually indicate a better real-world model.
+      </div>
+      <div class="lang-ms" style="display:none">
+        <strong>Senario Permulaan:</strong> Sebuah hospital melatih model pada 50,000 rekod pesakit untuk meramalkan sama ada pesakit akan dimasukkan semula dalam tempoh 30 hari. Selepas latihan, ia mencapai ketepatan 97% — tetapi apabila diuji pada pesakit baharu yang belum pernah dilihat, ketepatan jatuh ke 61%.<br><br>
+        <strong>Tugasan Anda:</strong> Terangkan apa yang berlaku dengan model ini. Huraikan (1) masalah khusus yang berlaku, (2) bagaimana hospital boleh memperbaikinya (fikirkan tentang data atau model), dan (3) mengapa ketepatan latihan yang lebih rendah mungkin menunjukkan model dunia sebenar yang lebih baik.
+      </div>
+    </div>
+
+    <label data-en="Your explanation (aim for 3–5 sentences):" data-ms="Penerangan anda (sasarkan 3–5 ayat):">Your explanation (aim for 3–5 sentences):</label>
+    <textarea id="t3-ans" rows="6" placeholder="The problem here is called… It happened because… To fix it…" oninput="countWords('t3-ans','wc-t3',20)"></textarea>
+    <div class="word-count" id="wc-t3">0 / 20 words minimum</div>
+
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="submitTier3()"><span data-en="Submit Tier 3 →" data-ms="Hantar Tahap 3 →">Submit Tier 3 →</span></button>
+    </div>
+    <p id="t3-err" style="color:var(--red);font-size:.84rem;display:none" data-en="⚠ Please write at least 20 words before submitting." data-ms="⚠ Sila tulis sekurang-kurangnya 20 perkataan sebelum menghantar.">⚠ Please write at least 20 words before submitting.</p>
+  </div>
+
+  <!-- ══ TIER 4 ══ -->
+  <div class="section locked" id="sec-t4">
+    <div class="tier-header">
+      <div class="tier-number">4</div>
+      <h2 style="margin:0"><span data-en="Create From Scratch" data-ms="Cipta Dari Mula">Create From Scratch</span> <span class="tag tag-purple" data-en="Design" data-ms="Reka Bentuk">Design</span></h2>
+    </div>
+    <p class="text-muted" data-en="This is your chance to apply everything creatively. Design your own AI solution idea." data-ms="Ini peluang anda untuk menerapkan segala yang telah dipelajari secara kreatif. Reka bentuk idea penyelesaian AI anda sendiri.">This is your chance to apply everything creatively. Design your own AI solution idea.</p>
+
+    <div style="background:var(--purple-light);border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:1rem;font-size:.92rem">
+      <div class="lang-en">
+        <strong>🎨 Your Challenge:</strong> Design a machine learning system for a problem that affects students in Malaysia. Plan it from data to prediction by answering the following:<br><br>
+        <ul style="margin:.4rem 0;padding-left:1.3rem;line-height:2">
+          <li>What is the <strong>problem</strong> you want ML to solve? (1 sentence)</li>
+          <li>What <strong>training data</strong> would you collect, and how would you get it?</li>
+          <li>What would each training example <strong>look like</strong>? List 3 features and 1 label.</li>
+          <li>What would the trained model <strong>predict or classify</strong>?</li>
+          <li>How would you know if the model is <strong>overfitting</strong> — and how would you fix it?</li>
+        </ul>
+      </div>
+      <div class="lang-ms" style="display:none">
+        <strong>🎨 Cabaran Anda:</strong> Reka bentuk sistem pembelajaran mesin untuk masalah yang mempengaruhi pelajar di Malaysia. Rancang dari data hingga ramalan dengan menjawab soalan berikut:<br><br>
+        <ul style="margin:.4rem 0;padding-left:1.3rem;line-height:2">
+          <li>Apakah <strong>masalah</strong> yang anda mahu PM selesaikan? (1 ayat)</li>
+          <li>Apakah <strong>data latihan</strong> yang akan anda kumpulkan, dan bagaimana mendapatkannya?</li>
+          <li>Bagaimana rupa <strong>setiap contoh latihan</strong>? Senaraikan 3 ciri dan 1 label.</li>
+          <li>Apakah yang model terlatih akan <strong>ramalkan atau kelaskan</strong>?</li>
+          <li>Bagaimana anda tahu jika model <strong>overfitting</strong> — dan bagaimana anda memperbaikinya?</li>
+        </ul>
+      </div>
+    </div>
+
+    <label data-en="Your AI Design (write freely — this is your original idea!):" data-ms="Reka Bentuk AI Anda (tulis dengan bebas — ini idea asal anda!):">Your AI Design (write freely — this is your original idea!):</label>
+    <textarea id="t4-ans" rows="10" placeholder="Problem: I want ML to solve…&#10;Training data: I would collect…&#10;Features: (1) … (2) … (3) …, Label: …&#10;Prediction: The model would…&#10;Overfitting check: I would know if…" oninput="countWords('t4-ans','wc-t4',30)"></textarea>
+    <div class="word-count" id="wc-t4">0 / 30 words minimum</div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitTier4()"><span data-en="Submit Tier 4 →" data-ms="Hantar Tahap 4 →">Submit Tier 4 →</span></button>
+    </div>
+    <p id="t4-err" style="color:var(--red);font-size:.84rem;display:none" data-en="⚠ Please write at least 30 words before submitting." data-ms="⚠ Sila tulis sekurang-kurangnya 30 perkataan sebelum menghantar.">⚠ Please write at least 30 words before submitting.</p>
+  </div>
+
+  <!-- ══ CONCEPT CHECK ══ -->
+  <div class="section locked" id="sec-mcq">
+    <h2>🧠 <span data-en="Concept Check" data-ms="Semak Pemahaman">Concept Check</span> <span class="tag tag-primary" data-en="5 Questions · Pass = 4/5" data-ms="5 Soalan · Lulus = 4/5">5 Questions · Pass = 4/5</span></h2>
+    <p class="text-muted" data-en="Test your understanding. Select one answer per question, then submit." data-ms="Uji pemahaman anda. Pilih satu jawapan setiap soalan, kemudian hantar.">Test your understanding. Select one answer per question, then submit.</p>
+
+    <div class="mcq-q" id="mcq1">
+      <p data-en="1. A model scores 95% accuracy on training data but only 58% on new test data. This is most likely caused by:" data-ms="1. Model mencapai 95% ketepatan pada data latihan tetapi hanya 58% pada data ujian baharu. Ini paling berkemungkinan disebabkan oleh:">1. A model scores 95% accuracy on training data but only 58% on new test data. This is most likely caused by:</p>
+      <label class="mcq-opt"><input type="radio" name="q1" value="a"> <span data-en="Underfitting — the model is too simple to learn any patterns." data-ms="Kurang-pasangan — model terlalu mudah untuk mempelajari sebarang corak.">Underfitting — the model is too simple to learn any patterns.</span></label>
+      <label class="mcq-opt"><input type="radio" name="q1" value="b"> <span data-en="Data leakage — test data was mixed into training data." data-ms="Kebocoran data — data ujian bercampur dengan data latihan.">Data leakage — test data was mixed into training data.</span></label>
+      <label class="mcq-opt"><input type="radio" name="q1" value="c"> <span data-en="Overfitting — the model memorised training data and cannot generalise." data-ms="Pemasangan berlebihan — model menghafal data latihan dan tidak dapat membuat generalisasi.">Overfitting — the model memorised training data and cannot generalise.</span></label>
+      <label class="mcq-opt"><input type="radio" name="q1" value="d"> <span data-en="Insufficient computing power — the hardware was too slow." data-ms="Kuasa pengiraan tidak mencukupi — perkakasan terlalu perlahan.">Insufficient computing power — the hardware was too slow.</span></label>
+      <div class="mcq-explain" id="exp1" data-en="✅ Correct. When training accuracy is high but test accuracy is low, the model has memorised the training data — this is overfitting." data-ms="✅ Betul. Apabila ketepatan latihan tinggi tetapi ketepatan ujian rendah, model telah menghafal data latihan — ini adalah pemasangan berlebihan.">✅ Correct. When training accuracy is high but test accuracy is low, the model has memorised the training data — this is overfitting.</div>
+    </div>
+
+    <div class="mcq-q" id="mcq2">
+      <p data-en="2. Which dataset split is used to tune hyperparameters (e.g., learning rate) without touching the test set?" data-ms="2. Pembahagian dataset manakah digunakan untuk menala hyperparameter (cth. kadar pembelajaran) tanpa menyentuh set ujian?">2. Which dataset split is used to tune hyperparameters (e.g., learning rate) without touching the test set?</p>
+      <label class="mcq-opt"><input type="radio" name="q2" value="a"> <span data-en="Training set" data-ms="Set latihan">Training set</span></label>
+      <label class="mcq-opt"><input type="radio" name="q2" value="b"> <span data-en="Validation set" data-ms="Set pengesahan">Validation set</span></label>
+      <label class="mcq-opt"><input type="radio" name="q2" value="c"> <span data-en="Test set" data-ms="Set ujian">Test set</span></label>
+      <label class="mcq-opt"><input type="radio" name="q2" value="d"> <span data-en="Deployment set" data-ms="Set penggunaan">Deployment set</span></label>
+      <div class="mcq-explain" id="exp2" data-en="✅ Correct. The validation set is a held-out portion of data used to tune the model and catch overfitting — without contaminating the final test set." data-ms="✅ Betul. Set pengesahan ialah bahagian data yang disimpan untuk menala model dan mengesan pemasangan berlebihan — tanpa mencemarkan set ujian akhir.">✅ Correct. The validation set is a held-out portion of data used to tune the model and catch overfitting — without contaminating the final test set.</div>
+    </div>
+
+    <div class="mcq-q" id="mcq3">
+      <p data-en="3. What does a 'feature' represent in a machine learning dataset?" data-ms="3. Apakah yang diwakili oleh 'ciri' (feature) dalam dataset pembelajaran mesin?">3. What does a 'feature' represent in a machine learning dataset?</p>
+      <label class="mcq-opt"><input type="radio" name="q3" value="a"> <span data-en="The correct answer the model is trying to predict (the label)" data-ms="Jawapan betul yang cuba diramalkan oleh model (label)">The correct answer the model is trying to predict (the label)</span></label>
+      <label class="mcq-opt"><input type="radio" name="q3" value="b"> <span data-en="The name of the algorithm used to train the model" data-ms="Nama algoritma yang digunakan untuk melatih model">The name of the algorithm used to train the model</span></label>
+      <label class="mcq-opt"><input type="radio" name="q3" value="c"> <span data-en="A measurable input variable used to describe each training example (e.g., height, test score, word count)" data-ms="Pembolehubah input yang boleh diukur untuk menggambarkan setiap contoh latihan (cth. tinggi, skor ujian, bilangan perkataan)">A measurable input variable used to describe each training example (e.g., height, test score, word count)</span></label>
+      <label class="mcq-opt"><input type="radio" name="q3" value="d"> <span data-en="The error rate the model produces after training is complete" data-ms="Kadar ralat yang dihasilkan model selepas latihan selesai">The error rate the model produces after training is complete</span></label>
+      <div class="mcq-explain" id="exp3" data-en="✅ Correct. A feature is a measurable input — like age, height or word count — that the model uses to make its prediction." data-ms="✅ Betul. Ciri adalah input yang boleh diukur — seperti umur, tinggi atau bilangan perkataan — yang digunakan model untuk membuat ramalannya.">✅ Correct. A feature is a measurable input — like age, height or word count — that the model uses to make its prediction.</div>
+    </div>
+
+    <div class="mcq-q" id="mcq4">
+      <p data-en="4. A data scientist splits data 70% training, 15% validation, 15% test. What is the PRIMARY purpose of the test set?" data-ms="4. Seorang saintis data membahagi data 70% latihan, 15% pengesahan, 15% ujian. Apakah tujuan UTAMA set ujian?">4. A data scientist splits data 70% training, 15% validation, 15% test. What is the PRIMARY purpose of the test set?</p>
+      <label class="mcq-opt"><input type="radio" name="q4" value="a"> <span data-en="To train the model on the most data possible" data-ms="Untuk melatih model pada data sebanyak mungkin">To train the model on the most data possible</span></label>
+      <label class="mcq-opt"><input type="radio" name="q4" value="b"> <span data-en="To evaluate the final model on data it has never seen before" data-ms="Untuk menilai model akhir pada data yang belum pernah dilihat sebelumnya">To evaluate the final model on data it has never seen before</span></label>
+      <label class="mcq-opt"><input type="radio" name="q4" value="c"> <span data-en="To tune hyperparameters like learning rate and depth" data-ms="Untuk menala hyperparameter seperti kadar pembelajaran dan kedalaman">To tune hyperparameters like learning rate and depth</span></label>
+      <label class="mcq-opt"><input type="radio" name="q4" value="d"> <span data-en="To prevent the model from learning any patterns" data-ms="Untuk menghalang model daripada mempelajari sebarang corak">To prevent the model from learning any patterns</span></label>
+      <div class="mcq-explain" id="exp4" data-en="✅ Correct. The test set is a final, untouched holdout — used only once to give an honest measure of real-world performance." data-ms="✅ Betul. Set ujian adalah simpanan akhir yang tidak disentuh — digunakan sekali sahaja untuk memberi ukuran prestasi dunia sebenar yang jujur.">✅ Correct. The test set is a final, untouched holdout — used only once to give an honest measure of real-world performance.</div>
+    </div>
+
+    <div class="mcq-q" id="mcq5">
+      <p data-en="5. Which technique helps prevent overfitting by randomly ignoring some neurons during each training step?" data-ms="5. Teknik manakah membantu mencegah pemasangan berlebihan dengan mengabaikan beberapa neuron secara rawak semasa setiap langkah latihan?">5. Which technique helps prevent overfitting by randomly ignoring some neurons during each training step?</p>
+      <label class="mcq-opt"><input type="radio" name="q5" value="a"> <span data-en="Data augmentation" data-ms="Penambahan data">Data augmentation</span></label>
+      <label class="mcq-opt"><input type="radio" name="q5" value="b"> <span data-en="Early stopping" data-ms="Pemberhentian awal">Early stopping</span></label>
+      <label class="mcq-opt"><input type="radio" name="q5" value="c"> <span data-en="Dropout regularisation" data-ms="Penyelarasan dropout">Dropout regularisation</span></label>
+      <label class="mcq-opt"><input type="radio" name="q5" value="d"> <span data-en="Feature normalisation" data-ms="Penormalan ciri">Feature normalisation</span></label>
+      <div class="mcq-explain" id="exp5" data-en="✅ Correct. Dropout randomly deactivates neurons during training, forcing the network to learn redundant representations and reducing overfitting." data-ms="✅ Betul. Dropout secara rawak menyahaktifkan neuron semasa latihan, memaksa rangkaian belajar representasi berlebihan dan mengurangkan pemasangan berlebihan.">✅ Correct. Dropout randomly deactivates neurons during training, forcing the network to learn redundant representations and reducing overfitting.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-mcq" onclick="checkMCQ()" disabled><span data-en="Submit Answers" data-ms="Hantar Jawapan">Submit Answers</span></button>
+    </div>
+    <div id="mcq-score-box"></div>
+  </div>
+
+  <!-- ══ POST REFLECTION ══ -->
+  <div class="section locked" id="sec-post">
+    <h2>🔄 <span data-en="After the Activity" data-ms="Selepas Aktiviti">After the Activity</span> <span class="tag tag-orange" data-en="Metacognitive Closing" data-ms="Penutup Metakognitif">Metacognitive Closing</span></h2>
+    <p class="text-muted" data-en="Now compare how you feel after the activity versus before." data-ms="Kini bandingkan perasaan anda selepas aktiviti berbanding sebelumnya.">Now compare how you feel <em>after</em> the activity versus before.</p>
+
+    <div class="slider-wrap">
+      <label data-en="How confident are you about AI &amp; Machine Learning now? (1–10)" data-ms="Seberapa yakin anda tentang AI &amp; Pembelajaran Mesin sekarang? (1–10)">How confident are you about AI &amp; Machine Learning <em>now</em>? (1–10)</label>
+      <div class="slider-val" id="post-conf-val">5</div>
+      <input type="range" min="1" max="10" value="5" id="post-conf-slider" oninput="document.getElementById('post-conf-val').textContent=this.value">
+      <div class="slider-label"><span data-en="Not confident" data-ms="Tidak yakin">Not confident</span><span data-en="Very confident" data-ms="Sangat yakin">Very confident</span></div>
+    </div>
+
+    <label data-en="What score (%) do you think you actually achieved on Tier 1?" data-ms="Apakah skor (%) yang anda fikir anda capai pada Tahap 1?">What score (%) do you think you actually achieved on Tier 1?</label>
+    <input type="number" id="post-score" min="0" max="100" placeholder="e.g. 80" style="max-width:160px">
+
+    <label data-en="How accurate was your prediction? What surprised you? (at least 10 words)" data-ms="Seberapa tepat ramalan anda? Apakah yang mengejutkan anda? (sekurang-kurangnya 10 perkataan)">How accurate was your prediction? What surprised you? (at least 10 words)</label>
+    <textarea id="post-reflect" rows="3" placeholder="I predicted … but actually … I was surprised that …" oninput="countWords('post-reflect','wc-post',10)"></textarea>
+    <div class="word-count" id="wc-post">0 / 10 words minimum</div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitPost()"><span data-en="Save &amp; Open Journal →" data-ms="Simpan &amp; Buka Jurnal →">Save &amp; Open Journal →</span></button>
+    </div>
+    <p id="post-err" style="color:var(--red);font-size:.84rem;display:none" data-en="⚠ Please complete all fields and write at least 10 words." data-ms="⚠ Sila lengkapkan semua medan dan tulis sekurang-kurangnya 10 perkataan.">⚠ Please complete all fields and write at least 10 words.</p>
+  </div>
+
+  <!-- ══ JOURNAL ══ -->
+  <div class="section locked" id="sec-journal">
+    <h2>📓 <span data-en="Reflective Journal" data-ms="Jurnal Reflektif">Reflective Journal</span> <span class="tag tag-primary" data-en="5 Prompts · Min 5 words each" data-ms="5 Soalan · Min 5 perkataan setiap satu">5 Prompts · Min 5 words each</span></h2>
+    <p class="text-muted" data-en="Reflect deeply on what you have learned. Write in your own words — there are no wrong answers." data-ms="Renungkan secara mendalam apa yang telah anda pelajari. Tulis dengan perkataan anda sendiri — tiada jawapan yang salah.">Reflect deeply on what you have learned. Write in your own words — there are no wrong answers.</p>
+
+    <div class="journal-prompt">
+      <div class="jp-label" data-en="1. In your own words, explain the difference between overfitting and underfitting. Which is worse in a medical diagnosis app, and why?" data-ms="1. Dengan perkataan anda sendiri, terangkan perbezaan antara pemasangan berlebihan dan kurang-pasangan. Manakah yang lebih buruk dalam aplikasi diagnosis perubatan, dan mengapa?">1. In your own words, explain the difference between overfitting and underfitting. Which is worse in a medical diagnosis app, and why?</div>
+      <textarea class="jp-ta" id="j1" rows="4" placeholder="Overfitting is when… while underfitting is… For medical apps…" oninput="countWords('j1','wc-j1',5)"></textarea>
+      <div class="word-count" id="wc-j1">0 / 5 words minimum</div>
+    </div>
+
+    <div class="journal-prompt">
+      <div class="jp-label" data-en="2. Describe a real situation where ML would be much better than a rule-based program. What features would your ML model use, and what would it predict?" data-ms="2. Huraikan situasi sebenar di mana PM jauh lebih baik daripada program berasaskan peraturan. Apakah ciri yang akan digunakan model PM anda, dan apakah yang akan diramalkan?">2. Describe a real situation where ML would be much better than a rule-based program. What features would your ML model use, and what would it predict?</div>
+      <textarea class="jp-ta" id="j2" rows="4" placeholder="ML would be better for… because… Features: … Prediction: …" oninput="countWords('j2','wc-j2',5)"></textarea>
+      <div class="word-count" id="wc-j2">0 / 5 words minimum</div>
+    </div>
+
+    <div class="journal-prompt">
+      <div class="jp-label" data-en="3. Why is the test set kept completely separate until the very end of training? What would go wrong if you tuned the model using test data?" data-ms="3. Mengapa set ujian disimpan sepenuhnya berasingan sehingga penghujung latihan? Apakah yang akan berlaku jika anda menala model menggunakan data ujian?">3. Why is the test set kept completely separate until the very end of training? What would go wrong if you tuned the model using test data?</div>
+      <textarea class="jp-ta" id="j3" rows="4" placeholder="The test set must be separate because… If we used it during tuning…" oninput="countWords('j3','wc-j3',5)"></textarea>
+      <div class="word-count" id="wc-j3">0 / 5 words minimum</div>
+    </div>
+
+    <div class="journal-prompt">
+      <div class="jp-label" data-en="4. Imagine you are advising a company that trained a customer churn model (95% training accuracy, 60% test accuracy). What three steps would you recommend to fix this problem?" data-ms="4. Bayangkan anda menasihati syarikat yang melatih model churn pelanggan (95% ketepatan latihan, 60% ketepatan ujian). Apakah tiga langkah yang anda cadangkan untuk menyelesaikan masalah ini?">4. Imagine you are advising a company that trained a customer churn model (95% training accuracy, 60% test accuracy). What three steps would you recommend to fix this problem?</div>
+      <textarea class="jp-ta" id="j4" rows="4" placeholder="Step 1: … Step 2: … Step 3: …" oninput="countWords('j4','wc-j4',5)"></textarea>
+      <div class="word-count" id="wc-j4">0 / 5 words minimum</div>
+    </div>
+
+    <div class="journal-prompt">
+      <div class="jp-label" data-en="5. After completing this activity, what is the most important thing you now understand about training data that you did not before? How has it changed how you think about AI?" data-ms="5. Selepas melengkapkan aktiviti ini, apakah perkara paling penting yang kini anda fahami tentang data latihan yang tidak anda fahami sebelum ini? Bagaimana ia mengubah cara anda berfikir tentang AI?">5. After completing this activity, what is the most important thing you now understand about training data that you did not before? How has it changed how you think about AI?</div>
+      <textarea class="jp-ta" id="j5" rows="4" placeholder="Before this activity I thought… Now I understand that… This changes how I see AI because…" oninput="countWords('j5','wc-j5',5)"></textarea>
+      <div class="word-count" id="wc-j5">0 / 5 words minimum</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="submitJournal()"><span data-en="Submit Journal &amp; Complete Module 2 🎉" data-ms="Hantar Jurnal &amp; Selesaikan Modul 2 🎉">Submit Journal &amp; Complete Module 2 🎉</span></button>
+    </div>
+    <p id="journal-err" style="color:var(--red);font-size:.84rem;display:none" data-en="⚠ Please write at least 5 words in every journal prompt." data-ms="⚠ Sila tulis sekurang-kurangnya 5 perkataan dalam setiap soalan jurnal.">⚠ Please write at least 5 words in every journal prompt.</p>
+  </div>
+
+  <!-- ══ COMPLETION ══ -->
+  <div class="complete-banner" id="sec-complete">
+    <div style="font-size:2.5rem">🎉</div>
+    <h2 data-en="Module 2 Activity Complete!" data-ms="Aktiviti Modul 2 Selesai!">Module 2 Activity Complete!</h2>
+    <p><span class="lang-en">You now understand training data, features, labels, overfitting and how models generalise. Head to Module 3 to discover <em>how</em> neural networks are built — layer by layer!</span><span class="lang-ms" style="display:none">Anda kini memahami data latihan, ciri, label, pemasangan berlebihan dan cara model membuat generalisasi. Teruskan ke Modul 3 untuk mengetahui <em>bagaimana</em> rangkaian neural dibina — lapisan demi lapisan!</span></p>
+    <a class="btn-continue" href="activity-3.html" data-en="Continue to Module 3 Activity →" data-ms="Teruskan ke Aktiviti Modul 3 →">Continue to Module 3 Activity →</a>
+  </div>
+
+  <!-- Export Panel -->
+  <div class="export-panel" id="export-panel">
+    <h3 data-en="📊 Export Student Data (Instructor / Research)" data-ms="📊 Eksport Data Pelajar (Pengajar / Penyelidikan)">📊 Export Student Data (Instructor / Research)</h3>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="copyJSON()" data-en="📋 Copy JSON" data-ms="📋 Salin JSON">📋 Copy JSON</button>
+      <button class="btn btn-outline" onclick="downloadJSON()" data-en="⬇ Download JSON" data-ms="⬇ Muat Turun JSON">⬇ Download JSON</button>
+      <button class="btn btn-outline" onclick="downloadCSV()" data-en="⬇ Download CSV" data-ms="⬇ Muat Turun CSV">⬇ Download CSV</button>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── State ──
+const S = {
+  identity:{},
+  cal:{confidence:5,prediction:0,prior:''},
+  t1:{q1:{},q2:{},q3:{},q4:{},score:0,passed:false},
+  t2:{fixes:{},passed:false},
+  t3:{text:'',submitted:false},
+  t4:{text:'',submitted:false},
+  mcq:{answers:{},score:0,passed:false,attempts:0},
+  post:{confidence:5,scoreEst:0,reflection:''},
+  journal:{j1:'',j2:'',j3:'',j4:'',j5:''},
+  timestamps:{start:new Date().toISOString()}
+};
+const MCQ_ANSWERS = {q1:'c',q2:'b',q3:'c',q4:'b',q5:'c'};
+const MCQ_CORRECT = {q1:2,q2:1,q3:2,q4:1,q5:2}; // index of correct option
+
+// ── Utility ──
+function unlock(id){const el=document.getElementById(id);el.classList.remove('locked')}
+function pb(id){document.getElementById(id).classList.add('active')}
+function pbDone(id){const el=document.getElementById(id);el.classList.remove('active');el.classList.add('done')}
+function countWords(taId,wcId,min){
+  const words=document.getElementById(taId).value.trim().split(/\s+/).filter(w=>w.length>0);
+  const wc=document.getElementById(wcId);
+  const isBM=document.documentElement.lang==='ms';
+  wc.textContent=words.length+' / '+min+(isBM?' perkataan minimum':' words minimum');
+  wc.className='word-count'+(words.length>=min?' ok':'');
+  return words.length>=min;
+}
+function wordCount(taId){return document.getElementById(taId).value.trim().split(/\s+/).filter(w=>w.length>0).length}
+function toggleHint(id){const el=document.getElementById(id);el.classList.toggle('show')}
+function resetBugStyle(n){const el=document.getElementById('fix'+n);el.classList.remove('correct','wrong')}
+
+// ── Identity ──
+function confirmIdentity(){
+  const name=document.getElementById('id-name').value.trim();
+  const matric=document.getElementById('id-matric').value.trim();
+  const mykid=document.getElementById('id-mykid').value.trim();
+  const gender=document.getElementById('id-gender').value;
+  const age=document.getElementById('id-age').value;
+  const state=document.getElementById('id-state').value;
+  const cls=document.getElementById('id-class').value.trim();
+  const school=document.getElementById('id-school').value.trim();
+  const institution=document.getElementById('id-institution').value.trim();
+  const phone=document.getElementById('id-phone').value.trim();
+  const email=document.getElementById('id-email').value.trim();
+  if(!name||!matric||!mykid||!gender||!age||!state||!cls||!school||!institution||!phone||!email){
+    document.getElementById('id-err').style.display='block';return}
+  document.getElementById('id-err').style.display='none';
+  S.identity={name,matric,mykid,gender,age,home_state:state,class:cls,school_code:school,institution_name:institution,phone,email};
+  document.getElementById('sec-identity').classList.add('locked');
+  unlock('sec-cal');
+  pbDone('pb-cal');pb('pb-t1');
+  document.getElementById('sec-cal').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── Calibration ──
+function submitCalibration(){
+  const pred=document.getElementById('pred-score').value;
+  const prior=document.getElementById('prior-know').value.trim();
+  if(!pred||wordCount('prior-know')<10){document.getElementById('cal-err').style.display='block';return}
+  document.getElementById('cal-err').style.display='none';
+  S.cal={confidence:parseInt(document.getElementById('conf-slider').value),prediction:parseInt(pred),prior};
+  S.timestamps.calDone=new Date().toISOString();
+  document.getElementById('sec-cal').classList.add('locked');
+  unlock('sec-t1');
+  pbDone('pb-cal');pb('pb-t1');
+  document.getElementById('sec-t1').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── Tier 1 state ──
+let q2Rank=[];
+let t1Choices={q1:null,q2:null,q3:null,q4:null};
+
+function pickOpt(qid,label,val){
+  document.querySelectorAll('#'+qid+'-opts .r-opt').forEach(l=>{l.classList.remove('sel','ok','ng')});
+  label.classList.add('sel');
+  t1Choices[qid]=val;
+}
+
+function pickTF(val){
+  document.getElementById('tf-true').classList.remove('sel','ok','ng');
+  document.getElementById('tf-false').classList.remove('sel','ok','ng');
+  document.getElementById('tf-'+val).classList.add('sel');
+  t1Choices.q3=val;
+}
+
+function rankClick(card){
+  const id=card.dataset.id;
+  const idx=q2Rank.indexOf(id);
+  if(idx>-1){q2Rank.splice(idx,1);}
+  else{if(q2Rank.length<3)q2Rank.push(id);}
+  ['A','B','C'].forEach(k=>{
+    const badge=document.getElementById('rnk-'+k);
+    const c=document.querySelector('[data-id="'+k+'"]');
+    const pos=q2Rank.indexOf(k);
+    if(pos>-1){badge.textContent=pos+1;c.classList.add('ranked');}
+    else{badge.textContent='';c.classList.remove('ranked','ok','ng');}
+  });
+  updateWC('q2-rsn','q2-wc',8);
+}
+
+function updateWC(taId,wcId,min){
+  const words=document.getElementById(taId).value.trim().split(/\s+/).filter(w=>w.length>0);
+  const el=document.getElementById(wcId);
+  const isBM=document.documentElement.lang==='ms';
+  el.textContent=words.length+(isBM?' perkataan':' words');
+  el.className='wc'+(words.length>=min?' ok':'');
+  return words.length>=min;
+}
+
+function checkTier1(){
+  const j1=updateWC('q1-just','q1-wc',8);
+  const j2=updateWC('q2-rsn','q2-wc',8);
+  const j3=updateWC('q3-just','q3-wc',8);
+  const j4=updateWC('q4-just','q4-wc',8);
+  if(!t1Choices.q1||!t1Choices.q3||!t1Choices.q4){
+    document.getElementById('t1-feedback').innerHTML='<div class="fb-chip fb-err">⚠ Please answer all 4 questions first.</div>';return;
+  }
+  if(!j1||!j2||!j3||!j4){
+    document.getElementById('t1-feedback').innerHTML='<div class="fb-chip fb-err">⚠ Each justification needs at least 8 words.</div>';return;
+  }
+  if(q2Rank.length<3){
+    document.getElementById('t1-feedback').innerHTML='<div class="fb-chip fb-err">⚠ Please rank all 3 items in Question 2.</div>';return;
+  }
+  const correct={
+    q1:t1Choices.q1==='supervised',
+    q2:q2Rank[2]==='B',
+    q3:t1Choices.q3==='false',
+    q4:t1Choices.q4==='puppy'
+  };
+  const score=Object.values(correct).filter(Boolean).length;
+  // Q1 feedback
+  document.querySelectorAll('#q1-opts .r-opt').forEach(l=>{if(l.classList.contains('sel'))l.classList.add(correct.q1?'ok':'ng')});
+  document.getElementById('q1-fb').innerHTML=correct.q1?
+    '<span style="color:var(--green)">✅ Correct — "correct/incorrect" labels on each example make this supervised learning.</span>':
+    '<span style="color:var(--red)">❌ Not quite. Because each answer is tagged with a label, this is <strong>supervised learning</strong>.</span>';
+  // Q2 feedback
+  q2Rank.forEach((id,i)=>{
+    const c=document.querySelector('[data-id="'+id+'"]');
+    if(i===2&&id==='B'){c.classList.add('ok');}
+    else if(i===2&&id!=='B'){c.classList.add('ng');}
+  });
+  document.getElementById('q2-fb').innerHTML=correct.q2?
+    '<span style="color:var(--green)">✅ Right — the formula task (B) has a fixed mathematical rule; ML is not needed there.</span>':
+    '<span style="color:var(--red)">❌ The temperature formula (B) has a precise rule — no ML needed. It should be <strong>least</strong> suitable.</span>';
+  // Q3 feedback
+  document.getElementById('tf-true').classList.remove('sel');
+  document.getElementById('tf-false').classList.remove('sel');
+  if(correct.q3){document.getElementById('tf-false').classList.add('ok');}
+  else{document.getElementById('tf-true').classList.add('ng');document.getElementById('tf-false').classList.add('ok');}
+  document.getElementById('q3-fb').innerHTML=correct.q3?
+    '<span style="color:var(--green)">✅ False — 100% training accuracy often means <em>overfitting</em>: the model memorised training data and may fail on new examples.</span>':
+    '<span style="color:var(--red)">❌ This is <strong>False</strong>. Perfect training accuracy usually signals <em>overfitting</em> — the model memorised instead of generalising.</span>';
+  // Q4 feedback
+  document.querySelectorAll('#q4-opts .r-opt').forEach(l=>{if(l.classList.contains('sel'))l.classList.add(correct.q4?'ok':'ng')});
+  document.getElementById('q4-fb').innerHTML=correct.q4?
+    '<span style="color:var(--green)">✅ Right — like a puppy improving through feedback and repetition, ML adjusts its weights with each training example.</span>':
+    '<span style="color:var(--red)">❌ The best analogy is <strong>B (the puppy)</strong>: it improves through repeated feedback — just like ML updating its weights.</span>';
+  // save state — lock in first attempt score, never overwrite it
+  const isFirstAttempt=!S.t1.attempt1_locked;
+  if(isFirstAttempt){
+    S.t1={
+      q1:{choice:t1Choices.q1,justify:document.getElementById('q1-just').value,correct:correct.q1},
+      q2:{rank:[...q2Rank],reason:document.getElementById('q2-rsn').value,correct:correct.q2},
+      q3:{choice:t1Choices.q3,justify:document.getElementById('q3-just').value,correct:correct.q3},
+      q4:{choice:t1Choices.q4,justify:document.getElementById('q4-just').value,correct:correct.q4},
+      score_attempt1:score,attempts:1,passed:true,attempt1_locked:true
+    };
+  } else {
+    S.t1.attempts++;
+  }
+  const fb=document.getElementById('t1-feedback');
+  const msg=score===4?'✅ 4/4 — perfect reasoning!':score===3?'✅ '+score+'/4 — good reasoning!':'📝 '+score+'/4 — review the highlighted answers above.';
+  fb.innerHTML='<div class="fb-chip '+(score>=3?'fb-ok':'fb-err')+'" style="margin:.6rem 0;font-size:.9rem">'+msg+(isFirstAttempt?' Tier 2 is now unlocked.':'')+'</div>';
+  document.getElementById('t1-retry').style.display='none';
+  // always unlock on first submission regardless of score
+  if(isFirstAttempt){
+    document.getElementById('sec-t1').classList.add('locked');
+    unlock('sec-t2');pbDone('pb-t1');pb('pb-t2');
+    document.getElementById('sec-t2').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+// ── Tier 2 ──
+function checkTier2(){
+  const fixes=[document.getElementById('fix1').value.trim(),
+    document.getElementById('fix2').value.trim(),document.getElementById('fix3').value.trim()];
+  let filled=fixes.every(f=>f.length>10);
+  if(!filled){document.getElementById('t2-feedback').textContent='⚠ Please write a corrected statement for each bug.';document.getElementById('t2-feedback').style.color='var(--red)';return}
+  S.t2.fixes={fix1:fixes[0],fix2:fixes[1],fix3:fixes[2]};
+  S.t2.passed=true;
+  document.getElementById('t2-feedback').textContent='✅ Responses saved — instructor will review your corrections. Tier 3 unlocked!';
+  document.getElementById('t2-feedback').style.color='var(--green)';
+  document.getElementById('sec-t2').classList.add('locked');
+  unlock('sec-t3');pbDone('pb-t2');pb('pb-t3');
+  document.getElementById('sec-t3').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── Tier 3 ──
+function submitTier3(){
+  if(wordCount('t3-ans')<20){document.getElementById('t3-err').style.display='block';return}
+  document.getElementById('t3-err').style.display='none';
+  S.t3={text:document.getElementById('t3-ans').value,submitted:true};
+  window.AiAdv && AiAdv.dropoff('activity-2','tier3',S.identity);
+  document.getElementById('sec-t3').classList.add('locked');
+  unlock('sec-t4');pbDone('pb-t3');pb('pb-t4');
+  document.getElementById('sec-t4').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── Tier 4 ──
+function submitTier4(){
+  if(wordCount('t4-ans')<30){document.getElementById('t4-err').style.display='block';return}
+  document.getElementById('t4-err').style.display='none';
+  S.t4={text:document.getElementById('t4-ans').value,submitted:true};
+  window.AiAdv && AiAdv.dropoff('activity-2','tier4',S.identity);
+  document.getElementById('sec-t4').classList.add('locked');
+  unlock('sec-mcq');pbDone('pb-t4');pb('pb-mcq');
+  document.getElementById('sec-mcq').scrollIntoView({behavior:'smooth',block:'start'});
+  // enable submit when all answered
+  setupMCQListeners();
+}
+
+// ── MCQ ──
+function setupMCQListeners(){
+  document.querySelectorAll('.mcq-q input[type=radio]').forEach(r=>{
+    r.addEventListener('change',()=>{
+      const allDone=['q1','q2','q3','q4','q5'].every(q=>document.querySelector(`input[name="${q}"]:checked`));
+      document.getElementById('btn-mcq').disabled=!allDone;
+    });
+  });
+}
+function checkMCQ(){
+  let score=0;
+  S.mcq.attempts++;
+  const isFirstAttempt=S.mcq.attempts===1;
+  ['q1','q2','q3','q4','q5'].forEach((q,idx)=>{
+    const sel=document.querySelector(`input[name="${q}"]:checked`);
+    const opts=document.querySelectorAll(`#mcq${idx+1} .mcq-opt`);
+    const explain=document.getElementById('exp'+(idx+1));
+    opts.forEach(o=>o.classList.remove('correct-ans','wrong-ans'));
+    if(sel){
+      S.mcq.answers[q]=sel.value;
+      const isOk=sel.value===MCQ_ANSWERS[q];
+      sel.closest('.mcq-opt').classList.add(isOk?'correct-ans':'wrong-ans');
+      opts[MCQ_CORRECT[q]].classList.add('correct-ans');
+      if(isOk)score++;
+      explain.classList.add('show');
+    }
+  });
+  // lock in first attempt score only
+  if(isFirstAttempt)S.mcq.score_attempt1=score;
+  S.mcq.score=score;S.mcq.passed=true;
+  const box=document.getElementById('mcq-score-box');
+  const emoji=score===5?'🎉':score>=3?'👍':'📝';
+  const msg=isFirstAttempt
+    ?`${emoji} ${score}/5 on first attempt — answers are shown above. Post-Activity Reflection unlocked.`
+    :`${emoji} ${score}/5 — review complete.`;
+  box.innerHTML=`<div class="mcq-score ${score>=4?'score-pass':'score-info'}">${msg}</div>`;
+  // always unlock on first submission
+  if(isFirstAttempt){
+    document.getElementById('sec-mcq').classList.add('locked');
+    unlock('sec-post');pbDone('pb-mcq');pb('pb-ref');
+    document.getElementById('sec-post').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+// ── Post Reflection ──
+function submitPost(){
+  const postScore=document.getElementById('post-score').value;
+  if(!postScore||wordCount('post-reflect')<10){document.getElementById('post-err').style.display='block';return}
+  document.getElementById('post-err').style.display='none';
+  S.post={confidence:parseInt(document.getElementById('post-conf-slider').value),
+    scoreEst:parseInt(postScore),reflection:document.getElementById('post-reflect').value};
+  document.getElementById('sec-post').classList.add('locked');
+  unlock('sec-journal');
+  document.getElementById('sec-journal').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── Journal ──
+function submitJournal(){
+  const ids=['j1','j2','j3','j4','j5'];
+  const allOk=ids.every(id=>wordCount(id)>=5);
+  if(!allOk){document.getElementById('journal-err').style.display='block';return}
+  document.getElementById('journal-err').style.display='none';
+  ids.forEach(id=>S.journal[id]=document.getElementById(id).value);
+  S.timestamps.complete=new Date().toISOString();
+  window.AiAdv && AiAdv.submit('activity-2', getExportData());
+  document.getElementById('sec-journal').classList.add('locked');
+  document.getElementById('sec-complete').classList.add('show');
+  pbDone('pb-ref');
+  document.getElementById('sec-complete').scrollIntoView({behavior:'smooth',block:'start'});
+  if(new URLSearchParams(location.search).get('export')==='1')showExport();
+}
+
+// ── Export ──
+function showExport(){document.getElementById('export-panel').classList.add('show')}
+function getExportData(){return{module:2,topic:'How ML Learns',student:S.identity,calibration_pre:S.cal,
+  tier1:{q1:S.t1.q1,q2:S.t1.q2,q3:S.t1.q3,q4:S.t1.q4,score:S.t1.score,passed:S.t1.passed},
+  tier2:{fixes:S.t2.fixes,passed:S.t2.passed},
+  tier3:S.t3,tier4:S.t4,
+  concept_check:{answers:S.mcq.answers,score_attempt1:S.mcq.score_attempt1,score_last:S.mcq.score,attempts:S.mcq.attempts,passed:S.mcq.passed},
+  calibration_post:S.post,journal:S.journal,timestamps:S.timestamps};}
+function copyJSON(){navigator.clipboard.writeText(JSON.stringify(getExportData(),null,2))}
+function downloadJSON(){
+  const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(getExportData(),null,2));
+  a.download=`activity2_${S.identity.matric||'student'}.json`;a.click();
+}
+function downloadCSV(){
+  const d=getExportData();
+  const rows=[['field','value'],['matric',d.student.matric],['name',d.student.name],
+    ['gender',d.student.gender],['age',d.student.age],['mykid',d.student.mykid],
+    ['home_state',d.student.home_state],['class',d.student.class],['school_code',d.student.school_code],
+    ['phone',d.student.phone],['email',d.student.email],['conf_pre',d.calibration_pre.confidence],
+    ['pred_score',d.calibration_pre.prediction],
+    ['t1_q1',d.tier1.q1?d.tier1.q1.choice:''],['t1_q1_correct',d.tier1.q1?d.tier1.q1.correct:''],
+    ['t1_q2_rank_last',d.tier1.q2&&d.tier1.q2.rank?d.tier1.q2.rank[2]:''],['t1_q2_correct',d.tier1.q2?d.tier1.q2.correct:''],
+    ['t1_q3',d.tier1.q3?d.tier1.q3.choice:''],['t1_q3_correct',d.tier1.q3?d.tier1.q3.correct:''],
+    ['t1_q4',d.tier1.q4?d.tier1.q4.choice:''],['t1_q4_correct',d.tier1.q4?d.tier1.q4.correct:''],
+    ['t1_score',d.tier1.score],['t1_passed',d.tier1.passed],
+    ['mcq_score_attempt1',d.concept_check.score_attempt1],['mcq_score_last',d.concept_check.score_last],['mcq_attempts',d.concept_check.attempts],
+    ['conf_post',d.calibration_post.confidence],['timestamp_start',d.timestamps.start],['timestamp_complete',d.timestamps.complete]];
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`activity1_${S.identity.matric||'student'}.csv`;a.click();
+}
+if(new URLSearchParams(location.search).get('export')==='1')showExport();
+</script>
+
+<div class="module-nav">
+  <a href="module-2.html" class="mn-card mn-prev">
+    <div class="mn-label">Previous</div>
+    <div class="mn-title">← Module 2: ML Foundations</div>
+  </a>
+  <a href="module-3.html" class="mn-card mn-next">
+    <div class="mn-label">Next</div>
+    <div class="mn-title">Module 3: Inside the Model →</div>
+  </a>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">See · Think · Explore · Marvel</div>
+    <div class="footer-sub">UMPSA STEM LAB · AI Adventure</div>
+    <div class="footer-copy">
+      <span>© 2026 Nurul Hazlina Noordin · UMPSA STEM Lab Engineering Education</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research page" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </a>
+      <a href="mailto:hazlina@umpsa.edu.my" title="Email" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Nav dropdown ── */
+(function(){
+  var btn=document.getElementById('modDropBtn'),menu=document.getElementById('modDropMenu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.classList.toggle('open',o);});
+  document.addEventListener('click',function(){menu.classList.remove('open');btn.classList.remove('open');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.classList.remove('open');btn.classList.remove('open');}});
+})();
+
+/* ── Bilingual toggle ── */
+function setLang(lang){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('ai_adv_lang',lang);}catch(e){}
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML=lang==='ms'?(el.getAttribute('data-ms')||el.getAttribute('data-en')):el.getAttribute('data-en');
+  });
+  document.querySelectorAll('.lang-en').forEach(function(el){el.style.display=lang==='ms'?'none':'';});
+  document.querySelectorAll('.lang-ms').forEach(function(el){el.style.display=lang==='ms'?'':'none';});
+  document.querySelectorAll('[data-en-placeholder]').forEach(function(el){
+    el.placeholder=lang==='ms'?(el.getAttribute('data-ms-placeholder')||el.getAttribute('data-en-placeholder')):el.getAttribute('data-en-placeholder');
+  });
+  var btn=document.getElementById('langToggle');
+  if(btn)btn.textContent=lang==='ms'?'EN':'BM';
+}
+(function(){
+  var _l='en';try{_l=localStorage.getItem('ai_adv_lang')||'en';}catch(e){}
+  if(_l==='ms')setLang('ms');
+})();
+</script>
+<script>
+(function(){
+  var clicks=0,timer;
+  var box=document.getElementById('see-egg');
+  if(!box)return;
+  box.addEventListener('mousedown',function(e){
+    e.preventDefault();
+    clicks++;
+    clearTimeout(timer);
+    timer=setTimeout(function(){clicks=0;},2000);
+    if(clicks>=3){clicks=0;window.location.href='teacher-2.html';}
+  });
+})();
+
+/* ── Show active student chip ── */
+function updateStudentChip() {
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    var name = s.student_name || s.name || '';
+    var matric = s.student_matric || s.matric || '';
+    if (!name) return;
+    var chip = document.getElementById('activeStudentChip');
+    var avatar = document.getElementById('chipAvatar');
+    var chipNameEl = document.getElementById('chipName');
+    if (chip) {
+      avatar.textContent = name.charAt(0).toUpperCase();
+      chipNameEl.textContent = name + (matric ? ' · ' + matric : '');
+      chip.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+window.addEventListener('load', updateStudentChip);
+
+/* ── Pre-fill identity form from registration ── */
+(function prefillFromRegistration() {
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    function fill(id, val) {
+      var el = document.getElementById(id);
+      if (el && val) el.value = val;
+    }
+    fill('id-name',    s.student_name   || s.name);
+    fill('id-matric',  s.student_matric || s.matric);
+    fill('id-mykid',   s.student_mykid  || s.mykid);
+    fill('id-gender',  s.student_gender || s.gender);
+    fill('id-age',     s.student_age    || s.age);
+    fill('id-state',   s.student_home_state || s.home_state);
+    fill('id-class',   s.student_class  || s['class'] || s.class_section);
+    fill('id-school',  s.student_school_code || s.school_code);
+    fill('id-phone',   s.student_phone  || s.phone);
+    fill('id-email',   s.student_email  || s.email);
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

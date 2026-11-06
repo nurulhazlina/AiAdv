@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base target="_self">
+  <title>Teacher Dashboard — AI Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap">
+  <style>
+/* ── Color tokens ── */
+:root {
+  --primary:      #0891B2;
+  --primary-dark: #0C4A6E;
+  --primary-mid:  #0E7490;
+  --nav-bg:#0b0820;
+  --blue:         #2563EB;
+  --red:          #DC2626;
+  --orange:       #F59E0B;
+  --green:        #059669;
+  --purple:       #7C3AED;
+  --ink:#e2e8f0;
+  --muted:rgba(255,255,255,.45);
+  --bg:#0f0c24;
+  --card:rgba(255,255,255,.04);
+  --line:rgba(255,255,255,.1);
+  --code-bg:      #0F172A;
+  --code-fg:      #E2E8F0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#07131D; --card:#0C2133; --line:#1A3550; --ink:#DFF0FA; --muted:#7BAFC9;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#07131D; --card:#0C2133; --line:#1A3550; --ink:#DFF0FA; --muted:#7BAFC9;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:'Poppins','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;height:auto;display:block;}
+a{color:var(--primary);}
+a:hover{color:var(--primary-mid);}
+.wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+
+/* ── Chevron Strip ── */
+.chev-strip{display:flex;height:34px;}
+.chev-strip span{flex:1;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fff;user-select:none;}
+.chev-strip span:nth-child(1){background:var(--blue);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);}
+.chev-strip span:nth-child(2){background:var(--red);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(3){background:var(--orange);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(4){background:var(--primary);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);}
+
+/* ── Site Nav ── */
+.sitenav{background:var(--nav-bg);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.5);}
+.sitenav-inner{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));height:54px;display:flex;align-items:center;gap:1rem;}
+.brand{display:flex;align-items:baseline;gap:.5rem;text-decoration:none;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:900;color:#fff;flex-shrink:0;}
+.brand em{font-style:normal;color:var(--primary);}
+.brand .brand-sub{font-size:.52em;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.sitenav nav{margin-left:auto;display:flex;align-items:center;gap:1.4rem;}
+.sitenav nav a{text-decoration:none;font-size:.83rem;font-weight:500;color:rgba(255,255,255,.62);transition:color .15s;}
+.sitenav nav a:hover{color:var(--primary);}
+.sitenav nav a.active{color:#fff;font-weight:600;}
+.nav-drop-wrap{position:relative;display:inline-block;}
+.nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;letter-spacing:.01em;}
+.nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(8,145,178,.25);border-color:var(--primary);color:#fff;}
+.nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+.nav-drop-btn.open .arr{transform:rotate(180deg);}
+.nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+.nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+.nav-drop-menu a:hover{background:rgba(8,145,178,.18);color:#fff;}
+.nav-drop-menu a.cur{color:var(--primary);font-weight:700;}
+.nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+.nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+.lang-toggle-btn{background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.22);color:#e2e8f0;border-radius:20px;padding:3px 12px;font-size:.78rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .2s,border-color .2s;white-space:nowrap;align-self:center;}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);}
+.lang-ms{display:none;}
+
+/* ── Student Chip ── */
+#activeStudentChip{display:none;align-items:center;gap:.45rem;background:rgba(8,145,178,.15);border:1px solid rgba(8,145,178,.35);border-radius:999px;padding:.2rem .75rem .2rem .2rem;cursor:default;flex-shrink:0;}
+.chip-avatar{width:26px;height:26px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;flex-shrink:0;}
+.chip-name{font-size:.75rem;font-weight:600;color:#67e8f9;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── Teacher Badge ── */
+.teacher-badge{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5;font-size:.72rem;font-weight:700;padding:.2rem .7rem;border-radius:999px;letter-spacing:.05em;white-space:nowrap;}
+
+/* ── Footer ── */
+footer{background:var(--nav-bg);margin-top:4rem;padding:2.5rem max(16px,env(safe-area-inset-left,0px)) 2rem;text-align:center;}
+.footer-inner{max-width:960px;margin:0 auto;}
+.footer-title{font-family:'Poppins',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin:0 0 .4rem;}
+.footer-sub{font-size:.85rem;color:rgba(255,255,255,.42);letter-spacing:.03em;margin:0 0 1.6rem;}
+.footer-copy{font-size:.78rem;color:rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.55rem;}
+
+/* ── Page hero ── */
+.teacher-hero{background:linear-gradient(160deg,#1a0a4e 0%,#0f0c24 60%);padding:2.5rem max(16px,env(safe-area-inset-left,0px));text-align:center;}
+.teacher-hero h1{font-size:clamp(1.5rem,4vw,2.2rem);color:#fff;font-weight:900;margin:0 0 .5rem;text-wrap:balance;}
+.teacher-hero h1 em{font-style:normal;color:var(--primary);}
+.teacher-hero .sub{font-size:.9rem;color:rgba(255,255,255,.6);max-width:520px;margin:0 auto;}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin:2rem 0;}
+.stat-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;text-align:center;}
+.stat-num{font-size:1.6rem;font-weight:800;color:var(--primary);}
+.stat-label{font-size:.7rem;color:var(--muted);margin-top:.2rem;font-weight:500;}
+
+/* ── Section title ── */
+.sec-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin:2rem 0 1rem;display:flex;align-items:center;gap:.6rem;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* ── Flow ── */
+.flow{display:flex;flex-direction:column;}
+.flow-step{display:grid;grid-template-columns:28px 1fr;gap:0 1rem;align-items:start;}
+.flow-spine{display:flex;flex-direction:column;align-items:center;}
+.flow-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;z-index:1;}
+.flow-line{width:2px;flex:1;min-height:1rem;background:var(--line);}
+.flow-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1rem;}
+.flow-step-label{font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:.6rem;}
+
+/* ── Survey card ── */
+.survey-link{display:flex;align-items:center;justify-content:space-between;padding:.7rem .9rem;border-radius:10px;text-decoration:none;color:var(--ink);transition:opacity .15s;}
+.survey-link:hover{opacity:.8;}
+.survey-link-label{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.survey-link-name{font-size:.95rem;font-weight:700;margin-top:.1rem;}
+.survey-link-desc{font-size:.72rem;color:var(--muted);margin-top:.15rem;}
+
+/* ── Module rows ── */
+.mod-row{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem 1rem;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--line);}
+.mod-row:last-child{border-bottom:none;}
+.mod-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0;}
+.mod-category{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.1rem;}
+.mod-title{font-size:.9rem;font-weight:700;color:var(--ink);}
+.mod-links{display:flex;gap:.4rem;flex-wrap:wrap;}
+.pill{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:999px;font-size:.71rem;font-weight:600;text-decoration:none;border:1px solid transparent;transition:opacity .15s;}
+.pill:hover{opacity:.8;}
+.pill-concept{background:rgba(8,145,178,.18);border-color:rgba(8,145,178,.4);color:#67e8f9;}
+.pill-activity{background:rgba(5,150,105,.18);border-color:rgba(5,150,105,.4);color:#6ee7b7;}
+.pill-guide{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.35);color:#fca5a5;}
+
+
+
+/* ── Tip box ── */
+.tip{background:rgba(8,145,178,.07);border:1px solid rgba(8,145,178,.2);border-radius:10px;padding:.85rem 1.1rem;font-size:.8rem;color:var(--muted);line-height:1.65;margin-top:1.5rem;}
+.tip strong{color:var(--primary);}
+.tip code{background:var(--line);padding:.1rem .3rem;border-radius:4px;font-size:.75rem;font-family:'Fira Code',monospace;}
+
+@media(max-width:620px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .mod-row{grid-template-columns:auto 1fr;}.mod-links{grid-column:1/-1;}
+  .sitenav nav a:not(.nav-drop-wrap):not(.teacher-badge){display:none;}
+}
+  </style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+
+<!-- ── CHEVRON STRIP ── -->
+<div class="chev-strip" aria-label="UMPSA STEM Lab">
+  <span>See</span><span>Think</span><span>Explore</span><span>Marvel</span>
+</div>
+
+<!-- ── SITE NAV ── -->
+<header class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand"><em>AI</em>&nbsp;Adventure<span class="brand-sub">UMPSA STEM Lab</span></a>
+    <nav>
+      <div class="nav-drop-wrap">
+        <button class="nav-drop-btn" id="modDropBtn">Modules <span class="arr">▾</span></button>
+        <div class="nav-drop-menu" id="modDropMenu">
+          <a href="module-1.html"><span class="mn">M1</span>Why AI?</a>
+          <a href="module-2.html"><span class="mn">M2</span>Supervised Learning</a>
+          <a href="module-3.html"><span class="mn">M3</span>Unsupervised Learning</a>
+          <a href="module-4.html"><span class="mn">M4</span>Reinforcement Learning</a>
+          <a href="module-5.html"><span class="mn">M5</span>Build Your Own AI</a>
+          <a href="module-6.html"><span class="mn">M6</span>What's Next in AI?</a>
+          <div class="sep-line"></div>
+          <a href="index.html"><span class="mn">🏠</span>Home</a>
+        </div>
+      </div>
+      <span class="teacher-badge">🔒 Teacher View</span>
+      <div id="activeStudentChip"><div class="chip-avatar" id="chipAvatar"></div><span class="chip-name" id="chipName"></span></div>
+      <button id="langToggle" class="lang-toggle-btn" onclick="setLang(document.documentElement.lang==='ms'?'en':'ms')" title="Tukar Bahasa / Switch Language">BM</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="teacher-hero">
+  <div class="wrap">
+    <div style="font-size:.75rem;font-weight:700;letter-spacing:.12em;color:var(--primary);text-transform:uppercase;margin-bottom:.5rem;">Teacher Dashboard</div>
+    <h1>AI Adventure <em>Program Roadmap</em></h1>
+    <p class="sub">Full structure at a glance — from student registration through every module, activity and survey.</p>
+  </div>
+</section>
+
+<!-- ── MAIN ── -->
+<main>
+  <div class="wrap">
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">Modules</div></div>
+      <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">Activities</div></div>
+      <div class="stat-box"><div class="stat-num">2</div><div class="stat-label">Surveys</div></div>
+      <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">Teacher Guides</div></div>
+    </div>
+
+    <div class="sec-title">Program Roadmap</div>
+
+    <div class="flow">
+
+      <!-- Step 0: Entry -->
+      <div class="flow-step">
+        <div class="flow-spine">
+          <div class="flow-dot" style="background:rgba(8,145,178,.2);border:2px solid #0891b2;font-size:.75rem;">📋</div>
+          <div class="flow-line"></div>
+        </div>
+        <div>
+          <div class="flow-card" style="border-color:rgba(8,145,178,.3);">
+            <div class="flow-step-label" style="color:#0891b2;">Step 0 — Entry Gate</div>
+            <a href="index.html" class="survey-link" style="background:rgba(8,145,178,.08);border:1px solid rgba(8,145,178,.2);">
+              <div>
+                <div class="survey-link-label">Landing Page</div>
+                <div class="survey-link-name">🏠 Student Registration Gate</div>
+                <div class="survey-link-desc">Students register before accessing any content · data saved to localStorage + backend</div>
+              </div>
+              <span style="opacity:.4;font-size:1.1rem;">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Pre-Survey -->
+      <div class="flow-step">
+        <div class="flow-spine">
+          <div class="flow-dot" style="background:rgba(124,58,237,.2);border:2px solid #7c3aed;font-size:.75rem;">📝</div>
+          <div class="flow-line"></div>
+        </div>
+        <div>
+          <div class="flow-card" style="border-color:rgba(124,58,237,.3);">
+            <div class="flow-step-label" style="color:#a78bfa;">Step 1 — Before Program</div>
+            <a href="student2-pre.html" class="survey-link" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);">
+              <div>
+                <div class="survey-link-label">Pre-Program Survey</div>
+                <div class="survey-link-name">📋 Knowledge Baseline</div>
+                <div class="survey-link-desc">30 MCQ · 3 open questions · step:'pre'</div>
+              </div>
+              <span style="opacity:.4;font-size:1.1rem;">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Modules -->
+      <div class="flow-step">
+        <div class="flow-spine">
+          <div class="flow-dot" style="background:rgba(5,150,105,.2);border:2px solid #059669;font-size:.75rem;">⚡</div>
+          <div class="flow-line" style="min-height:4rem;"></div>
+        </div>
+        <div>
+          <div class="flow-card" style="border-color:rgba(5,150,105,.3);">
+            <div class="flow-step-label" style="color:#34d399;">Step 2 — Core Program (6 Modules)</div>
+
+            <div class="mod-row">
+              <div class="mod-num" style="background:#0891b2;">1</div>
+              <div>
+                <div class="mod-category">Foundations</div>
+                <div class="mod-title">What Is Artificial Intelligence?</div>
+              </div>
+              <div class="mod-links">
+                <a href="module-1.html" class="pill pill-concept">📖 Concept</a>
+                <a href="activity-1.html" class="pill pill-activity">⚡ Activity</a>
+                <a href="teacher-1.html" class="pill pill-guide">📋 Guide</a>
+              </div>
+            </div>
+
+            <div class="mod-row">
+              <div class="mod-num" style="background:#2563eb;">2</div>
+              <div>
+                <div class="mod-category">Supervised Learning</div>
+                <div class="mod-title">Teaching Machines with Labelled Data</div>
+              </div>
+              <div class="mod-links">
+                <a href="module-2.html" class="pill pill-concept">📖 Concept</a>
+                <a href="activity-2.html" class="pill pill-activity">⚡ Activity</a>
+                <a href="teacher-2.html" class="pill pill-guide">📋 Guide</a>
+              </div>
+            </div>
+
+            <div class="mod-row">
+              <div class="mod-num" style="background:#f59e0b;">3</div>
+              <div>
+                <div class="mod-category">Unsupervised Learning</div>
+                <div class="mod-title">Finding Patterns without Labels</div>
+              </div>
+              <div class="mod-links">
+                <a href="module-3.html" class="pill pill-concept">📖 Concept</a>
+                <a href="activity-3.html" class="pill pill-activity">⚡ Activity</a>
+                <a href="teacher-3.html" class="pill pill-guide">📋 Guide</a>
+              </div>
+            </div>
+
+            <div class="mod-row">
+              <div class="mod-num" style="background:#059669;">4</div>
+              <div>
+                <div class="mod-category">Reinforcement Learning</div>
+                <div class="mod-title">Learning by Trial and Reward</div>
+              </div>
+              <div class="mod-links">
+                <a href="module-4.html" class="pill pill-concept">📖 Concept</a>
+                <a href="activity-4.html" class="pill pill-activity">⚡ Activity</a>
+                <a href="teacher-4.html" class="pill pill-guide">📋 Guide</a>
+              </div>
+            </div>
+
+            <div class="mod-row">
+              <div class="mod-num" style="background:#7c3aed;">5</div>
+              <div>
+                <div class="mod-category">Applied AI Project</div>
+                <div class="mod-title">Build Your Own AI</div>
+              </div>
+              <div class="mod-links">
+                <a href="module-5.html" class="pill pill-concept">📖 Concept</a>
+                <a href="activity-5.html" class="pill pill-activity">⚡ Activity</a>
+                <a href="teacher-5.html" class="pill pill-guide">📋 Guide</a>
+              </div>
+            </div>
+
+            <div class="mod-row">
+              <div class="mod-num" style="background:#dc2626;">6</div>
+              <div>
+                <div class="mod-category">Future &amp; Careers</div>
+                <div class="mod-title">What's Next in AI?</div>
+              </div>
+              <div class="mod-links">
+                <a href="module-6.html" class="pill pill-concept">📖 Concept</a>
+                <a href="activity-6.html" class="pill pill-activity">⚡ Activity</a>
+                <a href="teacher-6.html" class="pill pill-guide">📋 Guide</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Post-Survey -->
+      <div class="flow-step">
+        <div class="flow-spine">
+          <div class="flow-dot" style="background:rgba(124,58,237,.2);border:2px solid #7c3aed;font-size:.75rem;">🏁</div>
+          <div class="flow-line" style="min-height:.5rem;"></div>
+        </div>
+        <div>
+          <div class="flow-card" style="border-color:rgba(124,58,237,.3);">
+            <div class="flow-step-label" style="color:#a78bfa;">Step 3 — After Program</div>
+            <a href="student2-post.html" class="survey-link" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);">
+              <div>
+                <div class="survey-link-label">Post-Program Survey</div>
+                <div class="survey-link-name">📋 Knowledge Gain + Reflection</div>
+                <div class="survey-link-desc">30 MCQ · 15-item Likert · 3 open questions · step:'post'</div>
+              </div>
+              <span style="opacity:.4;font-size:1.1rem;">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /flow -->
+
+    <div class="tip">
+      <strong>🔒 Secret access:</strong> From the student index, click the <strong>AI</strong> logo 3 times quickly to reach this page — no visible link for students.<br><br>
+      <strong>📊 Data collection points:</strong> Registration → <code>step:'register'</code> · Pre-survey → <code>step:'pre'</code> · Each activity → module payload · Post-survey → <code>step:'post'</code>. All go to your Google Apps Script backend.
+    </div>
+
+  </div><!-- /wrap -->
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">See · Think · Explore · Marvel</div>
+    <div class="footer-sub">UMPSA STEM LAB · AI Adventure</div>
+    <div class="footer-copy">
+      <span>© 2026 Nurul Hazlina Noordin · UMPSA STEM Lab Engineering Education</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research page" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </a>
+      <a href="mailto:hazlina@umpsa.edu.my" title="Email" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Modules dropdown ── */
+(function(){
+  var btn=document.getElementById('modDropBtn'),menu=document.getElementById('modDropMenu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.classList.toggle('open',o);});
+  document.addEventListener('click',function(){menu.classList.remove('open');btn.classList.remove('open');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.classList.remove('open');btn.classList.remove('open');}});
+})();
+
+/* ── Bilingual toggle ── */
+function setLang(lang){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('ai_adv_lang',lang);}catch(e){}
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML=lang==='ms'?(el.getAttribute('data-ms')||el.getAttribute('data-en')):el.getAttribute('data-en');
+  });
+  document.querySelectorAll('.lang-en').forEach(function(el){el.style.display=lang==='ms'?'none':'inline';});
+  document.querySelectorAll('.lang-ms').forEach(function(el){el.style.display=lang==='ms'?'inline':'none';});
+  var btn=document.getElementById('langToggle');
+  if(btn)btn.textContent=lang==='ms'?'EN':'BM';
+}
+(function(){
+  var _l='en';
+  try{_l=localStorage.getItem('ai_adv_lang')||'en';}catch(e){}
+  if(_l==='ms')setLang('ms');
+})();
+
+/* ── Student chip ── */
+function updateStudentChip(){
+  try{
+    var raw=localStorage.getItem('ai_adv_student');
+    if(!raw)return;
+    var s=JSON.parse(raw);
+    var name=s.student_name||s.name||'';
+    var matric=s.student_matric||s.matric||'';
+    if(!name)return;
+    var chip=document.getElementById('activeStudentChip');
+    var avatar=document.getElementById('chipAvatar');
+    var chipNameEl=document.getElementById('chipName');
+    if(chip){
+      avatar.textContent=name.charAt(0).toUpperCase();
+      chipNameEl.textContent=name+(matric?' · '+matric:'');
+      chip.style.display='flex';
+    }
+  }catch(e){}
+}
+window.addEventListener('load',updateStudentChip);
+</script>
+</body>
+</html>

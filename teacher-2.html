@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Teacher Guide — How Machines Learn: Data, Patterns & Models</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0c24;--surface:rgba(255,255,255,.04);--surface2:rgba(255,255,255,.07);
+  --border:rgba(255,255,255,.1);--fg:#e8e4ff;--muted:rgba(255,255,255,.5);
+  --act:#F59E0B;--act-dark:#B45309;
+  --green:#22c55e;--green-bg:rgba(34,197,94,.12);
+  --amber:#F59E0B;--amber-bg:rgba(245,158,11,.12);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.12);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,.12);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,.12);
+}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;padding:0;min-height:100vh}
+.top-bar{background:linear-gradient(135deg,#1a0a4e 0%,#0f0c24 100%);border-bottom:1px solid var(--border);padding:.7rem max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:.7rem;position:sticky;top:0;z-index:10}
+.top-bar .logo{font-size:.78rem;font-weight:700;letter-spacing:.06em;color:var(--act)}
+.top-bar .badge{background:var(--act);color:#000;font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
+.hero{background:linear-gradient(160deg,#1a0a4e 0%,#0f0c24 60%);border-bottom:1px solid var(--border);padding:2.5rem max(16px,env(safe-area-inset-left,0px)) 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:280px;height:280px;background:radial-gradient(circle,rgba(245,158,11,.18) 0%,transparent 70%);pointer-events:none}
+.hero-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--act);margin-bottom:.5rem}
+.hero h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;line-height:1.2;color:#fff;text-wrap:balance}
+.hero h1 .ms{display:block;font-size:.7em;font-weight:500;color:rgba(255,255,255,.6);margin-top:.2rem}
+.hero-meta{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;margin-top:1rem}
+.hero-meta span{font-size:.78rem;color:var(--muted)}
+.hero-meta strong{color:var(--fg)}
+.wrap{max-width:900px;margin:0 auto;padding:2rem max(16px,env(safe-area-inset-left,0px))}
+.section{margin-bottom:2.5rem}
+.section-hdr{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.section-hdr .icon{font-size:1.1rem}
+.section-hdr h2{font-size:1rem;font-weight:700;color:#fff}
+.section-hdr .tag{font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-red{background:var(--red-bg);color:var(--red)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:.8rem}
+.card.amber{border-left:3px solid var(--amber)}
+.card.green{border-left:3px solid var(--green)}
+.card.red{border-left:3px solid var(--red)}
+.card.blue{border-left:3px solid var(--blue)}
+.card.purple{border-left:3px solid var(--purple)}
+.card-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;color:var(--muted)}
+.card p{font-size:.9rem;color:rgba(255,255,255,.8);margin-bottom:.4rem}
+.card p:last-child{margin-bottom:0}
+ul.notes{padding-left:1.3rem;margin:.4rem 0 0}
+ul.notes li{font-size:.88rem;color:rgba(255,255,255,.75);margin-bottom:.3rem;line-height:1.5}
+.tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:620px){.tier-grid{grid-template-columns:1fr}}
+.tier-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem}
+.tier-num{display:inline-block;width:28px;height:28px;border-radius:50%;background:var(--act);color:#000;font-size:.78rem;font-weight:800;text-align:center;line-height:28px;margin-bottom:.6rem}
+.tier-name{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.3rem}
+.tier-time{font-size:.72rem;color:var(--muted);margin-bottom:.6rem}
+.tier-block .what{font-size:.82rem;color:rgba(255,255,255,.75);margin-bottom:.6rem}
+.answer-box{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:.6rem .8rem;margin-bottom:.5rem}
+.answer-box .label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.25rem}
+.answer-box p{font-size:.8rem;color:rgba(255,255,255,.8)}
+.tip-box{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:.6rem .8rem}
+.tip-box .label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);margin-bottom:.25rem}
+.tip-box p{font-size:.8rem;color:rgba(255,255,255,.8)}
+.misconception-row{display:grid;grid-template-columns:1fr 1.6fr;gap:.6rem .8rem;align-items:start;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.misconception-row:last-child{border-bottom:none}
+.m-wrong{font-size:.82rem;font-weight:600;color:var(--red)}
+.m-right{font-size:.82rem;color:rgba(255,255,255,.78)}
+.debrief-q{background:var(--surface2);border-radius:10px;padding:.8rem 1rem;margin-bottom:.5rem;font-size:.88rem;color:rgba(255,255,255,.85);display:flex;gap:.7rem;align-items:flex-start}
+.debrief-q::before{content:attr(data-n);min-width:24px;height:24px;border-radius:50%;background:var(--purple);color:#fff;font-size:.7rem;font-weight:700;display:grid;place-items:center;flex-shrink:0;margin-top:.05rem}
+.diff-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:620px){.diff-row{grid-template-columns:1fr}}
+.objectives-list{padding-left:1.3rem;margin:0}
+.objectives-list li{font-size:.88rem;color:rgba(255,255,255,.8);margin-bottom:.4rem;line-height:1.5}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.8rem;margin-bottom:1.5rem}
+.ov-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem}
+.ov-card .ov-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.3rem}
+.ov-card .ov-val{font-size:.92rem;font-weight:700;color:#fff}
+footer{border-top:1px solid var(--border);padding:1.2rem max(16px,env(safe-area-inset-left,0px));text-align:center;font-size:.75rem;color:var(--muted);margin-top:1rem}
+.module-nav{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:2rem auto 0;max-width:900px;padding:0 max(16px,env(safe-area-inset-left,0px))}
+.module-nav .mn-card{display:block;padding:1.1rem 1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:background .2s}
+.module-nav .mn-card:hover{background:rgba(255,255,255,.13)}
+.module-nav .mn-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.3rem}
+.module-nav .mn-title{font-size:.97rem;font-weight:700;color:#fff}
+.module-nav .mn-next{text-align:right}
+.print-btn{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--act);color:#000;border:none;border-radius:50px;padding:.6rem 1.2rem;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:.4rem}
+@media print{.print-btn,.top-bar{display:none}.wrap{max-width:100%;padding:1rem}.hero{padding:1rem}}
+
+/* ── BRANDED SITENAV + FOOTER ── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
+.sitenav{background:#0b0820;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.5);}
+.sitenav-inner{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));height:54px;display:flex;align-items:center;gap:1rem;}
+.brand{display:flex;align-items:baseline;gap:.5rem;text-decoration:none;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:900;color:#fff;flex-shrink:0;}
+.brand em{color:#F59E0B;font-style:normal;}
+.brand .brand-sub{font-size:.52em;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.sitenav nav{margin-left:auto;display:flex;align-items:center;gap:1rem;}
+.nav-badge{background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.35);color:#F59E0B;font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.nav-drop-wrap{position:relative;display:inline-block;}
+.nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;}
+.nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(139,92,246,.25);border-color:#8B5CF6;color:#fff;}
+.nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+.nav-drop-btn.open .arr{transform:rotate(180deg);}
+.nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+.nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+.nav-drop-menu a:hover{background:rgba(139,92,246,.2);color:#fff;}
+.nav-drop-menu a.cur{color:#a78bfa;font-weight:700;}
+.nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+.nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+footer.branded{background:#0b0820;margin-top:4rem;padding:2.5rem max(16px,env(safe-area-inset-left,0px)) 2rem;text-align:center;border-top:1px solid rgba(255,255,255,.08);}
+.footer-inner-b{max-width:900px;margin:0 auto;}
+.footer-title-b{font-family:'Poppins',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin:0 0 .4rem;}
+.footer-sub-b{font-size:.85rem;color:rgba(255,255,255,.42);letter-spacing:.03em;margin:0 0 1.6rem;}
+.footer-copy-b{font-size:.78rem;color:rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.55rem;}
+
+</style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+<header class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand"><em>AI</em>&nbsp;Adventure<span class="brand-sub">UMPSA STEM Lab</span></a>
+    <nav>
+      <span class="nav-badge">🧑‍🏫 Facilitator</span>
+      <div class="nav-drop-wrap">
+        <button class="nav-drop-btn" id="modDropBtn">Activities <span class="arr">▾</span></button>
+        <div class="nav-drop-menu" id="modDropMenu">
+          <a href="teacher-1.html" id="nav-t1"><span class="mn">A1</span>Why AI?</a>
+          <a href="teacher-2.html" id="nav-t2" class="cur"><span class="mn">A2</span>How ML Learns</a>
+          <a href="teacher-3.html" id="nav-t3"><span class="mn">A3</span>Neural Networks</a>
+          <a href="teacher-4.html" id="nav-t4"><span class="mn">A4</span>AI in Action</a>
+          <a href="teacher-5.html" id="nav-t5"><span class="mn">A5</span>Build Your Own AI</a>
+          <a href="teacher-6.html" id="nav-t6"><span class="mn">A6</span>Beyond AI</a>
+          <div class="sep-line"></div>
+          <a href="index.html"><span class="mn">🏠</span>Home</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+
+<div class="hero">
+  <div class="hero-label">Module 2 · Facilitator Notes · Nota Fasilitator</div>
+  <h1>How Machines Learn: Data, Patterns & Models<span class="ms">Cara Mesin Belajar: Data, Corak & Model</span></h1>
+  <div class="hero-meta">
+    <span>⏱ <strong>75–90 minutes</strong></span>
+    <span>👥 <strong>Pairs or individual</strong></span>
+    <span>🖥 <strong>1 device per student</strong></span>
+    <span>📋 <strong>Bilingual (EN / BM)</strong></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- BIG IDEA -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">💡</span>
+    <h2>Big Idea &amp; Learning Objectives</h2>
+    <span class="tag tag-amber">Start here</span>
+  </div>
+  <div class="card amber">
+    <div class="card-title">The Central Insight / Idea Utama</div>
+    <p>Students explore the ML training pipeline — from raw data to a trained model — and grapple with overfitting, the train/test split, and why a model that memorises training data fails in the real world.</p>
+    <p style="color:rgba(255,255,255,.55);font-size:.82rem;margin-top:.4rem">Pelajar meneroka saluran paip latihan PM — dari data mentah ke model terlatih — dan berhadapan dengan pemasangan berlebihan, pembahagian latihan/ujian, dan mengapa model yang menghafal data latihan gagal di dunia nyata.</p>
+  </div>
+  <div class="overview-grid">
+    <div class="ov-card"><div class="ov-label">Module</div><div class="ov-val">Module 2</div></div>
+    <div class="ov-card"><div class="ov-label">Duration</div><div class="ov-val">75–90 minutes</div></div>
+    <div class="ov-card"><div class="ov-label">Tiers</div><div class="ov-val">Cal → 1 → 2 → 3 → 4 → MCQ → Reflect</div></div>
+  </div>
+  <ul class="objectives-list">
+    <li>Describe the steps in a basic ML training pipeline <span style="color:var(--muted);font-size:.78rem">/ Huraikan langkah-langkah dalam saluran paip latihan PM asas</span></li>
+<li>Distinguish training data from test data and explain why both are needed <span style="color:var(--muted);font-size:.78rem">/ Bezakan data latihan daripada data ujian dan jelaskan mengapa kedua-duanya diperlukan</span></li>
+<li>Identify overfitting from accuracy patterns and explain its danger <span style="color:var(--muted);font-size:.78rem">/ Kenal pasti pemasangan berlebihan daripada corak ketepatan dan terangkan bahayanya</span></li>
+<li>Design a simple dataset and label scheme for a chosen prediction task <span style="color:var(--muted);font-size:.78rem">/ Reka bentuk set data dan skim label mudah untuk tugasan ramalan yang dipilih</span></li>
+  </ul>
+</div>
+
+<!-- BEFORE SESSION -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">📋</span>
+    <h2>Before the Session / Sebelum Sesi</h2>
+    <span class="tag tag-blue">Setup</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+    <div class="card blue">
+      <div class="card-title">Tech Check</div>
+      <ul class="notes">
+        <li>Test activity-2.html on one device — confirm all tiers load</li>
+        <li>Check that the Google Sheets submission URL in the script is active</li>
+        <li>Have a backup offline worksheet ready if internet drops</li>
+        <li>Set language toggle to Bahasa Malaysia for BM classes</li>
+      </ul>
+    </div>
+    <div class="card blue">
+      <div class="card-title">Classroom Setup</div>
+      <ul class="notes">
+        <li>Arrange seating for paired or individual work</li>
+        <li>Project the activity on the class screen for group moments</li>
+        <li>Brief students: this is an ACTIVITY, not a test — effort &gt; perfection</li>
+        <li>Remind: student identity fields must be filled FIRST before the activity unlocks</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- CALIBRATION -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">🎯</span>
+    <h2>Calibration Phase / Fasa Kalibrasi</h2>
+    <span class="tag tag-amber">~5–8 min</span>
+  </div>
+  <div class="card amber">
+    <div class="card-title">What students do</div>
+    <p>Rate AI/ML confidence (1–10), predict their Tier 1 score, and write ≥10 words on what they already know about the topic.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Facilitator notes</div>
+    <ul class="notes">
+      <li>Emphasise "no wrong answers here" — calibration is for self-awareness, not grading</li>
+      <li>Watch for students who claim 10/10 confidence — they may rush Tier 1; encourage deeper justifications</li>
+      <li>Students who write less than 10 words are blocked — walk over and prompt: "Tell me one thing you've heard about AI"</li>
+      <li>Collect calibration data later to compare with post-activity Reflect scores — excellent metacognitive evidence</li>
+    </ul>
+  </div>
+</div>
+
+<!-- TIERS -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">🔢</span>
+    <h2>Tier-by-Tier Guide / Panduan Tahap demi Tahap</h2>
+    <span class="tag tag-green">Core activity</span>
+  </div>
+  <div class="tier-grid">
+    <div class="tier-block">
+      <div class="tier-num">1</div>
+      <div class="tier-name">Tier 1: Concepts / Konsep</div>
+      <div class="tier-time">⏱ 15–20 min</div>
+      <div class="what">Four concept questions focused on ML learning mechanics: supervised prediction tasks, task suitability ranking, overfitting True/False, analogy for model improvement.</div>
+      <div class="answer-box"><div class="label">Expected</div><p>Q1: Supervised (labelled 'correct'/'incorrect')</p></div>
+<div class="answer-box"><div class="label">Expected</div><p>Q2: A (grade prediction) > C (fraud detection) > B (Celsius formula — fixed, not ML)</p></div>
+<div class="answer-box"><div class="label">Expected</div><p>Q3: False — 100% training accuracy is a warning sign (overfitting)</p></div>
+<div class="answer-box"><div class="label">Expected</div><p>Q4: B — puppy analogy (reward-based gradual improvement)</p></div>
+      <div class="tip-box">
+        <div class="label">Facilitator Tips</div>
+        <ul class="notes"><li>On Q3, many students will say True. Use this as a teaching moment — ask 'What if you memorised past exam answers but the new exam had different questions?'</li>
+<li>The puppy analogy (Q4) is for iterative improvement — not reinforcement learning specifically. Clarify the difference if asked.</li></ul>
+      </div>
+    </div><div class="tier-block">
+      <div class="tier-num">2</div>
+      <div class="tier-name">Tier 2: Fix / Baiki</div>
+      <div class="tier-time">⏱ 15 min</div>
+      <div class="what">Students correct a flawed ML experiment description — spotting data leakage, mislabelled splits, or incorrect claims about accuracy.</div>
+      <div class="answer-box"><div class="label">Expected</div><p>Data used for testing should NOT have been seen during training</p></div>
+<div class="answer-box"><div class="label">Expected</div><p>Accuracy on training data alone does not prove the model works</p></div>
+      <div class="tip-box">
+        <div class="label">Facilitator Tips</div>
+        <ul class="notes"><li>Prompt: 'If you studied only past papers and the exam repeats those questions exactly — did you learn or memorise?'</li></ul>
+      </div>
+    </div><div class="tier-block">
+      <div class="tier-num">3</div>
+      <div class="tier-name">Tier 3: Extend / Kembang</div>
+      <div class="tier-time">⏱ 15 min</div>
+      <div class="what">Students design a training dataset for a school cafeteria food-waste prediction system — specifying features, labels, and train/test split rationale.</div>
+      <div class="answer-box"><div class="label">Expected</div><p>Features: day of week, weather, menu type, number of students present</p></div>
+<div class="answer-box"><div class="label">Expected</div><p>Label: amount of food wasted (kg)</p></div>
+<div class="answer-box"><div class="label">Expected</div><p>Train/test split: past 2 years training, most recent month test</p></div>
+      <div class="tip-box">
+        <div class="label">Facilitator Tips</div>
+        <ul class="notes"><li>Accept creative features; push students to explain WHY each feature predicts waste</li>
+<li>Common error: using future data as a feature — flag this as data leakage</li></ul>
+      </div>
+    </div><div class="tier-block">
+      <div class="tier-num">4</div>
+      <div class="tier-name">Tier 4: Create / Cipta</div>
+      <div class="tier-time">⏱ 15–20 min</div>
+      <div class="what">Students create their own mini ML experiment brief: define a problem, choose 3–5 features, specify labels, and explain how they would know if the model was overfitting.</div>
+      <div class="answer-box"><div class="label">Expected</div><p>No single answer — assess: clear problem statement, relevant features, explicit labels, and understanding of overfitting detection</p></div>
+      <div class="tip-box">
+        <div class="label">Facilitator Tips</div>
+        <ul class="notes"><li>Strong responses name the gap between training accuracy and test accuracy as the overfitting signal</li>
+<li>Encourage students to think about how data would actually be collected ('Who enters the label? When?')</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MISCONCEPTIONS -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">⚠️</span>
+    <h2>Common Misconceptions / Salah Faham Biasa</h2>
+    <span class="tag tag-red">Watch for these</span>
+  </div>
+  <div class="card red">
+    <div class="misconception-row">
+      <div class="m-wrong">✗ "100% training accuracy = best model"</div>
+      <div class="m-right">✓ High training accuracy with low test accuracy = overfitting. The model memorised, not learnt.</div>
+    </div><div class="misconception-row">
+      <div class="m-wrong">✗ "More data always fixes overfitting"</div>
+      <div class="m-right">✓ More diverse, representative data helps — but sometimes the model architecture also needs simplifying.</div>
+    </div><div class="misconception-row">
+      <div class="m-wrong">✗ "Features are just 'inputs'"</div>
+      <div class="m-right">✓ Features must be chosen deliberately — irrelevant features add noise and hurt accuracy.</div>
+    </div><div class="misconception-row">
+      <div class="m-wrong">✗ "Testing = grading the model once"</div>
+      <div class="m-right">✓ In practice, there's also a validation set used during training, not just a final test set.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEBRIEF -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">💬</span>
+    <h2>Debrief &amp; Discussion / Perbincangan &amp; Rumusan</h2>
+    <span class="tag tag-purple">Closing 10 min</span>
+  </div>
+  <div class="debrief-q" data-n="1">If a student memorises every past SPM question but the exam has new questions — which ML concept does this demonstrate?</div>
+<div class="debrief-q" data-n="2">Name a real service (bank, hospital, Grab) where overfitting could cause serious harm.</div>
+<div class="debrief-q" data-n="3">What is one feature you would NEVER include in an exam-score predictor — and why?</div>
+</div>
+
+<!-- DIFFERENTIATION -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">🎛️</span>
+    <h2>Differentiation / Pembezaan</h2>
+    <span class="tag tag-blue">Inclusive support</span>
+  </div>
+  <div class="diff-row">
+    <div class="card green">
+      <div class="card-title">Support (struggling students)</div>
+      <p>Provide a glossary card: training data, test data, features, labels, overfitting, accuracy. For Tier 3, allow students to describe a dataset in bullet points rather than prose.</p>
+    </div>
+    <div class="card purple">
+      <div class="card-title">Extension (advanced students)</div>
+      <p>Challenge: 'Design an experiment to compare two models — one that overfits and one that generalises. What would the accuracy tables look like?'</p>
+    </div>
+  </div>
+</div>
+
+<!-- ASSESSMENT -->
+<div class="section">
+  <div class="section-hdr">
+    <span class="icon">📊</span>
+    <h2>Assessment Notes / Nota Pentaksiran</h2>
+    <span class="tag tag-blue">Evidence of learning</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem">
+    <div class="card">
+      <div class="card-title">Look for in Tier 1</div>
+      <ul class="notes">
+        <li>Justification goes beyond restating the option chosen</li>
+        <li>Student names a specific reason tied to the concept (labels, data type, task complexity)</li>
+        <li>Ranking explanation references WHY the bottom task doesn't suit ML</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Look for in Tier 4 (Create)</div>
+      <ul class="notes">
+        <li>Problem is specific and scoped (not "solve all of education")</li>
+        <li>At least one risk or limitation is mentioned unprompted</li>
+        <li>Data source is realistic and ethically considered</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Reflect section signals</div>
+      <ul class="notes">
+        <li>Compare calibration confidence (pre) vs reflect score (post)</li>
+        <li>Students who over-estimated often have surface understanding</li>
+        <li>Use reflection responses in next lesson's warm-up</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- NAV -->
+<div class="module-nav">
+  <a href="teacher-1.html" class="mn-card mn-prev">
+    <div class="mn-label">Previous</div>
+    <div class="mn-title">← Teacher Guide 1</div>
+  </a>
+  <a href="teacher-3.html" class="mn-card mn-next">
+    <div class="mn-label">Next</div>
+    <div class="mn-title">Teacher Guide 3 →</div>
+  </a>
+</div>
+
+<footer class="branded">
+  <div class="footer-inner-b">
+    <div class="footer-title-b">See · Think · Explore · Marvel</div>
+    <div class="footer-sub-b">UMPSA STEM LAB · AI Adventure · Facilitator Resources</div>
+    <div class="footer-copy-b">
+      <span>© 2026 Nurul Hazlina Noordin · UMPSA STEM Lab Engineering Education</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research page" style="width:30px;height:30px;border-radius:50%;background:rgba(139,92,246,.18);border:1.5px solid rgba(139,92,246,.4);display:inline-flex;align-items:center;justify-content:center;color:#a78bfa;transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(139,92,246,.35)'" onmouseout="this.style.background='rgba(139,92,246,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </a>
+      <a href="mailto:hazlina@umpsa.edu.my" title="Email" style="width:30px;height:30px;border-radius:50%;background:rgba(139,92,246,.18);border:1.5px solid rgba(139,92,246,.4);display:inline-flex;align-items:center;justify-content:center;color:#a78bfa;transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(139,92,246,.35)'" onmouseout="this.style.background='rgba(139,92,246,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<button class="print-btn" onclick="window.print()">🖨 Print / PDF</button>
+
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('modDropBtn');
+    var menu=document.getElementById('modDropMenu');
+    if(btn&&menu){
+      btn.addEventListener('click',function(e){e.stopPropagation();btn.classList.toggle('open');menu.classList.toggle('open');});
+      document.addEventListener('click',function(){btn.classList.remove('open');menu.classList.remove('open');});
+    }
+  });
+})();
+</script>
+</body>
+</html>

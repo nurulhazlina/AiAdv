@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base target="_self">
+  <title>Module 1 · Why AI? — AI Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap">
+  <style>
+/* ── Color tokens ── */
+:root {
+  --primary:      #0891B2;
+  --primary-dark: #0C4A6E;
+  --primary-mid:  #0E7490;
+  --nav-bg:       #071B2E;
+  --blue:         #2563EB;
+  --blue-light:   #DBEAFE;
+  --red:          #DC2626;
+  --red-light:    #FEE2E2;
+  --orange:       #F59E0B;
+  --orange-light: #FEF3C7;
+  --green:        #059669;
+  --green-light:  #D1FAE5;
+  --purple:       #7C3AED;
+  --purple-light: #EDE9FE;
+  --ink:          #1E293B;
+  --muted:        #64748B;
+  --bg:           #F0F7FA;
+  --card:         #FFFFFF;
+  --line:         #CBD5E1;
+  --code-bg:      #0F172A;
+  --code-fg:      #E2E8F0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#07131D; --card:#0C2133; --line:#1A3550; --ink:#DFF0FA; --muted:#7BAFC9;
+    --blue-light:#1E3A5F; --red-light:#450A0A; --orange-light:#451A03;
+    --green-light:#022C22; --purple-light:#2E1065; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#07131D; --card:#0C2133; --line:#1A3550; --ink:#DFF0FA; --muted:#7BAFC9;
+  --blue-light:#1E3A5F; --red-light:#450A0A; --orange-light:#451A03;
+  --green-light:#022C22; --purple-light:#2E1065; color-scheme:dark;
+}
+
+/* ── Reset & Base ── */
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:'Poppins','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;height:auto;display:block;}
+a{color:var(--primary);}
+a:hover{color:var(--primary-mid);}
+code,pre{font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:.88em;}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+p{margin:0 0 1rem;}
+p:last-child{margin-bottom:0;}
+h2{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.35rem;color:var(--ink);margin:0 0 1rem;text-wrap:balance;line-height:1.3;}
+h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.05rem;color:var(--ink);margin:0 0 .5rem;text-wrap:balance;}
+:not(pre)>code{background:var(--code-bg);color:#7DD3FC;padding:.1em .4em;border-radius:4px;font-size:.85em;}
+pre{background:var(--code-bg);color:var(--code-fg);border-radius:8px;padding:1.1rem 1.25rem;overflow-x:auto;font-size:.88rem;line-height:1.6;margin:0 0 1.25rem;}
+
+/* ── Chevron Strip ── */
+.chev-strip{display:flex;height:34px;}
+.chev-strip span{flex:1;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fff;user-select:none;}
+.chev-strip span:nth-child(1){background:var(--blue);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);}
+.chev-strip span:nth-child(2){background:var(--red);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(3){background:var(--orange);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(4){background:var(--primary);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);}
+
+/* ── Site Nav ── */
+.sitenav{background:var(--nav-bg);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.5);}
+.sitenav-inner{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));height:54px;display:flex;align-items:center;gap:1rem;}
+.brand{display:flex;align-items:baseline;gap:.5rem;text-decoration:none;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:900;color:#fff;flex-shrink:0;}
+.brand em{font-style:normal;color:var(--primary);}
+.brand .brand-sub{font-size:.52em;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.sitenav nav{margin-left:auto;display:flex;align-items:center;gap:1.4rem;}
+.sitenav nav a{text-decoration:none;font-size:.83rem;font-weight:500;color:rgba(255,255,255,.62);transition:color .15s;}
+.sitenav nav a:hover{color:var(--primary);}
+.sitenav nav a.active{color:#fff;font-weight:600;}
+.sitenav nav .nav-btn{background:var(--primary);color:#fff;padding:.3rem .9rem;border-radius:6px;font-weight:700;font-size:.82rem;transition:background .15s;}
+.sitenav nav .nav-btn:hover{background:var(--primary-mid);color:#fff;}
+.nav-drop-wrap{position:relative;display:inline-block;}
+.nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;letter-spacing:.01em;}
+.nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(8,145,178,.25);border-color:var(--primary);color:#fff;}
+.nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+.nav-drop-btn.open .arr{transform:rotate(180deg);}
+.nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+.nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+.nav-drop-menu a:hover{background:rgba(8,145,178,.18);color:#fff;}
+.nav-drop-menu a.cur{color:var(--primary);font-weight:700;}
+.nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+.nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+
+
+/* ── Footer ── */
+footer{background:var(--nav-bg);margin-top:4rem;padding:2.5rem max(16px,env(safe-area-inset-left,0px)) 2rem;text-align:center;}
+.footer-inner{max-width:880px;margin:0 auto;}
+.footer-title{font-family:'Poppins',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin:0 0 .4rem;}
+.footer-sub{font-size:.85rem;color:rgba(255,255,255,.42);letter-spacing:.03em;margin:0 0 1.6rem;}
+
+.footer-copy{font-size:.78rem;color:rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.55rem;}
+
+/* ── MODULE HERO ── */
+.module-hero{background:linear-gradient(135deg,#071320 0%,#0a2540 50%,#0e1a3d 100%);padding:3rem max(16px,env(safe-area-inset-left,0px));text-align:center;position:relative;overflow:hidden;}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.3;pointer-events:none;}
+.mod-eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--primary);text-transform:uppercase;margin-bottom:.6rem;position:relative;}
+.module-hero h1{font-size:clamp(1.7rem,4vw,2.6rem);color:#fff;margin-bottom:.6rem;font-weight:900;position:relative;text-wrap:balance;}
+.module-hero h1 em{font-style:normal;color:var(--primary);}
+.module-hero .sub{font-size:.95rem;color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 1.4rem;line-height:1.6;position:relative;}
+.module-meta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;}
+.meta-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;color:rgba(255,255,255,.8);font-weight:600;}
+
+/* ── Progress Bar ── */
+.prog-bar-wrap{background:var(--card);border-bottom:1px solid var(--line);padding:.55rem 0;}
+.prog-bar-inner{max-width:880px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:1rem;}
+.prog-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.prog-track{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--blue));border-radius:3px;transition:width .6s ease;width:0%;}
+.prog-pct{font-size:.7rem;font-weight:700;color:var(--primary);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+/* ── Section Badges ── */
+@keyframes floatBadge{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.section-badge{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;font-size:.62rem;font-weight:900;letter-spacing:.08em;flex-shrink:0;text-transform:uppercase;animation:floatBadge 3s ease-in-out infinite;}
+.badge-see{background:var(--blue);color:#fff;animation-delay:0s;}
+.badge-think{background:var(--red);color:#fff;animation-delay:.8s;}
+.badge-exp{background:var(--orange);color:#fff;animation-delay:1.6s;}
+.badge-marv{background:var(--primary);color:#fff;animation-delay:2.4s;}
+
+/* ── Mod Sections (Accordion) ── */
+main{padding:2rem 0 3rem;}
+.mod-section{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:1.2rem;overflow:hidden;transition:border-color .2s;}
+.mod-section.sec-done{border-color:var(--green);}
+.mod-section-header{display:flex;align-items:center;gap:.75rem;padding:1.2rem 1.5rem;cursor:pointer;user-select:none;transition:background .15s;}
+.mod-section-header:hover{background:rgba(255,255,255,.03);}
+.section-header-text{flex:1;min-width:0;}
+.section-header-text h2{font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .15rem;}
+.section-header-text p{font-size:.78rem;color:var(--muted);margin:0;}
+.sec-meta{display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
+.sec-time{font-size:.7rem;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:2px 9px;white-space:nowrap;}
+.sec-status{font-size:1rem;}
+.sec-chev{width:20px;height:20px;flex-shrink:0;transition:transform .3s;color:var(--muted);}
+.mod-section.open .sec-chev{transform:rotate(180deg);}
+.mod-section-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid var(--line);}
+.mod-section.open .mod-section-body{display:block;}
+
+/* ── Content Elements ── */
+.concept-card{background:rgba(8,145,178,.06);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:1rem 1.1rem;margin:1rem 0;font-size:.9rem;line-height:1.75;color:var(--ink);}
+.concept-card strong{color:var(--ink);font-weight:700;}
+.concept-card em{color:var(--primary);font-style:normal;font-weight:600;}
+.takeaway{background:linear-gradient(135deg,rgba(8,145,178,.08),rgba(37,99,235,.06));border:1px solid rgba(8,145,178,.25);border-radius:10px;padding:1rem 1.1rem;margin:1rem 0 0;font-size:.87rem;line-height:1.65;color:var(--ink);}
+.takeaway strong{display:block;margin-bottom:4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--primary);font-weight:800;}
+.section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary);margin:1rem 0 .5rem;}
+.got-it-btn{display:inline-flex;align-items:center;gap:6px;margin-top:1rem;padding:.5rem 1.2rem;background:var(--primary);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;transition:all .2s;}
+.got-it-btn:hover{background:var(--primary-mid);transform:translateY(-1px);}
+.got-it-btn.done-btn{background:var(--green);}
+
+/* ── Canvas Simulations ── */
+.sim-wrap{margin:1rem 0;border-radius:10px;overflow:hidden;background:#071929;border:1px solid #1e3a4a;}
+.sim-canvas{display:block;width:100%;}
+.sim-controls{background:#071929;padding:.75rem 1rem;border-top:1px solid #1e3a4a;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;}
+.ctrl-label{font-size:.78rem;font-weight:600;color:#94a3b8;white-space:nowrap;}
+.ctrl-slider{-webkit-appearance:none;width:110px;height:4px;background:#1e3a4a;border-radius:2px;outline:none;}
+.ctrl-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--primary);cursor:pointer;}
+.ctrl-val{font-size:.78rem;font-weight:700;color:var(--orange);font-family:'Fira Code',monospace;min-width:32px;}
+.mode-toggle-wrap{display:flex;gap:6px;margin:.75rem 0;}
+.mode-btn{flex:1;padding:.55rem;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.82rem;border:2px solid var(--line);background:var(--card);cursor:pointer;transition:all .2s;color:var(--muted);}
+.mode-btn.active-rule{border-color:var(--orange);background:rgba(245,158,11,.12);color:#fde68a;}
+.mode-btn.active-ml{border-color:var(--primary);background:rgba(8,145,178,.12);color:#7dd3fc;}
+.bird-ctrl-row{display:flex;flex-wrap:wrap;gap:.6rem;padding:.75rem 1rem;background:#071929;border-top:1px solid #1e3a4a;align-items:center;}
+.bird-test-row{background:#0a1f2e;padding:.75rem 1rem;border-top:1px solid #1e3a4a;}
+.test-bird-title{font-size:.78rem;font-weight:700;color:#94a3b8;margin-bottom:.5rem;}
+.test-bird-sliders{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:.5rem;}
+.test-result-area{display:flex;align-items:center;gap:.75rem;padding:.5rem .75rem;background:#071929;border-radius:8px;min-height:40px;}
+.test-result-label{font-size:.78rem;color:#94a3b8;}
+.test-result-val{font-size:.95rem;font-weight:800;}
+.test-result-conf{font-size:.75rem;color:#64748b;margin-left:auto;font-family:'Fira Code',monospace;}
+
+/* ── Interactive Grids ── */
+.ai-examples-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem;margin:1rem 0;}
+.ai-example-card{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:.9rem .6rem;text-align:center;cursor:pointer;transition:all .2s;user-select:none;}
+.ai-example-card:hover{border-color:var(--primary);transform:translateY(-2px);}
+.ai-example-card.revealed{border-color:var(--green);background:rgba(5,150,105,.07);}
+.ai-example-card .ex-icon{font-size:1.8rem;margin-bottom:6px;}
+.ai-example-card .ex-name{font-size:.78rem;font-weight:700;color:var(--ink);}
+.ai-example-card .ex-desc{font-size:.7rem;color:var(--green);margin-top:4px;display:none;line-height:1.4;font-weight:600;}
+.ai-example-card.revealed .ex-desc{display:block;}
+.ai-example-card .ex-hint{font-size:.68rem;color:var(--muted);margin-top:6px;}
+.ai-example-card.revealed .ex-hint{display:none;}
+
+.industry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;margin:1rem 0;}
+.ind-card{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:1rem .75rem;cursor:pointer;transition:all .2s;text-align:center;}
+.ind-card:hover{transform:translateY(-2px);border-color:var(--primary);}
+.ind-card .ind-icon{font-size:2rem;margin-bottom:.5rem;}
+.ind-card .ind-title{font-size:.82rem;font-weight:700;color:var(--ink);}
+.ind-card .ind-ai{font-size:.72rem;color:var(--primary);margin-top:.4rem;display:none;font-weight:600;line-height:1.4;}
+.ind-card.flipped{border-color:var(--primary);background:rgba(8,145,178,.07);}
+.ind-card.flipped .ind-ai{display:block;}
+
+.compare-wrap{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;}
+.compare-col{border-radius:10px;padding:1rem;background:var(--bg);border:1.5px solid var(--line);}
+.compare-col h3{font-size:.88rem;font-weight:800;margin-bottom:.6rem;}
+.compare-col.human h3{color:var(--orange);}
+.compare-col.ai h3{color:var(--primary);}
+.compare-item{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid var(--line);font-size:.82rem;color:var(--ink);}
+.compare-item:last-child{border-bottom:none;}
+.compare-item .ci-icon{font-size:1rem;flex-shrink:0;}
+
+/* ── Quiz ── */
+.quiz-wrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.5rem;margin-top:1.5rem;}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1.2rem;}
+.quiz-header h2{font-size:1.05rem;font-weight:800;color:var(--ink);margin:0;}
+.quiz-badge{background:var(--primary);color:#fff;border-radius:20px;padding:3px 12px;font-size:.75rem;font-weight:700;}
+.q-block{margin-bottom:1.2rem;}
+.q-text{font-size:.9rem;font-weight:600;margin-bottom:.6rem;line-height:1.5;color:var(--ink);}
+.q-opts{display:flex;flex-direction:column;gap:.35rem;}
+.q-opt{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .9rem;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);cursor:pointer;font-size:.85rem;transition:all .2s;line-height:1.4;color:var(--ink);}
+.q-opt:hover{border-color:var(--primary);background:rgba(8,145,178,.07);}
+.q-opt.correct{border-color:var(--green);background:rgba(5,150,105,.1);color:var(--green);font-weight:600;}
+.q-opt.wrong{border-color:var(--red);background:rgba(220,38,38,.08);color:var(--red);}
+.q-opt.disabled{pointer-events:none;}
+.q-feedback{font-size:.8rem;margin-top:.5rem;padding:.5rem .75rem;border-radius:6px;}
+.q-feedback.good{background:rgba(5,150,105,.12);color:var(--green);}
+.q-feedback.bad{background:rgba(220,38,38,.08);color:var(--red);}
+.quiz-score{text-align:center;padding:1.2rem;font-size:1.1rem;font-weight:800;color:var(--primary);display:none;}
+.next-mod-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:1rem auto 0;padding:.75rem 2rem;background:linear-gradient(135deg,var(--primary),var(--blue));color:#fff;border:none;border-radius:25px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(8,145,178,.35);transition:all .2s;}
+.next-mod-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(8,145,178,.45);}
+
+/* ── Scroll Reveal ── */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s;}
+.reveal.in-view{opacity:1;transform:none;}
+
+/* ══ SIMULATION ACCORDION ══ */
+.sim-acc{margin:.8rem 0;}
+.sim-acc-item{border:1.5px solid var(--line);border-radius:10px;margin-bottom:.45rem;overflow:hidden;background:var(--card);}
+.sim-acc-item.open{border-color:var(--primary);}
+.sim-acc-header{display:flex;align-items:center;gap:.65rem;padding:.75rem .9rem;cursor:pointer;user-select:none;transition:background .15s;}
+.sim-acc-header:hover{background:rgba(8,145,178,.06);}
+.sim-acc-icon{font-size:1.25rem;flex-shrink:0;}
+.sim-acc-title{flex:1;font-size:.82rem;font-weight:700;color:var(--ink);}
+.sim-acc-sub{font-size:.7rem;color:var(--muted);font-weight:400;}
+.sim-acc-tag{font-size:.62rem;font-weight:700;background:rgba(8,145,178,.12);color:var(--primary);border-radius:20px;padding:2px 7px;white-space:nowrap;flex-shrink:0;}
+.sim-acc-chev{width:15px;height:15px;color:var(--muted);transition:transform .25s;flex-shrink:0;}
+.sim-acc-item.open .sim-acc-chev{transform:rotate(180deg);}
+.sim-acc-body{display:none;padding:.6rem .9rem .9rem;border-top:1px solid var(--line);}
+.sim-acc-item.open .sim-acc-body{display:block;}
+/* sim panel */
+.sim-panel{background:#071929;border-radius:8px;padding:.6rem .7rem;margin:.4rem 0;}
+.sim-note{font-size:.72rem;color:#94a3b8;line-height:1.5;margin-bottom:.4rem;}
+.sim-btn-row{display:flex;flex-wrap:wrap;gap:.35rem;margin:.4rem 0;}
+.sim-smbtn{background:#1e3a4a;color:#94a3b8;border:1px solid #253851;border-radius:16px;padding:3px 9px;font-family:Poppins,sans-serif;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.sim-smbtn:hover{background:#253851;color:#e2e8f0;}
+.sim-smbtn.picked{background:rgba(8,145,178,.22);border-color:var(--primary);color:#7dd3fc;}
+.sim-smbtn.liked-s{background:rgba(5,150,105,.18);border-color:#22c55e;color:#86efac;}
+.sim-input{width:100%;padding:.45rem .65rem;background:#0d1b2a;border:1px solid #1e3a4a;border-radius:6px;color:#e2e8f0;font-family:Poppins,sans-serif;font-size:.8rem;outline:none;box-sizing:border-box;}
+.sim-input:focus{border-color:var(--primary);}
+.sim-score-row{display:flex;align-items:center;gap:.5rem;margin:.4rem 0;}
+.sim-score-lbl{font-size:.7rem;color:#94a3b8;white-space:nowrap;min-width:76px;}
+.sim-score-track{flex:1;height:9px;background:#1e3a4a;border-radius:5px;overflow:hidden;}
+.sim-score-fill{height:100%;border-radius:5px;transition:width .45s ease;}
+.sim-score-val{font-size:.72rem;font-weight:700;font-family:'Fira Code',monospace;min-width:40px;}
+.sim-tag-row{display:flex;flex-wrap:wrap;gap:.25rem;margin:.35rem 0;min-height:20px;}
+.sim-tag{font-size:.65rem;padding:2px 6px;border-radius:12px;font-weight:600;}
+.sim-tag.spam-w{background:rgba(220,38,38,.22);color:#fca5a5;border:1px solid #ef4444;}
+.sim-tag.ok-w{background:rgba(100,116,139,.12);color:#64748b;}
+.sim-verdict{font-size:.82rem;font-weight:800;text-align:center;padding:.4rem;border-radius:6px;margin-top:.35rem;display:none;}
+.sim-verdict.is-spam{background:rgba(220,38,38,.13);color:#f87171;display:block;}
+.sim-verdict.not-spam{background:rgba(5,150,105,.13);color:#34d399;display:block;}
+.sim-verdict.warn{background:rgba(245,158,11,.12);color:#fbbf24;display:block;}
+/* product / song grid */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:.35rem;margin:.4rem 0;}
+.prod-card{background:#071929;border:1.5px solid #1e3a4a;border-radius:7px;padding:.45rem .25rem;text-align:center;cursor:pointer;transition:all .15s;user-select:none;}
+.prod-card:hover{border-color:#334155;}
+.prod-card.liked-p{border-color:#22c55e;background:rgba(5,150,105,.1);}
+.prod-card.rec-p{border-color:#f59e0b;background:rgba(245,158,11,.1);animation:pulse-brd .7s ease 2;}
+@keyframes pulse-brd{0%,100%{box-shadow:none;}50%{box-shadow:0 0 0 3px rgba(245,158,11,.28);}}
+.prod-icon{font-size:1.3rem;}
+.prod-name{font-size:.58rem;color:#94a3b8;margin-top:2px;line-height:1.3;}
+.prod-cat{font-size:.52rem;color:#475569;margin-top:1px;}
+/* symptom checker */
+.symptom-list{display:flex;flex-direction:column;gap:.3rem;margin:.4rem 0;}
+.symptom-row{display:flex;align-items:center;gap:.45rem;padding:.28rem .45rem;background:#071929;border-radius:5px;cursor:pointer;}
+.symptom-check{width:14px;height:14px;flex-shrink:0;cursor:pointer;}
+.symptom-name{font-size:.75rem;color:#94a3b8;}
+/* plant grid */
+.plant-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin:.4rem 0;}
+.plant-cell{background:#071929;border:1.5px solid #1e3a4a;border-radius:7px;padding:.45rem;text-align:center;cursor:pointer;transition:all .2s;}
+.plant-cell:hover{border-color:#334155;}
+.plant-cell.healthy{border-color:#22c55e;background:rgba(5,150,105,.1);}
+.plant-cell.diseased{border-color:#ef4444;background:rgba(220,38,38,.09);}
+.plant-cell.water{border-color:#3b82f6;background:rgba(59,130,246,.09);}
+.plant-emoji{font-size:1.5rem;}
+.plant-status{font-size:.58rem;margin-top:3px;font-weight:700;line-height:1.3;}
+/* voice sim */
+.voice-step{background:#071929;border-radius:5px;padding:.35rem .5rem;margin:.25rem 0;display:flex;gap:.4rem;align-items:flex-start;}
+.voice-num{background:var(--primary);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.voice-content{font-size:.72rem;color:#94a3b8;line-height:1.45;}
+.voice-content .hl{color:#7dd3fc;font-weight:600;}
+/* adaptive quiz */
+.adapt-q{font-size:.82rem;font-weight:600;color:#e2e8f0;margin-bottom:.45rem;line-height:1.4;}
+.adapt-opts{display:flex;flex-direction:column;gap:.28rem;}
+.adapt-opt{background:#071929;border:1.5px solid #1e3a4a;border-radius:5px;padding:.4rem .6rem;cursor:pointer;font-size:.75rem;color:#94a3b8;transition:all .15s;display:flex;gap:.4rem;}
+.adapt-opt:hover{border-color:#334155;color:#e2e8f0;}
+.adapt-opt.correct{border-color:#22c55e;background:rgba(5,150,105,.13);color:#86efac;}
+.adapt-opt.wrong{border-color:#ef4444;background:rgba(220,38,38,.09);color:#fca5a5;}
+.adapt-diff{display:flex;align-items:center;gap:.35rem;margin:.45rem 0;font-size:.7rem;color:#64748b;}
+.diff-dot{width:7px;height:7px;border-radius:50%;background:#1e3a4a;}
+.diff-dot.on{background:#f59e0b;}
+/* fraud */
+.fraud-row{display:flex;align-items:center;gap:.45rem;margin:.28rem 0;}
+.fraud-lbl{font-size:.7rem;color:#94a3b8;min-width:80px;}
+.fraud-val{font-size:.7rem;font-weight:700;color:#7dd3fc;font-family:'Fira Code',monospace;min-width:60px;text-align:right;}
+.fraud-big{text-align:center;padding:.6rem;background:#071929;border-radius:7px;margin:.4rem 0;}
+.fraud-big-num{font-size:1.9rem;font-weight:900;line-height:1;}
+.fraud-big-lbl{font-size:.68rem;color:#64748b;margin-top:2px;}
+.fraud-tags{display:flex;flex-wrap:wrap;gap:.25rem;justify-content:center;margin-top:.4rem;}
+.fraud-tag{font-size:.63rem;padding:2px 6px;border-radius:9px;font-weight:600;}
+.fraud-tag.bad{background:rgba(220,38,38,.18);color:#fca5a5;border:1px solid #ef4444;}
+.fraud-tag.ok{background:#071929;color:#475569;border:1px solid #1e3a4a;}
+/* ctrl-slider in dark panel */
+.sim-panel input[type=range]{width:100%;height:4px;appearance:none;background:#1e3a4a;border-radius:2px;outline:none;cursor:pointer;flex:1;}
+.sim-panel input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--primary);cursor:pointer;}
+
+@media(max-width:540px){
+  .sitenav nav a:not(.nav-btn):not(.active){display:none;}
+  .compare-wrap{grid-template-columns:1fr;}
+  .section-badge{width:32px;height:32px;font-size:.55rem;}
+}
+  
+/* ── Lang toggle ── */
+
+/* ── Dual-language spans ── */
+.lang-ms { display: none; }
+
+.lang-toggle-btn{
+  background:rgba(255,255,255,.09);
+  border:1.5px solid rgba(255,255,255,.22);
+  color:#e2e8f0;
+  border-radius:20px;
+  padding:3px 12px;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:background .2s,border-color .2s;
+  white-space:nowrap;
+  align-self:center;
+}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);}
+
+
+.act-cta-wrap{text-align:center;padding:2.5rem 1rem 1rem;border-top:1px solid rgba(255,255,255,.08);margin-top:2.5rem;}
+.act-cta-label{font-size:.9rem;color:var(--muted,rgba(255,255,255,.5));margin-bottom:1.1rem;}
+.act-cta-btn{display:inline-flex;align-items:center;gap:.7rem;background:var(--primary);color:#fff;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;padding:.85rem 2rem;border-radius:10px;text-decoration:none;transition:filter .2s,transform .15s;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+.act-cta-btn:hover{filter:brightness(1.12);transform:translateY(-2px);}
+.act-cta-tiers{font-size:.78rem;font-weight:400;opacity:.82;letter-spacing:.02em;}
+
+.module-nav{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:2rem auto 0;max-width:900px;padding:0 max(16px,env(safe-area-inset-left,0px));}
+.module-nav .mn-card{display:block;padding:1.1rem 1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:background .2s;}
+.module-nav .mn-card:hover{background:rgba(255,255,255,.13);}
+.module-nav .mn-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.3rem;}
+.module-nav .mn-title{font-size:.97rem;font-weight:700;color:#fff;}
+.module-nav .mn-next{text-align:right;}
+
+/* ── Active student chip ── */
+#activeStudentChip{display:none;align-items:center;gap:.4rem;background:rgba(8,145,178,.18);border:1px solid rgba(8,145,178,.4);border-radius:999px;padding:.22rem .75rem .22rem .5rem;font-size:.72rem;color:#67e8f9;white-space:nowrap;max-width:180px;}
+#activeStudentChip .chip-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0;}
+#activeStudentChip .chip-name{overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+</style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+
+<!-- ── CHEVRON STRIP ── -->
+<div class="chev-strip" aria-label="UMPSA STEM Lab">
+  <span>See</span><span>Think</span><span>Explore</span><span>Marvel</span>
+</div>
+
+<!-- ── SITE NAV ── -->
+<header class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand"><em>AI</em>&nbsp;Adventure<span class="brand-sub">UMPSA STEM Lab</span></a>
+    <nav>
+      <div class="nav-drop-wrap"><button class="nav-drop-btn" id="modDropBtn">Modules <span class="arr">▾</span></button><div class="nav-drop-menu" id="modDropMenu"><a href="module-1.html" class="cur"><span class="mn">M1</span>Why AI?</a>
+<a href="module-2.html"><span class="mn">M2</span>Supervised Learning</a>
+<a href="module-3.html"><span class="mn">M3</span>Unsupervised Learning</a>
+<a href="module-4.html"><span class="mn">M4</span>Reinforcement Learning</a>
+<a href="module-5.html"><span class="mn">M5</span>Build Your Own AI</a>
+<a href="module-6.html"><span class="mn">M6</span>What's Next in AI?</a>
+<div class="sep-line"></div>
+<a href="index.html"><span class="mn">🏠</span>Home</a></div></div>
+    
+    <div id="activeStudentChip"><div class="chip-avatar" id="chipAvatar"></div><span class="chip-name" id="chipName"></span></div>
+  <button id="langToggle" class="lang-toggle-btn" onclick="setLang(document.documentElement.lang==='ms'?'en':'ms')" title="Tukar Bahasa / Switch Language">BM</button>
+</nav>
+  </div>
+</header>
+
+<!-- ── CHROME FILE:// WARNING BANNER ── -->
+<div id="chromeBanner" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:.78rem;text-align:center;padding:.45rem 1rem;line-height:1.5;">
+  ⚠️ <strong>Chrome restricts local file navigation.</strong> For the best experience, open this file in <strong>Firefox</strong> — or right-click the file → <em>Open With → Firefox</em>.
+  <button onclick="document.getElementById('chromeBanner').style.display='none'" style="margin-left:.8rem;background:rgba(255,255,255,.15);border:none;color:#fca5a5;border-radius:4px;padding:1px 8px;cursor:pointer;font-size:.78rem;">✕</button>
+</div>
+<script>
+(function(){
+  var isChrome=/Chrome/.test(navigator.userAgent)&&!/Edg|OPR|Firefox/.test(navigator.userAgent);
+  var isFile=location.protocol==='file:';
+  if(isChrome&&isFile)document.getElementById('chromeBanner').style.display='block';
+})();
+</script>
+
+<!-- ── MODULE HERO ── -->
+<section class="module-hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="mod-eyebrow">Module 1 · Why AI?</div>
+    <h1>From Rules to <em>Learning</em></h1>
+    <p class="sub"><span data-en="Discover why AI exists by exploring the limits of traditional programming — and what happens when we let computers learn from data instead." data-ms="Ketahui kenapa AI wujud dengan meneroka had pengaturcaraan tradisional — dan apa yang berlaku apabila kita biarkan komputer belajar daripada data.">Discover why AI exists by exploring the limits of traditional programming — and what happens when we let computers learn from data instead.</span></p>
+    <div class="module-meta">
+      <span class="meta-chip"><span data-en="📚 5 Sections" data-ms="📚 5 Bahagian">📚 5 Sections</span></span>
+      <span class="meta-chip">⏱ ~45 min</span>
+      <span class="meta-chip"><span data-en="🎮 Interactive" data-ms="🎮 Interaktif">🎮 Interactive</span></span>
+      <span class="meta-chip"><span data-en="🟢 Beginner" data-ms="🟢 Pemula">🟢 Beginner</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROGRESS ── -->
+<div class="prog-bar-wrap">
+  <div class="prog-bar-inner">
+    <span class="prog-label"><span data-en="Progress" data-ms="Kemajuan">Progress</span></span>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <span class="prog-pct" id="progPct">0%</span>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main>
+  <div class="wrap">
+
+    <!-- 1.1 WHAT IS AI? — SEE -->
+    <div class="mod-section reveal" id="sec1">
+      <div class="mod-section-header" onclick="toggleSec('sec1')">
+        <div class="section-badge badge-see">SEE</div>
+        <div class="section-header-text">
+          <h2><span data-en="1.1 — What Is AI?" data-ms="1.1 — Apakah AI?">1.1 — What Is AI?</span></h2>
+          <p><span data-en="Intelligent machines — myth vs. reality" data-ms="Mesin pintar — mitos lwn. realiti">Intelligent machines — myth vs. reality</span></p>
+        </div>
+        <div class="sec-meta">
+          <span class="sec-time">⏱ 8 min</span>
+          <span class="sec-status" id="st1">○</span>
+        </div>
+        <svg class="sec-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </div>
+      <div class="mod-section-body">
+        <div class="concept-card"><span class="lang-en"><strong>Artificial Intelligence (AI)</strong> is the field of making computers perform tasks that would normally require human intelligence — recognising faces, understanding speech, or making decisions. <em>AI is not magic</em>, and computers are not truly "thinking." They are recognising patterns in data, extremely fast.</span><span class="lang-ms"><strong>Kecerdasan Buatan (AI)</strong> ialah bidang yang menjadikan komputer melaksanakan tugas yang biasanya memerlukan kecerdasan manusia — mengenali wajah, memahami percakapan, atau membuat keputusan. <em>AI bukan sihir</em>, dan komputer tidak benar-benar "berfikir." Mereka mengenali corak dalam data, dengan sangat pantas.</span></div>
+        <div class="section-label">👇 Click each example to try a live AI simulation</div>
+        <div class="sim-acc" id="acc1">
+          <!-- Face Unlock -->
+          <div class="sim-acc-item" id="sa-face">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-face')">
+              <span class="sim-acc-icon">📸</span>
+              <div class="sim-acc-title">Face Unlock <span class="sim-acc-sub">— pattern matching</span></div>
+              <span class="sim-acc-tag">Vision AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI extracts ~128 face features (eye spacing, nose length, jaw angle…) and compares them to a stored pattern. Try different people!</span><span class="lang-ms">AI mengekstrak ~128 ciri wajah (jarak mata, panjang hidung, sudut rahang…) dan membandingkannya dengan corak tersimpan. Cuba orang yang berbeza!</span></p>
+              <div class="sim-panel">
+                <div class="sim-btn-row">
+                  <button class="sim-smbtn" onclick="runFaceSim('you')">😊 Your face</button>
+                  <button class="sim-smbtn" onclick="runFaceSim('sibling')">😁 Sibling</button>
+                  <button class="sim-smbtn" onclick="runFaceSim('stranger')">😐 Stranger</button>
+                </div>
+                <canvas id="faceCanvas" height="110" style="width:100%;border-radius:6px;background:#030d17;display:block;"></canvas>
+                <div id="faceResult" style="text-align:center;padding:.35rem;font-size:.75rem;color:#94a3b8;margin-top:.25rem;">← Pick a face to test</div>
+              </div>
+            </div>
+          </div>
+          <!-- Song Recommendations -->
+          <div class="sim-acc-item" id="sa-song">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-song')">
+              <span class="sim-acc-icon">🎵</span>
+              <div class="sim-acc-title">Song Recommendations <span class="sim-acc-sub">— similarity search</span></div>
+              <span class="sim-acc-tag">RecSys</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI learns your taste by comparing song features: tempo, energy, mood. 👍 Like 2–3 songs and watch it recommend similar ones!</span><span class="lang-ms">AI mempelajari citarasa anda dengan membandingkan ciri lagu: tempo, tenaga, mood. 👍 Suka 2–3 lagu dan tengok ia mengesyorkan yang serupa!</span></p>
+              <div class="sim-panel">
+                <div style="font-size:.7rem;color:#94a3b8;margin-bottom:.3rem;">👍 Tap songs you like:</div>
+                <div class="prod-grid" id="songGrid"></div>
+                <div id="songRecs" style="display:none;margin-top:.5rem;">
+                  <div style="font-size:.7rem;color:#f59e0b;font-weight:700;margin-bottom:.28rem;">⭐ You might also like:</div>
+                  <div class="prod-grid" id="songRecGrid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Spam Filter -->
+          <div class="sim-acc-item" id="sa-spam">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-spam')">
+              <span class="sim-acc-icon">📧</span>
+              <div class="sim-acc-title">Spam Filter <span class="sim-acc-sub">— text classification</span></div>
+              <span class="sim-acc-tag">NLP</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI scans email text for suspicious patterns — spam words light up in red. Try the examples or type your own subject line!</span><span class="lang-ms">AI mengimbas teks e-mel untuk corak mencurigakan — perkataan spam menyala merah. Cuba contoh atau taip baris subjek anda sendiri!</span></p>
+              <div class="sim-panel">
+                <div class="sim-btn-row">
+                  <button class="sim-smbtn" onclick="testSpam('WIN a FREE iPhone NOW!!! Click here to claim')">🔴 Spam</button>
+                  <button class="sim-smbtn" onclick="testSpam('Meeting notes from today standup agenda attached')">🟢 Legit</button>
+                  <button class="sim-smbtn" onclick="testSpam('URGENT your account COMPROMISED verify password NOW')">🔴 Spam 2</button>
+                  <button class="sim-smbtn" onclick="testSpam('Assignment 3 feedback please check submission portal')">🟢 Legit 2</button>
+                </div>
+                <input type="text" class="sim-input" id="spamInput" placeholder="Type an email subject…" oninput="testSpam()">
+                <div class="sim-tag-row" id="spamHighlighted"></div>
+                <div class="sim-score-row">
+                  <span class="sim-score-lbl">Spam score:</span>
+                  <div class="sim-score-track"><div class="sim-score-fill" id="spamBar" style="width:0%;background:#22c55e;"></div></div>
+                  <span class="sim-score-val" id="spamScore">0%</span>
+                </div>
+                <div class="sim-verdict" id="spamVerdict"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Navigation -->
+          <div class="sim-acc-item" id="sa-nav">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-nav')">
+              <span class="sim-acc-icon">🗺️</span>
+              <div class="sim-acc-title">Navigation <span class="sim-acc-sub">— route optimisation</span></div>
+              <span class="sim-acc-tag">Graph AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI finds the shortest path from 🟢 Start to 🔴 End. Click any cell to add a 🚧 traffic block — watch it instantly reroute!</span><span class="lang-ms">AI mencari laluan terpendek dari 🟢 Mula ke 🔴 Tamat. Klik mana-mana sel untuk menambah 🚧 halangan trafik — tengok ia terus cari laluan baru!</span></p>
+              <div class="sim-panel">
+                <canvas id="navCanvas" height="180" style="width:100%;border-radius:6px;display:block;cursor:pointer;"></canvas>
+                <div style="display:flex;gap:.4rem;margin-top:.35rem;align-items:center;flex-wrap:wrap;">
+                  <button class="sim-smbtn" onclick="resetNav()">🔄 Reset</button>
+                  <span style="font-size:.67rem;color:#475569;">Click cells to add/remove traffic blocks</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Medical Scan -->
+          <div class="sim-acc-item" id="sa-med">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-med')">
+              <span class="sim-acc-icon">🏥</span>
+              <div class="sim-acc-title">Medical Scans <span class="sim-acc-sub">— anomaly detection</span></div>
+              <span class="sim-acc-tag">Vision AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI scans an X-ray pixel by pixel, comparing regions to thousands of training images. Watch it find an anomaly in real time!</span><span class="lang-ms">AI mengimbas X-ray piksel demi piksel, membandingkan kawasan dengan ribuan imej latihan. Tengok ia mengesan anomali dalam masa nyata!</span></p>
+              <div class="sim-panel">
+                <canvas id="medCanvas" height="150" style="width:100%;border-radius:6px;display:block;background:#030d17;"></canvas>
+                <div style="display:flex;gap:.4rem;margin-top:.35rem;align-items:center;">
+                  <button class="sim-smbtn" onclick="runMedScan()">▶ Run AI Scan</button>
+                  <span class="sim-score-val" id="medResult" style="color:#94a3b8;font-size:.72rem;">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Voice Assistant -->
+          <div class="sim-acc-item" id="sa-voice">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-voice')">
+              <span class="sim-acc-icon">🤖</span>
+              <div class="sim-acc-title">Voice Assistants <span class="sim-acc-sub">— NLP pipeline</span></div>
+              <span class="sim-acc-tag">NLP</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI breaks your words into steps: tokenise → understand intent → generate response. Try a command!</span><span class="lang-ms">AI memecahkan perkataan anda kepada langkah-langkah: tokenkan → faham niat → jana respons. Cuba satu arahan!</span></p>
+              <div class="sim-panel">
+                <div class="sim-btn-row">
+                  <button class="sim-smbtn" onclick="processVoice('What is the weather today')">What is the weather?</button>
+                  <button class="sim-smbtn" onclick="processVoice('Set a timer for 5 minutes')">Set a timer</button>
+                  <button class="sim-smbtn" onclick="processVoice('Play some relaxing music')">Play music</button>
+                  <button class="sim-smbtn" onclick="processVoice('Translate hello to Malay')">Translate</button>
+                </div>
+                <input type="text" class="sim-input" id="voiceInput" placeholder="Or type a command…" oninput="processVoice(this.value)">
+                <div id="voiceSteps" style="margin-top:.4rem;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="takeaway"><strong>Key Takeaway</strong><span class="lang-en">AI is a collection of techniques for making computers learn patterns from data and use those patterns to make decisions or predictions.</span><span class="lang-ms">AI ialah koleksi teknik untuk menjadikan komputer belajar corak daripada data dan menggunakan corak tersebut untuk membuat keputusan atau ramalan.</span></div>
+        <button class="got-it-btn" onclick="markDone('sec1','st1',1)"><span data-en="Got it! ✓" data-ms="Faham! ✓">Got it! ✓</span></button>
+      </div>
+    </div>
+
+    <!-- 1.2 PROGRAMMING & AUTOMATION — THINK -->
+    <div class="mod-section reveal" id="sec2">
+      <div class="mod-section-header" onclick="toggleSec('sec2')">
+        <div class="section-badge badge-think">THINK</div>
+        <div class="section-header-text">
+          <h2><span data-en="1.2 — Programming and Automation" data-ms="1.2 — Pengaturcaraan dan Automasi">1.2 — Programming and Automation</span></h2>
+          <p><span data-en="Rules, thermostats, and the limits of if-then logic" data-ms="Peraturan, termostat, dan had logik jika-maka">Rules, thermostats, and the limits of if-then logic</span></p>
+        </div>
+        <div class="sec-meta">
+          <span class="sec-time">⏱ 10 min</span>
+          <span class="sec-status" id="st2">○</span>
+        </div>
+        <svg class="sec-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </div>
+      <div class="mod-section-body">
+        <div class="concept-card"><span class="lang-en">Traditional programming works by <strong>writing explicit rules</strong>. A programmer reads the problem, understands the logic, and translates it into code. The computer follows those rules exactly — it cannot adapt if the world changes.</span><span class="lang-ms">Pengaturcaraan tradisional berfungsi dengan <strong>menulis peraturan eksplisit</strong>. Pengaturcara membaca masalah, memahami logik, dan menerjemahkannya ke dalam kod. Komputer mengikut peraturan tersebut tepat-tepat — ia tidak boleh menyesuaikan diri jika dunia berubah.</span></div>
+        <div class="section-label">🌡️ Try it: Rule-based temperature controller</div>
+        <div class="sim-wrap">
+          <canvas id="pidCanvas" class="sim-canvas" height="200"></canvas>
+          <div class="sim-controls">
+            <span class="ctrl-label">Threshold (°C):</span>
+            <input type="range" class="ctrl-slider" id="pidThresh" min="18" max="30" value="24" oninput="updatePidThresh()">
+            <span class="ctrl-val" id="pidThreshVal">24°C</span>
+            <span style="margin-left:auto;font-size:.72rem;color:#64748b;">Click room to add heat 🔥</span>
+          </div>
+        </div>
+        <div class="concept-card" style="margin-top:.75rem;">
+          Notice how the rule <code>if temp &gt; threshold → AC on</code> causes oscillation. And when conditions change, the rule doesn't adapt — it still just checks the threshold. A human would notice and adjust. The rule cannot.
+        </div>
+        <div class="takeaway"><strong>Key Takeaway</strong><span class="lang-en">Rule-based programming is powerful for predictable, well-defined problems. When the environment is complex and changing, hand-written rules become fragile and impossible to maintain.</span><span class="lang-ms">Pengaturcaraan berasaskan peraturan berkuasa untuk masalah yang boleh diramal dan ditakrifkan dengan baik. Apabila persekitaran menjadi kompleks dan berubah, peraturan tulisan tangan menjadi rapuh dan mustahil untuk diselenggara.</span></div>
+        <button class="got-it-btn" onclick="markDone('sec2','st2',2)"><span data-en="Got it! ✓" data-ms="Faham! ✓">Got it! ✓</span></button>
+      </div>
+    </div>
+
+    <!-- 1.3 WHAT ML ADDS — EXPLORE -->
+    <div class="mod-section reveal" id="sec3">
+      <div class="mod-section-header" onclick="toggleSec('sec3')">
+        <div class="section-badge badge-exp">EXP</div>
+        <div class="section-header-text">
+          <h2><span data-en="1.3 — What Machine Learning Adds ⭐" data-ms="1.3 — Apa yang Pembelajaran Mesin Tambah ⭐">1.3 — What Machine Learning Adds ⭐</span></h2>
+          <p><span data-en="Teaching a computer with examples instead of rules" data-ms="Mengajar komputer dengan contoh berbanding peraturan">Teaching a computer with examples instead of rules</span></p>
+        </div>
+        <div class="sec-meta">
+          <span class="sec-time">⏱ 15 min</span>
+          <span class="sec-status" id="st3">○</span>
+        </div>
+        <svg class="sec-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </div>
+      <div class="mod-section-body">
+        <div class="concept-card"><span class="lang-en">Machine learning flips the process: instead of <em>writing rules</em>, you <em>show examples</em>. The computer looks at enough labelled examples and figures out the pattern itself. Let's explore this — can a computer learn to tell an Ayam from an Itik?</span><span class="lang-ms">Pembelajaran mesin membalikkan proses: bukannya <em>menulis peraturan</em>, anda <em>menunjukkan contoh</em>. Komputer melihat cukup banyak contoh berlabel dan mencari coraknya sendiri. Mari terokai ini — bolehkah komputer belajar membezakan Ayam daripada Itik?</span></div>
+        <div class="section-label">🐔 vs 🦆 Classifier — Switch between modes</div>
+        <div class="mode-toggle-wrap">
+          <button class="mode-btn active-rule" id="btnRule" onclick="setMode('rule')">📏 Rule-Based</button>
+          <button class="mode-btn" id="btnML" onclick="setMode('ml')">🧠 Machine Learning</button>
+        </div>
+        <div id="rulePanel">
+          <div class="concept-card" style="background:rgba(245,158,11,.07);border-left-color:#F59E0B;">
+            <strong>Rule-Based mode:</strong> You write the rule. Drag the threshold to classify birds by <em>foot webbing score</em>. Watch how many are correctly classified — and notice the mistakes.
+          </div>
+          <div class="sim-wrap">
+            <canvas id="ruleCanvas" class="sim-canvas" height="260"></canvas>
+            <div class="bird-ctrl-row">
+              <span class="ctrl-label">Webbing threshold:</span>
+              <input type="range" class="ctrl-slider" id="ruleThresh" min="1" max="9" value="5" step="0.1" oninput="drawRuleSim()">
+              <span class="ctrl-val" id="ruleThreshVal">5.0</span>
+              <span style="font-size:.72rem;color:#64748b;margin-left:auto;" id="ruleScore"></span>
+            </div>
+          </div>
+        </div>
+        <div id="mlPanel" style="display:none;">
+          <div class="concept-card" style="background:rgba(8,145,178,.07);border-left-color:#0891B2;">
+            <strong>ML mode:</strong> The computer learns from labelled examples using <em>both</em> foot webbing AND beak shape. Add more examples, then test a mystery bird!
+          </div>
+          <div class="sim-wrap">
+            <canvas id="mlCanvas" class="sim-canvas" height="260"></canvas>
+            <div class="bird-ctrl-row">
+              <button onclick="addExample('ayam')" style="background:#92400e;color:#fff;border:none;padding:5px 12px;border-radius:20px;font-family:Poppins,sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;">+ Ayam 🐔</button>
+              <button onclick="addExample('itik')" style="background:#0e7490;color:#fff;border:none;padding:5px 12px;border-radius:20px;font-family:Poppins,sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;">+ Itik 🦆</button>
+              <button onclick="resetML()" style="background:#334155;color:#fff;border:none;padding:5px 12px;border-radius:20px;font-family:Poppins,sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;">Reset</button>
+              <span style="font-size:.7rem;color:#64748b;margin-left:auto;" id="mlCount"></span>
+            </div>
+            <div class="bird-test-row">
+              <div class="test-bird-title">🔍 Test a mystery bird — adjust its features:</div>
+              <div class="test-bird-sliders">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="ctrl-label">Foot Webbing:</span>
+                  <input type="range" class="ctrl-slider" id="testWeb" min="1" max="9" value="5" step="0.5" oninput="classifyTest()">
+                  <span class="ctrl-val" id="testWebVal">5.0</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="ctrl-label">Beak Flatness:</span>
+                  <input type="range" class="ctrl-slider" id="testBeak" min="1" max="9" value="5" step="0.5" oninput="classifyTest()">
+                  <span class="ctrl-val" id="testBeakVal">5.0</span>
+                </div>
+              </div>
+              <div class="test-result-area">
+                <span class="test-result-label">Prediction:</span>
+                <span class="test-result-val" id="testResultVal">—</span>
+                <span class="test-result-conf" id="testConf"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="takeaway"><strong>Key Takeaway</strong><span class="lang-en">Machine learning doesn't need hand-written rules. It finds patterns in labelled data. The more examples you provide, the better — and it can automatically use features a human might not think to include.</span><span class="lang-ms">Pembelajaran mesin tidak memerlukan peraturan tulisan tangan. Ia mencari corak dalam data berlabel. Lebih banyak contoh yang anda berikan, lebih baik — dan ia boleh menggunakan ciri-ciri yang mungkin tidak terfikir oleh manusia.</span></div>
+        <button class="got-it-btn" onclick="markDone('sec3','st3',3)"><span data-en="Got it! ✓" data-ms="Faham! ✓">Got it! ✓</span></button>
+      </div>
+    </div>
+
+    <!-- 1.4 AI IN EVERYDAY LIFE — SEE -->
+    <div class="mod-section reveal" id="sec4">
+      <div class="mod-section-header" onclick="toggleSec('sec4')">
+        <div class="section-badge badge-see">SEE</div>
+        <div class="section-header-text">
+          <h2><span data-en="1.4 — AI in Everyday Life" data-ms="1.4 — AI dalam Kehidupan Seharian">1.4 — AI in Everyday Life</span></h2>
+          <p><span data-en="Where ML is already making decisions around you" data-ms="Di mana PM sudah membuat keputusan di sekeliling anda">Where ML is already making decisions around you</span></p>
+        </div>
+        <div class="sec-meta">
+          <span class="sec-time">⏱ 8 min</span>
+          <span class="sec-status" id="st4">○</span>
+        </div>
+        <svg class="sec-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </div>
+      <div class="mod-section-body">
+        <div class="concept-card"><span class="lang-en">AI is already embedded in the tools you use every day — often invisibly. Every time a platform recommends something, flags something suspicious, or personalises your experience, <em>a trained model made that decision</em>.</span><span class="lang-ms">AI sudah tertanam dalam alatan yang anda gunakan setiap hari — selalunya secara tidak kelihatan. Setiap kali platform mengesyorkan sesuatu, menandakan sesuatu yang mencurigakan, atau memperibadikan pengalaman anda, <em>model terlatih yang membuat keputusan itu</em>.</span></div>
+        <div class="section-label">👇 Click each industry to try a live simulation</div>
+        <div class="sim-acc" id="acc4">
+          <!-- Healthcare -->
+          <div class="sim-acc-item" id="sa-health">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-health')">
+              <span class="sim-acc-icon">🏥</span>
+              <div class="sim-acc-title">Healthcare <span class="sim-acc-sub">— symptom analysis</span></div>
+              <span class="sim-acc-tag">Diagnosis AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI analyses symptom combinations to flag potential conditions. Check any symptoms and watch the risk scores update live.</span><span class="lang-ms">AI menganalisis kombinasi gejala untuk menandakan keadaan yang mungkin. Tandakan mana-mana gejala dan tengok skor risiko dikemas kini secara langsung.</span></p>
+              <div class="sim-panel">
+                <div class="symptom-list" id="symptomList"></div>
+                <div id="condBars" style="margin-top:.4rem;"></div>
+                <div style="font-size:.62rem;color:#475569;margin-top:.35rem;">⚠️ Demo only — not medical advice</div>
+              </div>
+            </div>
+          </div>
+          <!-- Transport -->
+          <div class="sim-acc-item" id="sa-transport">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-transport')">
+              <span class="sim-acc-icon">🚗</span>
+              <div class="sim-acc-title">Transport <span class="sim-acc-sub">— real-time rerouting</span></div>
+              <span class="sim-acc-tag">Routing AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">Just like Waze or Google Maps — add traffic jams and watch AI instantly find a new route! Click cells to block roads.</span><span class="lang-ms">Seperti Waze atau Google Maps — tambah kesesakan lalu lintas dan tengok AI cari laluan baru dengan serta-merta! Klik sel untuk sekat jalan.</span></p>
+              <div class="sim-panel">
+                <canvas id="nav2Canvas" height="170" style="width:100%;border-radius:6px;display:block;cursor:pointer;"></canvas>
+                <div style="display:flex;gap:.4rem;margin-top:.35rem;">
+                  <button class="sim-smbtn" onclick="resetNav2()">🔄 Reset</button>
+                  <span style="font-size:.67rem;color:#475569;">Click to add/remove traffic 🚧</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Retail -->
+          <div class="sim-acc-item" id="sa-retail">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-retail')">
+              <span class="sim-acc-icon">🛒</span>
+              <div class="sim-acc-title">Retail <span class="sim-acc-sub">— product recommendations</span></div>
+              <span class="sim-acc-tag">RecSys</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI recommends products based on similar shoppers' choices. 👍 Like a few items and see what it suggests next!</span><span class="lang-ms">AI mengesyorkan produk berdasarkan pilihan pembeli serupa. 👍 Suka beberapa item dan lihat apa yang dicadangkan seterusnya!</span></p>
+              <div class="sim-panel">
+                <div style="font-size:.7rem;color:#94a3b8;margin-bottom:.28rem;">👍 Tap products you like:</div>
+                <div class="prod-grid" id="retailGrid"></div>
+                <div id="retailRecs" style="display:none;margin-top:.5rem;">
+                  <div style="font-size:.7rem;color:#f59e0b;font-weight:700;margin-bottom:.28rem;">⭐ Customers who liked those also bought:</div>
+                  <div class="prod-grid" id="retailRecGrid"></div>
+                </div>
+                <button class="sim-smbtn" onclick="resetRetail()" style="margin-top:.35rem;">🔄 Reset</button>
+              </div>
+            </div>
+          </div>
+          <!-- Agriculture -->
+          <div class="sim-acc-item" id="sa-agri">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-agri')">
+              <span class="sim-acc-icon">🌾</span>
+              <div class="sim-acc-title">Agriculture <span class="sim-acc-sub">— crop health AI</span></div>
+              <span class="sim-acc-tag">Vision AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">A drone AI scans a rice field and classifies each plant's health using image recognition. Click any plant to see its diagnosis!</span><span class="lang-ms">AI dron mengimbas sawah padi dan mengklasifikasikan kesihatan setiap pokok menggunakan pengecaman imej. Klik mana-mana pokok untuk lihat diagnosisnya!</span></p>
+              <div class="sim-panel">
+                <div class="plant-grid" id="plantGrid"></div>
+                <div id="plantDiag" style="font-size:.75rem;color:#94a3b8;margin-top:.35rem;padding:.35rem .5rem;background:#030d17;border-radius:5px;min-height:28px;"></div>
+                <button class="sim-smbtn" onclick="resetPlants()" style="margin-top:.35rem;">🔄 New field</button>
+              </div>
+            </div>
+          </div>
+          <!-- Education -->
+          <div class="sim-acc-item" id="sa-edu">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-edu')">
+              <span class="sim-acc-icon">🎓</span>
+              <div class="sim-acc-title">Education <span class="sim-acc-sub">— adaptive learning</span></div>
+              <span class="sim-acc-tag">Adaptive AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI adjusts question difficulty based on your answers. Get it right → harder. Get it wrong → easier. Answer 4 questions and watch the level change!</span><span class="lang-ms">AI menyesuaikan kesukaran soalan berdasarkan jawapan anda. Betul → lebih susah. Salah → lebih mudah. Jawab 4 soalan dan tengok tahap berubah!</span></p>
+              <div class="sim-panel" id="adaptPanel"></div>
+            </div>
+          </div>
+          <!-- Finance -->
+          <div class="sim-acc-item" id="sa-finance">
+            <div class="sim-acc-header" onclick="toggleSimAcc('sa-finance')">
+              <span class="sim-acc-icon">💰</span>
+              <div class="sim-acc-title">Finance <span class="sim-acc-sub">— fraud detection</span></div>
+              <span class="sim-acc-tag">Anomaly AI</span>
+              <svg class="sim-acc-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+            </div>
+            <div class="sim-acc-body">
+              <p class="sim-note"><span class="lang-en">AI compares every transaction against your usual patterns. Slide the values and see how unusual combinations trigger a fraud alert!</span><span class="lang-ms">AI membandingkan setiap transaksi dengan corak biasa anda. Gelangsar nilai dan lihat bagaimana kombinasi luar biasa mencetuskan amaran penipuan!</span></p>
+              <div class="sim-panel">
+                <div class="fraud-row"><span class="fraud-lbl">Amount (RM):</span><input type="range" min="1" max="10000" value="50" id="fraudAmt" oninput="updateFraud()"><span class="fraud-val" id="fraudAmtV">RM 50</span></div>
+                <div class="fraud-row"><span class="fraud-lbl">Hour of day:</span><input type="range" min="0" max="23" value="14" id="fraudTime" oninput="updateFraud()"><span class="fraud-val" id="fraudTimeV">2:00 PM</span></div>
+                <div class="fraud-row"><span class="fraud-lbl">Location risk:</span><input type="range" min="0" max="100" value="10" id="fraudLoc" oninput="updateFraud()"><span class="fraud-val" id="fraudLocV">Local</span></div>
+                <div class="fraud-row"><span class="fraud-lbl">Txn/hour:</span><input type="range" min="1" max="10" value="1" id="fraudVel" oninput="updateFraud()"><span class="fraud-val" id="fraudVelV">1</span></div>
+                <div class="fraud-big" id="fraudBig">
+                  <div class="fraud-big-num" id="fraudNum" style="color:#22c55e;">12%</div>
+                  <div class="fraud-big-lbl">Fraud Probability</div>
+                </div>
+                <div class="fraud-tags" id="fraudTags"></div>
+                <div id="fraudVerdict" style="text-align:center;font-size:.72rem;font-weight:700;margin-top:.4rem;color:#22c55e;">✅ Transaction approved</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="takeaway"><strong>Key Takeaway</strong><span class="lang-en">You interact with AI dozens of times a day. Understanding how it works gives you the power to use it wisely — and to notice when it might be wrong.</span><span class="lang-ms">Anda berinteraksi dengan AI berpuluh kali sehari. Memahami cara ia berfungsi memberi anda kuasa untuk menggunakannya dengan bijak — dan untuk perasan apabila ia mungkin salah.</span></div>
+        <button class="got-it-btn" onclick="markDone('sec4','st4',4)"><span data-en="Got it! ✓" data-ms="Faham! ✓">Got it! ✓</span></button>
+      </div>
+    </div>
+
+    <!-- 1.5 AI VS HUMAN — MARVEL -->
+    <div class="mod-section reveal" id="sec5">
+      <div class="mod-section-header" onclick="toggleSec('sec5')">
+        <div class="section-badge badge-marv">MARV</div>
+        <div class="section-header-text">
+          <h2><span data-en="1.5 — AI vs. Human Intelligence" data-ms="1.5 — AI lwn. Kecerdasan Manusia">1.5 — AI vs. Human Intelligence</span></h2>
+          <p><span data-en="What computers do better — and what they still can't" data-ms="Apa yang komputer lakukan dengan lebih baik — dan apa yang masih tidak boleh">What computers do better — and what they still can't</span></p>
+        </div>
+        <div class="sec-meta">
+          <span class="sec-time">⏱ 8 min</span>
+          <span class="sec-status" id="st5">○</span>
+        </div>
+        <svg class="sec-chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      </div>
+      <div class="mod-section-body">
+        <div class="concept-card"><span class="lang-en">AI is not "smarter" than humans — it's <em>differently capable</em>. Understanding where each excels helps you decide when to trust an AI system, when to question it, and when human judgement is irreplaceable.</span><span class="lang-ms">AI tidak "lebih bijak" daripada manusia — ia <em>mempunyai keupayaan yang berbeza</em>. Memahami di mana setiap satu cemerlang membantu anda memutuskan bila untuk mempercayai sistem AI, bila untuk meraguinya, dan bila pertimbangan manusia tidak boleh digantikan.</span></div>
+        <div class="compare-wrap">
+          <div class="compare-col human">
+            <h3>🧠 Humans excel at…</h3>
+            <div class="compare-item"><span class="ci-icon">💡</span> Common sense reasoning</div>
+            <div class="compare-item"><span class="ci-icon">🎨</span> True creativity &amp; originality</div>
+            <div class="compare-item"><span class="ci-icon">🤝</span> Empathy &amp; social nuance</div>
+            <div class="compare-item"><span class="ci-icon">🌍</span> Adapting to new contexts</div>
+            <div class="compare-item"><span class="ci-icon">⚖️</span> Moral &amp; ethical judgement</div>
+            <div class="compare-item"><span class="ci-icon">📖</span> Learning from 1–2 examples</div>
+          </div>
+          <div class="compare-col ai">
+            <h3>🤖 AI excels at…</h3>
+            <div class="compare-item"><span class="ci-icon">⚡</span> Processing huge datasets fast</div>
+            <div class="compare-item"><span class="ci-icon">🔁</span> Consistent, tireless repetition</div>
+            <div class="compare-item"><span class="ci-icon">📊</span> Spotting patterns in noise</div>
+            <div class="compare-item"><span class="ci-icon">🌐</span> Scaling to millions of users</div>
+            <div class="compare-item"><span class="ci-icon">🔬</span> Precision in trained domains</div>
+            <div class="compare-item"><span class="ci-icon">💾</span> Never forgetting training data</div>
+          </div>
+        </div>
+        <div class="sim-wrap">
+          <canvas id="compCanvas" class="sim-canvas" height="190"></canvas>
+        </div>
+        <div class="takeaway"><strong>Key Takeaway</strong><span class="lang-en">The best outcomes happen when humans and AI work together — AI handles the scale and pattern recognition, humans handle the judgement, ethics, and creativity.</span><span class="lang-ms">Hasil terbaik berlaku apabila manusia dan AI bekerjasama — AI mengendalikan skala dan pengecaman corak, manusia mengendalikan pertimbangan, etika, dan kreativiti.</span></div>
+        <button class="got-it-btn" onclick="markDone('sec5','st5',5)"><span data-en="Got it! ✓" data-ms="Faham! ✓">Got it! ✓</span></button>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="quiz-wrap reveal" id="quizSection">
+      <div class="quiz-header">
+        <div>
+          <h2><span data-en="Module 1 Check-In" data-ms="Semakan Modul 1">Module 1 Check-In</span></h2>
+          <p style="font-size:.8rem;color:var(--muted);margin-top:2px;"><span class="lang-en">5 quick questions to consolidate your understanding</span><span class="lang-ms">5 soalan pantas untuk mengukuhkan pemahaman anda</span></p>
+        </div>
+        <span class="quiz-badge"><span data-en="Quiz" data-ms="Kuiz">Quiz</span></span>
+      </div>
+      <div id="quizBody"></div>
+      <div class="quiz-score" id="quizScore"></div>
+    </div>
+
+  </div><!-- .wrap -->
+
+  <!-- ── ACTIVITY CTA ── -->
+  <div class="act-cta-wrap">
+    <p class="act-cta-label"><span class="lang-en">You've covered all the concepts for Module 1. Time to apply them.</span><span class="lang-ms">Anda telah mempelajari semua konsep untuk Modul 1. Masa untuk mengaplikasikannya.</span></p>
+    <a href="activity-1.html" class="act-cta-btn">
+      <span class="lang-en">Start Activities →</span><span class="lang-ms">Mula Aktiviti →</span>
+      <span class="act-cta-tiers">Tier 1 → 2 → 3 → 4</span>
+    </a>
+  </div>
+
+<div class="module-nav">
+  <a href="index.html" class="mn-card mn-prev">
+    <div class="mn-label">Previous</div>
+    <div class="mn-title">← Home</div>
+  </a>
+  <a href="module-2.html" class="mn-card mn-next">
+    <div class="mn-label">Next</div>
+    <div class="mn-title">Module 2: ML Foundations →</div>
+  </a>
+</div>
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title"><span data-en="See · Think · Explore · Marvel" data-ms="Lihat · Fikir · Terokai · Kagumi">See · Think · Explore · Marvel</span></div>
+    <div class="footer-sub">UMPSA STEM LAB · AI Adventure</div>
+    <div class="footer-copy">
+      <span>© 2026 Nurul Hazlina Noordin · UMPSA STEM Lab Engineering Education</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research page" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </a>
+      <a href="mailto:hazlina@umpsa.edu.my" title="Email" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── HERO CANVAS ──
+(function(){
+  var c=document.getElementById('heroCanvas');
+  var ctx=c.getContext('2d');
+  var nodes=[];
+  function resize(){c.width=c.offsetWidth;c.height=c.offsetHeight;nodes=[];for(var i=0;i<Math.floor(c.width/60);i++)nodes.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+1});}
+  resize();window.addEventListener('resize',resize);
+  function loop(){
+    ctx.clearRect(0,0,c.width,c.height);
+    nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>c.width)n.vx*=-1;if(n.y<0||n.y>c.height)n.vy*=-1;});
+    for(var i=0;i<nodes.length;i++){for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.strokeStyle='rgba(8,145,178,'+(1-d/120)*.5+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();}}}
+    nodes.forEach(function(n){ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle='rgba(8,145,178,.7)';ctx.fill();});
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+// ── STATE & STORAGE ──
+var state={done:[],quiz:null};
+try{var _s=localStorage.getItem('ai_adv_m1');if(_s)state=JSON.parse(_s);}catch(e){}
+function saveState(){try{localStorage.setItem('ai_adv_m1',JSON.stringify(state));}catch(e){}}
+
+// ── SCROLL REVEAL ──
+if(window.IntersectionObserver){
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in-view');});},{threshold:.06});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+}else{document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in-view');});}
+
+// ── ACCORDION ──
+function toggleSec(id){
+  var el=document.getElementById(id);
+  var wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.mod-section').forEach(function(s){s.classList.remove('open');});
+  if(!wasOpen){el.classList.add('open');}
+  setTimeout(function(){drawPidSim();drawRuleSim();drawMLSim();drawCompSim();if(id==='sec3')classifyTest();},60);
+}
+
+// ── PROGRESS ──
+function markDone(secId,stId,secNum){
+  document.getElementById(secId).classList.add('sec-done');
+  document.getElementById(stId).textContent='✅';
+  var btn=document.getElementById(secId).querySelector('.got-it-btn');
+  if(btn){btn.textContent='Completed ✓';btn.classList.add('done-btn');btn.disabled=true;}
+  if(state.done.indexOf(secNum)<0)state.done.push(secNum);
+  saveState();updateProgress();
+}
+function updateProgress(){
+  var pct=Math.round(state.done.length/5*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progPct').textContent=pct+'%';
+}
+state.done.forEach(function(n){markDone('sec'+n,'st'+n,n);});
+updateProgress();
+
+// ══ SIMULATION ACCORDION ══
+function toggleSimAcc(id){
+  var el=document.getElementById(id);
+  var wasOpen=el.classList.contains('open');
+  el.classList.toggle('open');
+  if(!wasOpen){setTimeout(function(){initSimOnOpen(id);},80);}
+}
+function initSimOnOpen(id){
+  if(id==='sa-face')runFaceSim('you');
+  if(id==='sa-song')initSongGrid();
+  if(id==='sa-nav')initNav();
+  if(id==='sa-med')setTimeout(runMedScan,350);
+  if(id==='sa-health')initSymptoms();
+  if(id==='sa-transport')initNav2();
+  if(id==='sa-retail')initRetail();
+  if(id==='sa-agri')initPlants();
+  if(id==='sa-edu')initAdaptive();
+  if(id==='sa-finance')updateFraud();
+}
+
+// ── FACE UNLOCK ──
+function runFaceSim(who){
+  var c=document.getElementById('faceCanvas');if(!c)return;
+  c.width=c.offsetWidth;c.height=110;
+  var ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
+  var ref=[.62,.58,.78,.45,.71,.82,.55,.69,.74,.61];
+  var faces={you:[.63,.57,.77,.46,.72,.81,.54,.70,.75,.62],sibling:[.60,.60,.74,.48,.68,.79,.57,.67,.72,.65],stranger:[.40,.75,.55,.62,.48,.95,.82,.42,.58,.38]};
+  var test=faces[who]||faces.you;
+  var dot=0,ra=0,ta=0;
+  for(var i=0;i<ref.length;i++){dot+=ref[i]*test[i];ra+=ref[i]*ref[i];ta+=test[i]*test[i];}
+  var pct=Math.round(dot/Math.sqrt(ra*ta)*100);
+  var W=c.width,H=110,bw=(W/2-14)/ref.length;
+  ctx.font='bold 8px Poppins,sans-serif';ctx.textAlign='left';
+  ctx.fillStyle='#475569';ctx.fillText('Stored face',8,12);
+  ref.forEach(function(v,i){var x=8+i*bw,bh=v*60;ctx.fillStyle='#0891B2';ctx.fillRect(x,82-bh,bw-2,bh);});
+  ctx.fillStyle='#475569';ctx.fillText('Testing: '+who,W/2+8,12);
+  test.forEach(function(v,i){var x=W/2+8+i*bw,bh=v*60;ctx.fillStyle='#F59E0B';ctx.fillRect(x,82-bh,bw-2,bh);});
+  ctx.strokeStyle='#1e3a4a';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,88);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#071929';ctx.fillRect(8,H-18,W-16,12);
+  ctx.fillStyle=pct>85?'#22c55e':pct>70?'#f59e0b':'#ef4444';
+  ctx.fillRect(8,H-18,(W-16)*(pct/100),12);
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 8px Poppins,sans-serif';
+  ctx.fillText('Feature match: '+pct+'%',W/2,H-9);
+  var r=document.getElementById('faceResult');
+  if(pct>85){r.textContent='✅ MATCH — Access granted ('+pct+'% confidence)';r.style.color='#22c55e';}
+  else if(pct>70){r.textContent='⚠️ Uncertain — please try again ('+pct+'%)';r.style.color='#f59e0b';}
+  else{r.textContent='🚫 No match — Access denied ('+pct+'%)';r.style.color='#ef4444';}
+}
+
+// ── SONG RECOMMENDATIONS ──
+var songs=[
+  {id:0,name:'Neon City',icon:'🌆',genre:'Electronic',energy:8,mood:6},
+  {id:1,name:'Rainy Café',icon:'☕',genre:'Lo-fi',energy:2,mood:4},
+  {id:2,name:'Bass Drop',icon:'🎧',genre:'Electronic',energy:9,mood:7},
+  {id:3,name:'Soft Petal',icon:'🌸',genre:'Lo-fi',energy:3,mood:5},
+  {id:4,name:'Power Run',icon:'🏃',genre:'Pop',energy:8,mood:8},
+  {id:5,name:'Midnight',icon:'🌙',genre:'R&B',energy:4,mood:3},
+  {id:6,name:'Fiesta',icon:'🎉',genre:'Pop',energy:9,mood:9},
+  {id:7,name:'Still Water',icon:'🏔️',genre:'Ambient',energy:1,mood:5}
+];
+var likedSongs={};
+function initSongGrid(){renderSongGrid();}
+function renderSongGrid(){
+  var g=document.getElementById('songGrid');if(!g)return;g.innerHTML='';
+  songs.forEach(function(s){
+    var d=document.createElement('div');d.className='prod-card'+(likedSongs[s.id]?' liked-p':'');
+    d.innerHTML='<div class="prod-icon">'+s.icon+'</div><div class="prod-name">'+s.name+'</div><div class="prod-cat">'+s.genre+'</div>';
+    d.onclick=function(){likedSongs[s.id]=!likedSongs[s.id];renderSongGrid();updateSongRecs();};
+    g.appendChild(d);
+  });
+}
+function updateSongRecs(){
+  var liked=songs.filter(function(s){return likedSongs[s.id];});
+  if(!liked.length){document.getElementById('songRecs').style.display='none';return;}
+  var ae=liked.reduce(function(a,s){return a+s.energy;},0)/liked.length;
+  var am=liked.reduce(function(a,s){return a+s.mood;},0)/liked.length;
+  var notL=songs.filter(function(s){return!likedSongs[s.id];});
+  notL.sort(function(a,b){return(Math.pow(a.energy-ae,2)+Math.pow(a.mood-am,2))-(Math.pow(b.energy-ae,2)+Math.pow(b.mood-am,2));});
+  var rg=document.getElementById('songRecGrid');rg.innerHTML='';
+  notL.slice(0,3).forEach(function(s){
+    var d=document.createElement('div');d.className='prod-card rec-p';
+    d.innerHTML='<div class="prod-icon">'+s.icon+'</div><div class="prod-name">'+s.name+'</div><div class="prod-cat">'+s.genre+'</div>';
+    rg.appendChild(d);
+  });
+  document.getElementById('songRecs').style.display='block';
+}
+
+// ── SPAM FILTER ──
+var spamW=['free','win','winner','click','urgent','guaranteed','prize','congratulations','offer','limited','cash','earn','money','credit','password','verify','compromised','claim'];
+function testSpam(preset){
+  if(preset!==undefined)document.getElementById('spamInput').value=preset;
+  var txt=document.getElementById('spamInput').value;
+  if(!txt){document.getElementById('spamHighlighted').innerHTML='';document.getElementById('spamVerdict').className='sim-verdict';return;}
+  var words=txt.split(/\s+/);var hits=0;var html='';
+  words.forEach(function(w){
+    var wl=w.toLowerCase().replace(/[^a-z0-9]/g,'');
+    var bad=spamW.some(function(sw){return wl===sw||wl.includes(sw);});
+    if(bad)hits++;
+    html+='<span class="sim-tag '+(bad?'spam-w':'ok-w')+'">'+w+'</span> ';
+  });
+  document.getElementById('spamHighlighted').innerHTML=html;
+  var ratio=hits/Math.max(words.length,1);
+  var score=Math.min(100,Math.round(ratio*220+(txt.includes('!!')&&txt.toUpperCase()===txt&&txt.length>5?20:0)));
+  var bar=document.getElementById('spamBar');
+  bar.style.width=score+'%';bar.style.background=score>60?'#ef4444':score>30?'#f59e0b':'#22c55e';
+  document.getElementById('spamScore').textContent=score+'%';
+  var vd=document.getElementById('spamVerdict');
+  if(score>60){vd.textContent='🚫 SPAM — moved to Junk';vd.className='sim-verdict is-spam';}
+  else if(score>30){vd.textContent='⚠️ Suspicious — flagged for review';vd.className='sim-verdict warn';}
+  else{vd.textContent='✅ Safe — delivered to Inbox';vd.className='sim-verdict not-spam';}
+}
+
+// ── NAVIGATION (BFS pathfinding) ──
+var NC=8,NR=6;
+var navWalls={},navWalls2={};
+function bfs(walls){
+  var end=NC*NR-1,prev={};prev[0]=-1;var vis={};vis[0]=true;var q=[0];
+  while(q.length){var cur=q.shift();if(cur===end)break;
+    var x=cur%NC,y=Math.floor(cur/NC),nb=[];
+    if(x>0)nb.push(cur-1);if(x<NC-1)nb.push(cur+1);
+    if(y>0)nb.push(cur-NC);if(y<NR-1)nb.push(cur+NC);
+    nb.forEach(function(n){if(!vis[n]&&!walls[n]){vis[n]=true;prev[n]=cur;q.push(n);}});
+  }
+  if(prev[end]===undefined)return null;
+  var path=[],c=end;while(c!==-1){path.unshift(c);c=prev[c];}return path;
+}
+function drawNav(cid,walls){
+  var c=document.getElementById(cid);if(!c)return;
+  var W=c.offsetWidth||280,H=parseInt(c.getAttribute('height'))||170;c.width=W;
+  var ctx=c.getContext('2d');ctx.clearRect(0,0,W,H);
+  var path=bfs(walls),ps={};if(path)path.forEach(function(p){ps[p]=true;});
+  var cw=W/NC,ch=H/NR;
+  for(var i=0;i<NC*NR;i++){
+    var x=(i%NC)*cw,y=Math.floor(i/NC)*ch;
+    var iS=i===0,iE=i===NC*NR-1;
+    if(walls[i])ctx.fillStyle='#253545';
+    else if(iS)ctx.fillStyle='#065f46';
+    else if(iE)ctx.fillStyle='#7f1d1d';
+    else if(ps[i])ctx.fillStyle='rgba(8,145,178,.35)';
+    else ctx.fillStyle='#071929';
+    ctx.fillRect(x+1,y+1,cw-2,ch-2);
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.strokeStyle='#1e3a4a';ctx.lineWidth=.5;
+    ctx.strokeRect(x+.5,y+.5,cw-1,ch-1);
+    ctx.textAlign='center';ctx.font=Math.min(cw,ch)*.5+'px serif';
+    if(iS)ctx.fillText('🟢',x+cw/2,y+ch*.7);
+    if(iE)ctx.fillText('🔴',x+cw/2,y+ch*.7);
+    if(walls[i]){ctx.font=Math.min(cw,ch)*.42+'px serif';ctx.fillText('🚧',x+cw/2,y+ch*.7);}
+    if(ps[i]&&!iS&&!iE){ctx.fillStyle='rgba(8,145,178,.75)';ctx.beginPath();ctx.arc(x+cw/2,y+ch/2,Math.min(cw,ch)*.18,0,Math.PI*2);ctx.fill();}
+  }
+  if(!path){ctx.fillStyle='rgba(220,38,38,.8)';ctx.font='bold 11px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText('❌ No route — all paths blocked!',W/2,H/2);}
+}
+function initNav(){
+  navWalls={};[9,10,17,18,33].forEach(function(i){navWalls[i]=true;});
+  drawNav('navCanvas',navWalls);
+  var c=document.getElementById('navCanvas');
+  if(c&&!c._nl){c._nl=true;c.addEventListener('click',function(e){
+    var r=c.getBoundingClientRect();
+    var col=Math.floor((e.clientX-r.left)/(c.width/NC));
+    var row=Math.floor((e.clientY-r.top)/(c.offsetHeight/NR));
+    var idx=row*NC+col;if(idx===0||idx===NC*NR-1)return;
+    navWalls[idx]=!navWalls[idx];drawNav('navCanvas',navWalls);
+  });}
+}
+function resetNav(){navWalls={};initNav();}
+function initNav2(){
+  navWalls2={};[2,3,10,26,27].forEach(function(i){navWalls2[i]=true;});
+  drawNav('nav2Canvas',navWalls2);
+  var c=document.getElementById('nav2Canvas');
+  if(c&&!c._nl){c._nl=true;c.addEventListener('click',function(e){
+    var r=c.getBoundingClientRect();
+    var col=Math.floor((e.clientX-r.left)/(c.width/NC));
+    var row=Math.floor((e.clientY-r.top)/(c.offsetHeight/NR));
+    var idx=row*NC+col;if(idx===0||idx===NC*NR-1)return;
+    navWalls2[idx]=!navWalls2[idx];drawNav('nav2Canvas',navWalls2);
+  });}
+}
+function resetNav2(){navWalls2={};initNav2();}
+
+// ── MEDICAL SCAN ──
+var medAnim=null;
+function runMedScan(){
+  var c=document.getElementById('medCanvas');if(!c)return;
+  c.width=c.offsetWidth;c.height=150;
+  var ctx=c.getContext('2d'),W=c.width,H=150;
+  cancelAnimationFrame(medAnim);
+  function drawXray(){
+    ctx.fillStyle='#030d17';ctx.fillRect(0,0,W,H);
+    for(var i=0;i<5;i++){
+      ctx.strokeStyle='rgba(180,210,240,'+(0.08+i*0.03)+')';ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.ellipse(W/2,H/2,W*.37,15+i*18,0,-Math.PI*.6,Math.PI*.6);ctx.stroke();
+    }
+    ctx.fillStyle='rgba(180,210,240,.2)';ctx.fillRect(W/2-5,8,10,H-16);
+    ctx.fillStyle='rgba(90,130,170,.07)';
+    ctx.beginPath();ctx.ellipse(W*.34,H*.5,W*.14,H*.33,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(W*.66,H*.5,W*.14,H*.33,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(170,195,220,.4)';
+    ctx.beginPath();ctx.arc(W*.63,H*.37,11,0,Math.PI*2);ctx.fill();
+  }
+  drawXray();
+  var sy=0,found=false;
+  var res=document.getElementById('medResult');res.textContent='Scanning…';res.style.color='#94a3b8';
+  function loop(){
+    drawXray();sy+=2.5;
+    ctx.fillStyle='rgba(8,145,178,.18)';ctx.fillRect(0,sy-5,W,10);
+    ctx.strokeStyle='rgba(8,145,178,.7)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(0,sy);ctx.lineTo(W,sy);ctx.stroke();
+    if(sy>H*.37-12&&sy<H*.37+12&&!found){
+      found=true;
+      ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.setLineDash([4,2]);
+      ctx.strokeRect(W*.63-18,H*.37-18,36,36);ctx.setLineDash([]);
+      ctx.fillStyle='rgba(220,38,38,.12)';ctx.fillRect(W*.63-18,H*.37-18,36,36);
+      res.textContent='⚠️ Anomaly flagged — 87% confidence';res.style.color='#f87171';
+    }
+    if(sy<H){medAnim=requestAnimationFrame(loop);}
+    else{
+      drawXray();
+      ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.setLineDash([4,2]);
+      ctx.strokeRect(W*.63-18,H*.37-18,36,36);ctx.setLineDash([]);
+      ctx.fillStyle='rgba(220,38,38,.12)';ctx.fillRect(W*.63-18,H*.37-18,36,36);
+      ctx.fillStyle='#ef4444';ctx.font='bold 7px Poppins,sans-serif';ctx.textAlign='left';
+      ctx.fillText('Anomaly?',W*.63+20,H*.37-2);ctx.fillText('87% conf',W*.63+20,H*.37+9);
+      ctx.fillStyle='#22c55e';ctx.fillText('✓ Scan complete',8,H-7);
+    }
+  }
+  loop();
+}
+
+// ── VOICE ASSISTANT ──
+var voiceDB={
+  weather:{kw:['weather','rain','temperature','forecast','hot','cold','sunny','humid'],resp:'Checking your location… ☀️ It\'s 29°C and sunny today in Kuantan!'},
+  timer:{kw:['timer','alarm','remind','minute','second','hour'],resp:'Timer set! I\'ll alert you when it\'s done ⏰'},
+  music:{kw:['play','music','song','playlist','listen','spotify'],resp:'Playing Relaxing Lo-fi Mix 🎵 on Spotify'},
+  translate:{kw:['translate','malay','bahasa','english','meaning','bahasa'],resp:'"Hello" in Bahasa Melayu → "Helo" atau "Salam" 🇲🇾'},
+  search:{kw:['what','who','how','why','search','find','explain'],resp:'Searching the web for your query… 🔍 Here\'s what I found:'}
+};
+function processVoice(cmd){
+  if(!cmd||!cmd.trim){cmd=document.getElementById('voiceInput').value||'';}
+  if(typeof cmd==='string'&&cmd){document.getElementById('voiceInput').value=cmd;}
+  var input=(cmd||'').trim();
+  if(!input){document.getElementById('voiceSteps').innerHTML='';return;}
+  var tokens=input.split(/\s+/).filter(Boolean);
+  var il=input.toLowerCase();var det=null,dk='unknown';
+  Object.keys(voiceDB).forEach(function(k){if(!det&&voiceDB[k].kw.some(function(w){return il.includes(w);})){det=voiceDB[k];dk=k;}});
+  if(!det)det={resp:'I\'m not sure what you mean. Could you rephrase? 🤔'};
+  var html='<div class="voice-step"><span class="voice-num">1</span><div class="voice-content"><span class="hl">Tokenise:</span> '
+    +tokens.map(function(t){return'<span class="hl">['+t+']</span>';}).join(' ')+'</div></div>';
+  html+='<div class="voice-step"><span class="voice-num">2</span><div class="voice-content"><span class="hl">Intent detected:</span> <b style="color:#fbbf24;">'+dk.toUpperCase()+'</b></div></div>';
+  html+='<div class="voice-step"><span class="voice-num">3</span><div class="voice-content"><span class="hl">Response:</span> <span style="color:#86efac;">'+det.resp+'</span></div></div>';
+  document.getElementById('voiceSteps').innerHTML=html;
+}
+
+// ── 1.2 PID THERMOSTAT ──
+var pidTemp=26.0,pidThreshVal=24,pidAcOn=false;
+var pidCanvas=document.getElementById('pidCanvas');
+var pidCtx=pidCanvas.getContext('2d');
+function updatePidThresh(){pidThreshVal=parseFloat(document.getElementById('pidThresh').value);document.getElementById('pidThreshVal').textContent=pidThreshVal+'°C';}
+pidCanvas.addEventListener('click',function(){pidTemp=Math.min(37,pidTemp+2.0);});
+function drawPidSim(){
+  var W=pidCanvas.offsetWidth||400,H=200;
+  if(pidCanvas.width!==W){pidCanvas.width=W;pidCanvas.height=H;}
+  var ctx=pidCtx;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#0d1b2a';ctx.fillRect(0,0,W,H);
+  if(pidTemp>pidThreshVal)pidAcOn=true;
+  else if(pidTemp<=pidThreshVal-1.0)pidAcOn=false;
+  if(pidAcOn)pidTemp=Math.max(pidThreshVal-1.5,pidTemp-0.04);
+  else pidTemp=Math.min(37,pidTemp+0.02);
+  var hx=W*.04,hy=H*.2,hw=W*.38,hh=H*.6;
+  ctx.fillStyle='#1e3a4a';ctx.fillRect(hx,hy+12,hw,hh);
+  ctx.fillStyle='#253851';ctx.beginPath();ctx.moveTo(hx-4,hy+12);ctx.lineTo(hx+hw/2,hy-14);ctx.lineTo(hx+hw+4,hy+12);ctx.closePath();ctx.fill();
+  var tx=hx+hw*.42,ty=hy+18,th=hh*.52;
+  var ratio=Math.max(0,Math.min(1,(pidTemp-18)/(37-18)));
+  ctx.fillStyle='#1e293b';ctx.fillRect(tx,ty,10,th);
+  ctx.fillStyle=ratio>.65?'#ef4444':ratio>.4?'#f59e0b':'#38bdf8';
+  ctx.fillRect(tx,ty+th*(1-ratio),10,th*ratio);
+  ctx.strokeStyle='#334155';ctx.lineWidth=1;ctx.strokeRect(tx,ty,10,th);
+  ctx.fillStyle='#e2e8f0';ctx.font='bold 11px Poppins,sans-serif';ctx.textAlign='left';
+  ctx.fillText(pidTemp.toFixed(1)+'°C',tx+14,ty+th/2+4);
+  var ax=W*.52,ay=H*.18,aw=W*.42,ah=H*.28;
+  ctx.fillStyle=pidAcOn?'#0e4f6e':'#1e293b';
+  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(ax,ay,aw,ah,6);ctx.fill();}else ctx.fillRect(ax,ay,aw,ah);
+  ctx.strokeStyle=pidAcOn?'#0891B2':'#334155';ctx.lineWidth=1.5;
+  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(ax,ay,aw,ah,6);ctx.stroke();}else ctx.strokeRect(ax,ay,aw,ah);
+  ctx.fillStyle='#e2e8f0';ctx.font='bold 11px Poppins,sans-serif';ctx.textAlign='center';
+  ctx.fillText(pidAcOn?'❄️  AC: ON':'⏸  AC: OFF',ax+aw/2,ay+ah/2+4);
+  var cx=W*.52,cy=H*.52,cw=W*.42,ch=H*.34;
+  ctx.fillStyle='#071929';
+  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,6);ctx.fill();}else ctx.fillRect(cx,cy,cw,ch);
+  ctx.font='9px "Fira Code",monospace';ctx.textAlign='left';
+  var lines=[{t:'if temp > '+pidThreshVal+':',c:'#38bdf8'},{t:'    ac.on()  '+(pidAcOn?'← ✓ running':'← ...'),c:pidAcOn?'#86efac':'#64748b'},{t:'else:',c:'#38bdf8'},{t:'    ac.off() '+(!pidAcOn?'← ✓ running':'← ...'),c:!pidAcOn?'#86efac':'#64748b'}];
+  lines.forEach(function(l,i){ctx.fillStyle=l.c;ctx.fillText(l.t,cx+7,cy+14+i*14);});
+  ctx.fillStyle='#f59e0b';ctx.font='8px Poppins,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Threshold: '+pidThreshVal+'°C  |  Click room to add heat 🔥',W/2,H-5);
+}
+(function pidLoop(){drawPidSim();requestAnimationFrame(pidLoop);})();
+
+// ── 1.3 AYAM / ITIK ──
+var simMode='rule';
+var baseTraining=[[1.5,2.0,'ayam'],[2.2,1.8,'ayam'],[2.8,2.6,'ayam'],[1.2,2.2,'ayam'],[3.0,1.5,'ayam'],[7.8,7.5,'itik'],[8.3,8.0,'itik'],[7.2,8.4,'itik'],[8.8,7.2,'itik'],[7.5,8.8,'itik']];
+var mlTrainingData=baseTraining.slice();
+
+function setMode(m){
+  simMode=m;
+  document.getElementById('rulePanel').style.display=m==='rule'?'block':'none';
+  document.getElementById('mlPanel').style.display=m==='ml'?'block':'none';
+  document.getElementById('btnRule').className='mode-btn'+(m==='rule'?' active-rule':'');
+  document.getElementById('btnML').className='mode-btn'+(m==='ml'?' active-ml':'');
+  setTimeout(function(){if(m==='rule')drawRuleSim();else{drawMLSim();classifyTest();}},60);
+}
+function drawRuleSim(){
+  var c=document.getElementById('ruleCanvas');
+  var W=c.offsetWidth||400,H=260;
+  if(c.width!==W){c.width=W;c.height=H;}
+  var ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#071929';ctx.fillRect(0,0,W,H);
+  var thresh=parseFloat(document.getElementById('ruleThresh').value||5);
+  document.getElementById('ruleThreshVal').textContent=thresh.toFixed(1);
+  var PAD=44,PW=W-PAD*2,PH=H-PAD-24,OX=PAD,OY=H-32;
+  var tx=OX+(thresh-1)/8*PW;
+  ctx.fillStyle='rgba(245,158,11,.08)';ctx.fillRect(OX,OY-PH,tx-OX,PH);
+  ctx.fillStyle='rgba(8,145,178,.08)';ctx.fillRect(tx,OY-PH,OX+PW-tx,PH);
+  ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(tx,OY-PH-10);ctx.lineTo(tx,OY+4);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#ef4444';ctx.font='bold 9px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText('threshold='+thresh.toFixed(1),tx,OY-PH-14);
+  ctx.strokeStyle='#1e3a4a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(OX,OY-PH-4);ctx.lineTo(OX,OY);ctx.lineTo(OX+PW,OY);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='9px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText('Foot Webbing Score (1–9) →',OX+PW/2,H-8);
+  for(var i=1;i<=9;i++){var x=OX+(i-1)/8*PW;ctx.fillStyle='#334155';ctx.fillRect(x,OY,1,4);ctx.fillStyle='#64748b';ctx.textAlign='center';ctx.fillText(i,x,OY+13);}
+  var correct=0;
+  baseTraining.forEach(function(d,idx){
+    var x=OX+(d[0]-1)/8*PW;
+    var yOff=(d[2]==='ayam'?PH*.25:PH*.55)+(Math.sin(idx*2.7)*PH*.07);
+    var predicted=d[0]>thresh?'itik':'ayam';
+    var ok=predicted===d[2];if(ok)correct++;
+    ctx.beginPath();ctx.arc(x,OY-yOff,9,0,Math.PI*2);
+    ctx.fillStyle=d[2]==='ayam'?'#F59E0B':'#0891B2';ctx.fill();
+    if(!ok){ctx.strokeStyle='#ef4444';ctx.lineWidth=2.5;ctx.stroke();}
+    ctx.font='12px serif';ctx.textAlign='center';ctx.fillText(d[2]==='ayam'?'🐔':'🦆',x,OY-yOff+5);
+  });
+  ctx.fillStyle='rgba(245,158,11,.6)';ctx.font='bold 9px Poppins,sans-serif';ctx.textAlign='left';ctx.fillText('🐔 Ayam zone',OX+4,OY-PH+13);
+  ctx.fillStyle='rgba(8,145,178,.6)';ctx.textAlign='right';ctx.fillText('Itik zone 🦆',OX+PW-4,OY-PH+13);
+  document.getElementById('ruleScore').textContent='✓ '+correct+'/'+baseTraining.length+' correct ('+Math.round(correct/baseTraining.length*100)+'%)';
+}
+function getCentroids(){
+  var sums={ayam:[0,0,0],itik:[0,0,0]};
+  mlTrainingData.forEach(function(d){sums[d[2]][0]+=d[0];sums[d[2]][1]+=d[1];sums[d[2]][2]++;});
+  var res={};
+  ['ayam','itik'].forEach(function(l){if(sums[l][2]>0)res[l]=[sums[l][0]/sums[l][2],sums[l][1]/sums[l][2]];});
+  return res;
+}
+function mlClassify(web,beak){
+  var c=getCentroids();
+  if(!c.ayam||!c.itik)return null;
+  var da=Math.sqrt(Math.pow(web-c.ayam[0],2)+Math.pow(beak-c.ayam[1],2));
+  var di=Math.sqrt(Math.pow(web-c.itik[0],2)+Math.pow(beak-c.itik[1],2));
+  var total=da+di;
+  return{label:da<di?'ayam':'itik',conf:total>0?Math.round((da<di?di/total:da/total)*100):50};
+}
+function drawMLSim(){
+  var c=document.getElementById('mlCanvas');
+  var W=c.offsetWidth||400,H=260;
+  if(c.width!==W){c.width=W;c.height=H;}
+  var ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#071929';ctx.fillRect(0,0,W,H);
+  var PAD=44,PW=W-PAD*2,PH=H-PAD-24,OX=PAD,OY=H-32;
+  ctx.strokeStyle='#1e3a4a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(OX,OY-PH-4);ctx.lineTo(OX,OY);ctx.lineTo(OX+PW,OY);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='9px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText('Foot Webbing →',OX+PW/2,H-8);
+  ctx.save();ctx.translate(10,OY-PH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Beak Flatness →',0,0);ctx.restore();
+  for(var i=1;i<=9;i++){var x=OX+(i-1)/8*PW,y=OY-(i-1)/8*PH;ctx.fillStyle='#334155';ctx.fillRect(x,OY,1,4);ctx.fillRect(OX-4,y,4,1);ctx.fillStyle='#64748b';ctx.textAlign='center';ctx.fillText(i,x,OY+13);ctx.textAlign='right';ctx.fillText(i,OX-6,y+3);}
+  var cents=getCentroids();
+  if(cents.ayam&&cents.itik){
+    var N=40;
+    for(var sx=0;sx<N;sx++){for(var sy=0;sy<N;sy++){
+      var wx=1+sx/(N-1)*8,bk=1+sy/(N-1)*8,res2=mlClassify(wx,bk);
+      if(res2){ctx.fillStyle=res2.label==='ayam'?'rgba(245,158,11,.10)':'rgba(8,145,178,.10)';ctx.fillRect(OX+sx/N*PW,OY-(sy+1)/N*PH,PW/N+2,PH/N+2);}
+    }}
+    function drawStar(cx2,cy2,color,label){
+      ctx.beginPath();
+      for(var s=0;s<5;s++){var a=s*Math.PI*2/5-Math.PI/2,a2=a+Math.PI/5;if(s===0)ctx.moveTo(cx2+Math.cos(a)*11,cy2+Math.sin(a)*11);else ctx.lineTo(cx2+Math.cos(a)*11,cy2+Math.sin(a)*11);ctx.lineTo(cx2+Math.cos(a2)*5,cy2+Math.sin(a2)*5);}
+      ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.stroke();
+      ctx.fillStyle=color;ctx.font='bold 8px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText('★ '+label+' centroid',cx2,cy2+18);
+    }
+    drawStar(OX+(cents.ayam[0]-1)/8*PW,OY-cents.ayam[1]/8*PH,'#F59E0B','ayam');
+    drawStar(OX+(cents.itik[0]-1)/8*PW,OY-cents.itik[1]/8*PH,'#0891B2','itik');
+  }
+  mlTrainingData.forEach(function(d){
+    var x=OX+(d[0]-1)/8*PW,y=OY-(d[1]-1)/8*PH;
+    ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);
+    ctx.fillStyle=d[2]==='ayam'?'#F59E0B':'#0891B2';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();
+    ctx.font='11px serif';ctx.textAlign='center';ctx.fillText(d[2]==='ayam'?'🐔':'🦆',x,y+4);
+  });
+  var tw=parseFloat(document.getElementById('testWeb').value||5),tb=parseFloat(document.getElementById('testBeak').value||5);
+  var ttx=OX+(tw-1)/8*PW,tty=OY-(tb-1)/8*PH;
+  ctx.beginPath();ctx.arc(ttx,tty,11,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.12)';ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.setLineDash([3,2]);ctx.stroke();ctx.setLineDash([]);
+  ctx.font='15px serif';ctx.textAlign='center';ctx.fillText('❓',ttx,tty+6);
+  document.getElementById('mlCount').textContent=mlTrainingData.length+' training examples';
+}
+function addExample(label){
+  var web,beak;
+  if(label==='ayam'){web=1.2+Math.random()*2.5;beak=1.2+Math.random()*2.5;}
+  else{web=6.5+Math.random()*2.5;beak=6.5+Math.random()*2.5;}
+  mlTrainingData.push([Math.min(9,parseFloat(web.toFixed(1))),Math.min(9,parseFloat(beak.toFixed(1))),label]);
+  drawMLSim();classifyTest();
+}
+function resetML(){mlTrainingData=baseTraining.slice();drawMLSim();classifyTest();}
+function classifyTest(){
+  var tw=parseFloat(document.getElementById('testWeb').value||5),tb=parseFloat(document.getElementById('testBeak').value||5);
+  document.getElementById('testWebVal').textContent=tw.toFixed(1);
+  document.getElementById('testBeakVal').textContent=tb.toFixed(1);
+  var res=mlClassify(tw,tb),el=document.getElementById('testResultVal'),cel=document.getElementById('testConf');
+  if(res){el.textContent=res.label==='ayam'?'🐔 Ayam':'🦆 Itik';el.style.color=res.label==='ayam'?'#F59E0B':'#0891B2';cel.textContent='Confidence: '+res.conf+'%';}
+  else{el.textContent='—';el.style.color='#94a3b8';cel.textContent='Need more training data';}
+  if(simMode==='ml')drawMLSim();
+}
+setTimeout(function(){drawRuleSim();drawMLSim();classifyTest();},120);
+
+// ── HEALTHCARE SYMPTOM CHECKER ──
+var symptomsData=['Fever','Cough','Headache','Fatigue','Sore Throat','Runny Nose','Shortness of Breath','Chest Pain','Nausea','Body Aches'];
+var conditions={
+  'Common Cold':{syms:[1,2,4,5],color:'#22c55e'},
+  'Flu':{syms:[0,1,2,3,7,9],color:'#f59e0b'},
+  'COVID-19':{syms:[0,1,3,6,8],color:'#ef4444'},
+  'Migraine':{syms:[2,3,8],color:'#a855f7'},
+  'Bronchitis':{syms:[1,3,6,2],color:'#3b82f6'}
+};
+var checkedSyms={};
+function initSymptoms(){
+  var sl=document.getElementById('symptomList');if(!sl)return;sl.innerHTML='';
+  symptomsData.forEach(function(s,i){
+    var b=document.createElement('button');b.className='sim-smbtn'+(checkedSyms[i]?' active':'');
+    b.textContent=(checkedSyms[i]?'✓ ':'')+s;
+    b.onclick=function(){checkedSyms[i]=!checkedSyms[i];initSymptoms();updateConditions();};
+    sl.appendChild(b);
+  });
+  updateConditions();
+}
+function updateConditions(){
+  var cb=document.getElementById('condBars');if(!cb)return;
+  var cnt=Object.values(checkedSyms).filter(Boolean).length;
+  if(!cnt){cb.innerHTML='<div class="sim-note" style="color:#475569;">Select symptoms above to see AI diagnosis</div>';return;}
+  var scores=[];
+  Object.keys(conditions).forEach(function(name){
+    var c=conditions[name];var matches=c.syms.filter(function(si){return checkedSyms[si];}).length;
+    var pct=Math.round(matches/c.syms.length*100);scores.push({name:name,pct:pct,color:c.color});
+  });
+  scores.sort(function(a,b){return b.pct-a.pct;});
+  cb.innerHTML='';scores.forEach(function(s){
+    var row=document.createElement('div');row.style.cssText='margin-bottom:.4rem;';
+    row.innerHTML='<div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--ink);margin-bottom:2px;"><span>'+s.name+'</span><span style="color:'+s.color+'">'+s.pct+'%</span></div>'
+      +'<div style="height:7px;background:#1e3a4a;border-radius:4px;overflow:hidden;"><div style="width:'+s.pct+'%;height:100%;background:'+s.color+';border-radius:4px;transition:width .4s;"></div></div>';
+    cb.appendChild(row);
+  });
+  var top=scores[0];
+  var verdict=document.createElement('div');
+  verdict.style.cssText='margin-top:.5rem;font-size:.72rem;font-weight:700;color:'+top.color+';';
+  verdict.textContent=top.pct>60?'🔍 Most likely: '+top.name+' ('+top.pct+'% match)':'⚠️ Symptoms unclear — please consult a doctor';
+  cb.appendChild(verdict);
+}
+
+// ── RETAIL RECOMMENDATIONS ──
+var retailProducts=[
+  {id:0,name:'Sneakers',icon:'💟',cat:'Sport',tags:['sport','shoes','active']},
+  {id:1,name:'Novel',icon:'📚',cat:'Books',tags:['read','fiction','relax']},
+  {id:2,name:'Yoga Mat',icon:'🧘',cat:'Sport',tags:['sport','wellness','active']},
+  {id:3,name:'Headphones',icon:'🎧',cat:'Tech',tags:['tech','music','relax']},
+  {id:4,name:'Backpack',icon:'🎒',cat:'Travel',tags:['travel','outdoor','active']},
+  {id:5,name:'Coffee',icon:'☕',cat:'Food',tags:['relax','morning','drink']},
+  {id:6,name:'Smart Watch',icon:'⌚',cat:'Tech',tags:['tech','sport','active']},
+  {id:7,name:'Cookbook',icon:'🍳',cat:'Books',tags:['read','food','relax']}
+];
+var likedRetail={};
+function initRetail(){renderRetailGrid();}
+function renderRetailGrid(){
+  var g=document.getElementById('retailGrid');if(!g)return;g.innerHTML='';
+  retailProducts.forEach(function(p){
+    var d=document.createElement('div');d.className='prod-card'+(likedRetail[p.id]?' liked-p':'');
+    d.innerHTML='<div class="prod-icon">'+p.icon+'</div><div class="prod-name">'+p.name+'</div><div class="prod-cat">'+p.cat+'</div>';
+    d.onclick=function(){likedRetail[p.id]=!likedRetail[p.id];renderRetailGrid();updateRetailRecs();};
+    g.appendChild(d);
+  });
+}
+function updateRetailRecs(){
+  var liked=retailProducts.filter(function(p){return likedRetail[p.id];});
+  if(!liked.length){document.getElementById('retailRecs').style.display='none';return;}
+  var tagScore={};
+  liked.forEach(function(p){p.tags.forEach(function(t){tagScore[t]=(tagScore[t]||0)+1;});});
+  var notL=retailProducts.filter(function(p){return!likedRetail[p.id];});
+  notL.forEach(function(p){p._score=p.tags.reduce(function(a,t){return a+(tagScore[t]||0);},0);});
+  notL.sort(function(a,b){return b._score-a._score;});
+  var rg=document.getElementById('retailRecGrid');rg.innerHTML='';
+  notL.slice(0,3).forEach(function(p){
+    var d=document.createElement('div');d.className='prod-card rec-p';
+    d.innerHTML='<div class="prod-icon">'+p.icon+'</div><div class="prod-name">'+p.name+'</div><div class="prod-cat">'+p.cat+'</div>';
+    rg.appendChild(d);
+  });
+  document.getElementById('retailRecs').style.display='block';
+}
+function resetRetail(){likedRetail={};renderRetailGrid();document.getElementById('retailRecs').style.display='none';}
+
+// ── AGRICULTURE ──
+var plantTypes=['🌾 Wheat','🌽 Corn','🍅 Tomato','🫑 Pepper'];
+var healthStates=['healthy','diseased','water'];
+var plantStates=[];
+function initPlants(){plantStates=plantTypes.map(function(){return'healthy';});renderPlantGrid();}
+function renderPlantGrid(){
+  var g=document.getElementById('plantGrid');if(!g)return;g.innerHTML='';
+  plantTypes.forEach(function(name,i){
+    var d=document.createElement('div');d.className='plant-cell '+plantStates[i];
+    var icons={healthy:'💚',diseased:'🔴',water:'💧'};
+    var parts=name.split(' ');
+    d.innerHTML='<div style="font-size:1.2rem;">'+parts[0]+'</div><div style="font-size:.6rem;margin-top:2px;">'+parts.slice(1).join(' ')+'</div><div style="font-size:.85rem;margin-top:3px;">'+icons[plantStates[i]]+'</div>';
+    d.onclick=function(){var st=healthStates[(healthStates.indexOf(plantStates[i])+1)%healthStates.length];plantStates[i]=st;renderPlantGrid();};
+    g.appendChild(d);
+  });
+  renderPlantDiag();
+}
+function renderPlantDiag(){
+  var pd=document.getElementById('plantDiag');if(!pd)return;
+  var counts={healthy:0,diseased:0,water:0};plantStates.forEach(function(s){counts[s]++;});
+  var msgs=[];
+  if(counts.diseased>0)msgs.push('⚠️ '+counts.diseased+' plant(s) showing disease — spraying recommended');
+  if(counts.water>0)msgs.push('💧 '+counts.water+' plant(s) need irrigation');
+  if(counts.healthy===plantTypes.length)msgs.push('✅ All crops healthy — no action needed');
+  pd.innerHTML=msgs.map(function(m){return'<div style="font-size:.7rem;margin:.15rem 0;color:var(--ink);">'+m+'</div>';}).join('')
+    +'<div style="font-size:.65rem;color:#475569;margin-top:.3rem;">Tap a plant to cycle its health state</div>';
+}
+function resetPlants(){initPlants();}
+
+// ── ADAPTIVE QUIZ ──
+var adaptQuestions=[
+  {q:'What does AI stand for?',a:['Automated Intelligence','Artificial Intelligence','Advanced Interface','Auto-Input'],c:1,diff:1},
+  {q:'Which task can AI do well?',a:['Feel emotions','Make friends','Recognise images','Dream'],c:2,diff:1},
+  {q:'What is "training" an AI model?',a:['Jogging with a robot','Feeding it examples to learn from','Writing code by hand','Painting data'],c:1,diff:2},
+  {q:'What type of AI learns from rewards?',a:['Supervised','Reinforcement','Unsupervised','Random'],c:1,diff:2},
+  {q:'Which is a neural network layer type?',a:['Pooling','Filtering','Sorting','Stacking'],c:0,diff:3}
+];
+var adaptState={qi:0,streak:0,diff:1,score:0,done:false};
+function initAdaptive(){adaptState={qi:0,streak:0,diff:1,score:0,done:false};renderAdaptQ();}
+function renderAdaptQ(){
+  var p=document.getElementById('adaptPanel');if(!p)return;
+  if(adaptState.done){
+    p.innerHTML='<div style="text-align:center;padding:.8rem;"><div style="font-size:1.6rem;">🎉</div><div style="font-size:.8rem;font-weight:700;color:#22c55e;margin:.3rem 0;">Quiz Complete!</div><div style="font-size:.7rem;color:var(--muted);">Score: '+adaptState.score+'/'+adaptQuestions.length+'</div><button class="sim-smbtn" style="margin-top:.5rem;" onclick="initAdaptive()">Try Again</button></div>';
+    return;
+  }
+  var pool=adaptQuestions.filter(function(q){return q.diff<=adaptState.diff+1&&q.diff>=Math.max(1,adaptState.diff-1);});
+  if(!pool.length)pool=adaptQuestions;
+  var qi=adaptState.qi%pool.length;var q=pool[qi];
+  var prog=Math.round(adaptState.qi/adaptQuestions.length*100);
+  p.innerHTML='<div style="font-size:.62rem;color:var(--muted);margin-bottom:.3rem;">Difficulty: '+'⭐'.repeat(adaptState.diff)+' · Score: '+adaptState.score+'</div>'
+    +'<div style="height:4px;background:#1e3a4a;border-radius:2px;margin-bottom:.5rem;"><div style="width:'+prog+'%;height:100%;background:var(--primary);border-radius:2px;"></div></div>'
+    +'<div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:.5rem;">'+q.q+'</div>'
+    +'<div class="sim-btn-row" style="flex-direction:column;gap:.25rem;">'
+    +q.a.map(function(ans,i){return'<button class="adapt-opt" onclick="answerAdapt('+i+','+(i===q.c)+')">'+ans+'</button>';}).join('')+'</div>';
+}
+function answerAdapt(oi,correct){
+  var btns=document.querySelectorAll('.adapt-opt');
+  btns.forEach(function(b,i){b.onclick=null;if(i===oi)b.classList.add(correct?'correct':'wrong');});
+  if(correct){adaptState.score++;adaptState.streak++;if(adaptState.streak>=2)adaptState.diff=Math.min(3,adaptState.diff+1);}
+  else{adaptState.streak=0;adaptState.diff=Math.max(1,adaptState.diff-1);}
+  adaptState.qi++;
+  if(adaptState.qi>=adaptQuestions.length){setTimeout(function(){adaptState.done=true;renderAdaptQ();},700);}
+  else{setTimeout(renderAdaptQ,700);}
+}
+
+// ── FRAUD DETECTION ──
+function updateFraud(){
+  var amtEl=document.getElementById('fraudAmt');
+  var timeEl=document.getElementById('fraudTime');
+  var locEl=document.getElementById('fraudLoc');
+  var velEl=document.getElementById('fraudVel');
+  if(!amtEl)return;
+  var amt=parseInt(amtEl.value)||0;
+  var time=parseInt(timeEl.value)||0;
+  var loc=parseInt(locEl.value)||0;
+  var vel=parseInt(velEl.value)||1;
+  var vAmtEl=document.getElementById('vAmt')||document.getElementById('fraudAmtV');
+  var vTimeEl=document.getElementById('vTime')||document.getElementById('fraudTimeV');
+  var vLocEl=document.getElementById('vLoc')||document.getElementById('fraudLocV');
+  var vVelEl=document.getElementById('vVel')||document.getElementById('fraudVelV');
+  if(vAmtEl)vAmtEl.textContent='RM '+amt.toLocaleString();
+  if(vTimeEl)vTimeEl.textContent=time+':00 '+(time<12?'AM':'PM');
+  if(vLocEl)vLocEl.textContent=loc+'km away';
+  if(vVelEl)vVelEl.textContent=vel+' txn/min';
+  var amtScore=amt>5000?35:amt>2000?20:amt>500?10:0;
+  var timeScore=(time<6||time>22)?20:0;
+  var locScore=loc>60?25:loc>30?15:0;
+  var velScore=vel>5?20:vel>3?10:0;
+  var total=Math.min(100,amtScore+timeScore+locScore+velScore);
+  var tags=document.getElementById('fraudTags');
+  var numEl=document.getElementById('fraudNum')||document.getElementById('fraudBig');
+  if(!numEl)return;
+  numEl.textContent=total+'%';
+  numEl.style.color=total>70?'#ef4444':total>40?'#f59e0b':'#22c55e';
+  var flags=[];
+  if(amtScore>0)flags.push({t:'High amount',bad:amtScore>20});
+  if(timeScore>0)flags.push({t:'Odd hour',bad:true});
+  if(locScore>0)flags.push({t:'Distant location',bad:locScore>20});
+  if(velScore>0)flags.push({t:'Rapid transactions',bad:velScore>10});
+  if(!flags.length)flags.push({t:'Looks normal',bad:false});
+  tags.innerHTML=flags.map(function(f){return'<span class="fraud-tag'+(f.bad?' bad':'')+'">'+f.t+'</span>';}).join('');
+  var verdict=document.getElementById('fraudVerdict');
+  if(verdict){
+    verdict.textContent=total>70?'🚨 BLOCKED — Suspected fraud':total>40?'⚠️ Flagged for review':'✅ Transaction approved';
+    verdict.style.color=total>70?'#ef4444':total>40?'#f59e0b':'#22c55e';
+  }
+}
+
+// ── 1.5 COMPARISON ──
+function drawCompSim(){
+  var c=document.getElementById('compCanvas');
+  var W=c.offsetWidth||400,H=190;
+  if(c.width!==W){c.width=W;c.height=H;}
+  var ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#071929';ctx.fillRect(0,0,W,H);
+  var tasks=[{t:'Image recog.',ai:.97,hu:.82},{t:'Creative writing',ai:.58,hu:.95},{t:'Pattern spotting',ai:.99,hu:.55},{t:'Ethical reasoning',ai:.28,hu:.93},{t:'Repetitive tasks',ai:1.0,hu:.38},{t:'Common sense',ai:.32,hu:.94}];
+  var BW=W/(tasks.length+.5),BH=H*.52,BY=H*.28;
+  tasks.forEach(function(tk,i){
+    var x=BW*(i+.25);
+    ctx.fillStyle='rgba(8,145,178,.75)';ctx.fillRect(x,BY+BH-tk.ai*BH,BW*.36,tk.ai*BH);
+    ctx.fillStyle='rgba(245,158,11,.75)';ctx.fillRect(x+BW*.39,BY+BH-tk.hu*BH,BW*.36,tk.hu*BH);
+    ctx.fillStyle='#64748b';ctx.font='7px Poppins,sans-serif';ctx.textAlign='center';
+    tk.t.split(' ').forEach(function(w,wi){ctx.fillText(w,x+BW*.37,BY+BH+10+wi*9);});
+  });
+  ctx.strokeStyle='#1e3a4a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(BW*.25,BY+BH);ctx.lineTo(W-BW*.25,BY+BH);ctx.stroke();
+  ctx.fillStyle='#0891B2';ctx.fillRect(W*.08,12,12,10);ctx.fillStyle='#94a3b8';ctx.font='9px Poppins,sans-serif';ctx.textAlign='left';ctx.fillText('🤖 AI',W*.08+16,21);
+  ctx.fillStyle='#F59E0B';ctx.fillRect(W*.28,12,12,10);ctx.fillStyle='#94a3b8';ctx.fillText('🧠 Human',W*.28+16,21);
+  ctx.fillStyle='#e2e8f0';ctx.font='bold 10px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText('Human vs AI — performance by task type',W/2,H-6);
+}
+setTimeout(drawCompSim,140);
+
+var resizeTimer;
+window.addEventListener('resize',function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){drawPidSim();drawRuleSim();drawMLSim();drawCompSim();},100);});
+
+// ── QUIZ ──
+
+/* ── M1 bilingual quiz ── */
+var questions_EN=[
+  {q:'What is the key difference between traditional programming and machine learning?',opts:['Traditional programming is faster than machine learning','Machine learning writes explicit rules; programming learns from data','Traditional programming uses explicit rules; ML learns patterns from data','ML can only work with images, not text'],ans:2,fb:'Traditional programming requires the developer to write every rule. ML finds the rules itself by looking at labelled examples.'},
+  {q:'Which problem best illustrates a limitation of rule-based systems?',opts:['Sorting a list of numbers from smallest to largest','Recognising a face even when lighting or angle changes','Converting temperature from Celsius to Fahrenheit','Calculating the area of a rectangle'],ans:1,fb:'Face recognition needs to handle infinite variations in light, angle, and expression — far too many rules to write by hand.'},
+  {q:'In the Ayam vs Itik classifier, why does the ML model outperform the single-threshold rule?',opts:['It runs faster on the computer','It uses multiple features simultaneously to find a better boundary','It memorises every training example exactly','It connects to the internet for updates'],ans:1,fb:'The ML nearest-centroid classifier considers both foot webbing AND beak shape together, finding a more nuanced boundary than any single threshold.'},
+  {q:'Which of the following is something humans currently do better than AI?',opts:['Analysing 1 million patient records for patterns','Maintaining focus on a repetitive task for 24 hours','Making ethical judgements that consider cultural and emotional context','Processing high-resolution images in real time'],ans:2,fb:'Ethical and moral reasoning requires empathy, cultural awareness, and values — areas where human intelligence still leads.'},
+  {q:'A hospital wants to detect tumours in X-ray images. Which approach is best?',opts:['Rule-based: write IF/THEN rules for every possible tumour shape','Machine learning: train a model on thousands of labelled X-ray images','No AI — doctors should examine every image without computer help','Use a calculator to measure pixel density'],ans:1,fb:'Tumours vary enormously. ML can learn these patterns from thousands of labelled examples far better than any hand-crafted rule set.'}
+];
+var questions_MS=[
+  {q:'Apakah perbezaan utama antara pengaturcaraan tradisional dan pembelajaran mesin?',opts:['Pengaturcaraan tradisional lebih laju daripada pembelajaran mesin','Pembelajaran mesin menulis peraturan eksplisit; pengaturcaraan belajar daripada data','Pengaturcaraan tradisional menggunakan peraturan eksplisit; PM belajar corak daripada data','PM hanya boleh bekerja dengan imej, bukan teks'],ans:2,fb:'Pengaturcaraan tradisional memerlukan pembangun menulis setiap peraturan. PM mencari peraturan sendiri dengan melihat contoh berlabel.'},
+  {q:'Masalah mana yang paling menunjukkan had sistem berasaskan peraturan?',opts:['Menyusun senarai nombor dari terkecil ke terbesar','Mengenali wajah walaupun cahaya atau sudut berubah','Menukar suhu dari Celsius ke Fahrenheit','Mengira luas segi empat'],ans:1,fb:'Pengecaman wajah perlu menangani variasi cahaya, sudut, dan ekspresi yang tidak terhingga — terlalu banyak peraturan untuk ditulis secara manual.'},
+  {q:'Dalam pengelas Ayam lwn. Itik, mengapa model PM mengatasi peraturan ambang tunggal?',opts:['Ia lebih laju pada komputer','Ia menggunakan pelbagai ciri serentak untuk mencari sempadan yang lebih baik','Ia menghafal setiap contoh latihan tepat','Ia bersambung ke internet untuk kemas kini'],ans:1,fb:'Pengelas PM mempertimbangkan selaput kaki DAN bentuk paruh bersama-sama, mencari sempadan yang lebih halus daripada mana-mana ambang tunggal.'},
+  {q:'Yang manakah antara berikut sesuatu yang manusia lakukan lebih baik daripada AI pada masa ini?',opts:['Menganalisis 1 juta rekod pesakit untuk corak','Mengekalkan tumpuan pada tugas berulang selama 24 jam','Membuat penghakiman etika yang mengambil kira konteks budaya dan emosi','Memproses imej resolusi tinggi dalam masa nyata'],ans:2,fb:'Penaakulan etika dan moral memerlukan empati, kesedaran budaya, dan nilai — bidang di mana kecerdasan manusia masih memimpin.'},
+  {q:'Hospital ingin mengesan tumor dalam imej X-ray. Pendekatan mana yang terbaik?',opts:['Berasaskan peraturan: tulis peraturan IF/THEN untuk setiap bentuk tumor mungkin','Pembelajaran mesin: latih model pada ribuan imej X-ray berlabel','Tiada AI — doktor perlu periksa setiap imej sendiri','Gunakan kalkulator untuk mengukur ketumpatan piksel'],ans:1,fb:'Tumor sangat pelbagai. PM boleh mempelajari corak ini daripada ribuan contoh berlabel jauh lebih baik daripada mana-mana set peraturan buatan tangan.'}
+];
+var questions=questions_EN;
+
+
+function buildQuiz(){
+  var body=document.getElementById('quizBody');
+  body.innerHTML='';
+  var answered=0,correct=0;
+  if(state.quiz!==null){
+    document.getElementById('quizScore').style.display='block';
+    document.getElementById('quizScore').innerHTML='You scored <b>'+state.quiz+'/'+questions.length+'</b> previously! 🎉<br><a href="module-2.html" class="next-mod-btn" style="margin-top:16px;display:inline-flex;"><span data-en="Continue to Module 2 →" data-ms="Teruskan ke Modul 2 →">Continue to Module 2 →</span></a>';
+    return;
+  }
+  questions.forEach(function(q,qi){
+    var block=document.createElement('div');block.className='q-block';
+    block.innerHTML='<div class="q-text">'+(qi+1)+'. '+q.q+'</div><div class="q-opts" id="qo'+qi+'"></div><div class="q-feedback" id="qf'+qi+'" style="display:none;"></div>';
+    body.appendChild(block);
+    var opts=document.getElementById('qo'+qi);
+    q.opts.forEach(function(opt,oi){
+      var btn=document.createElement('div');btn.className='q-opt';btn.textContent=opt;
+      btn.onclick=function(){
+        if(this.classList.contains('disabled'))return;
+        var isRight=(oi===q.ans);if(isRight)correct++;answered++;
+        Array.from(opts.children).forEach(function(b,bi){b.classList.add('disabled');if(bi===q.ans)b.classList.add('correct');else if(bi===oi&&!isRight)b.classList.add('wrong');});
+        var fb=document.getElementById('qf'+qi);fb.style.display='block';
+        fb.className='q-feedback '+(isRight?'good':'bad');
+        fb.textContent=(isRight?'✅ ':'❌ ')+q.fb;
+        if(answered===questions.length){
+          setTimeout(function(){
+            state.quiz=correct;saveState();
+            var sc=document.getElementById('quizScore');sc.style.display='block';
+            var pct=Math.round(correct/questions.length*100);
+            var msg=pct===100?'🏆 Perfect!':pct>=80?'🌟 Excellent!':pct>=60?'👍 Good effort!':'📚 Review and try again!';
+            sc.innerHTML=msg+' You scored <b>'+correct+'/'+questions.length+'</b><br><a href="module-2.html" class="next-mod-btn" style="margin-top:16px;display:inline-flex;">Continue to Module 2 →</a>';
+          },600);
+        }
+      };
+      opts.appendChild(btn);
+    });
+  });
+}
+buildQuiz();
+
+function renderLang(lang){
+  questions=(lang==='ms'?questions_MS:questions_EN);
+  buildQuiz();
+}
+
+(function(){
+  var btn=document.getElementById('modDropBtn'),menu=document.getElementById('modDropMenu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.classList.toggle('open',o);});
+  document.addEventListener('click',function(){menu.classList.remove('open');btn.classList.remove('open');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.classList.remove('open');btn.classList.remove('open');}});
+})();
+
+/* ── Bilingual toggle ── */
+function setLang(lang){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('ai_adv_lang',lang);}catch(e){}
+  /* attribute-based */
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML=lang==='ms'?(el.getAttribute('data-ms')||el.getAttribute('data-en')):el.getAttribute('data-en');
+  });
+  /* span-based (rich HTML content) */
+  document.querySelectorAll('.lang-en').forEach(function(el){ el.style.display=lang==='ms'?'none':'inline'; });
+  document.querySelectorAll('.lang-ms').forEach(function(el){ el.style.display=lang==='ms'?'inline':'none'; });
+  var btn=document.getElementById('langToggle');
+  if(btn) btn.textContent=lang==='ms'?'EN':'BM';
+  if(typeof renderLang==='function') renderLang(lang);
+}
+(function(){
+  var _l='en';
+  try{_l=localStorage.getItem('ai_adv_lang')||'en';}catch(e){}
+  if(_l==='ms') setLang('ms');
+})();
+
+/* ── Show active student chip ── */
+function updateStudentChip() {
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    var name = s.student_name || s.name || '';
+    var matric = s.student_matric || s.matric || '';
+    if (!name) return;
+    var chip = document.getElementById('activeStudentChip');
+    var avatar = document.getElementById('chipAvatar');
+    var chipNameEl = document.getElementById('chipName');
+    if (chip) {
+      avatar.textContent = name.charAt(0).toUpperCase();
+      chipNameEl.textContent = name + (matric ? ' · ' + matric : '');
+      chip.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+window.addEventListener('load', updateStudentChip);
+</script>
+</body>
+</html>

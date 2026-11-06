@@ -1,0 +1,2933 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Module 5 · Build Your Own AI — AI Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* ── Tokens ── */
+:root{
+  --primary:#0891B2;--primary-d:#0E7490;--nav-bg:#071B2E;
+  --blue:#2563EB;--red:#DC2626;--orange:#F59E0B;
+  --green:#059669;--purple:#7C3AED;--teal:#0D9488;
+  --ink:#1E293B;--muted:#64748B;
+  --bg:#F0F9FF;--surface:#FFFFFF;--surface2:#E0F2FE;
+  --fg:#0C1A27;--fg2:#374151;--fg3:#6B7280;
+  --border:#BAE6FD;--shadow:0 2px 12px rgba(8,145,178,.12);
+  --radius:14px;--font:'Poppins',sans-serif;--mono:'Fira Code',monospace;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#07131D;--surface:#0F2940;--surface2:#0A2035;
+  --fg:#E0F2FE;--fg2:#BAE6FD;--fg3:#7DD3FC;
+  --border:#164E63;--shadow:0 2px 12px rgba(0,0,0,.4);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#07131D;--surface:#0F2940;--surface2:#0A2035;
+  --fg:#E0F2FE;--fg2:#BAE6FD;--fg3:#7DD3FC;
+  --border:#164E63;--shadow:0 2px 12px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100vh;}
+/* ── Chevron Strip ── */
+.chev-strip{display:flex;height:34px;}
+.chev-strip span{flex:1;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fff;user-select:none;}
+.chev-strip span:nth-child(1){background:var(--blue);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);}
+.chev-strip span:nth-child(2){background:var(--red);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(3){background:var(--orange);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(4){background:var(--primary);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);}
+/* ── Site Nav ── */
+.sitenav{background:var(--nav-bg);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.5);}
+.sitenav-inner{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));height:54px;display:flex;align-items:center;gap:1rem;}
+.brand{display:flex;align-items:baseline;gap:.5rem;text-decoration:none;font-family:var(--font);font-size:1.05rem;font-weight:900;color:#fff;flex-shrink:0;}
+.brand em{font-style:normal;color:var(--primary);}
+.brand .brand-sub{font-size:.52em;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.sitenav nav{margin-left:auto;display:flex;align-items:center;gap:1.4rem;}
+.sitenav nav a{text-decoration:none;font-size:.83rem;font-weight:500;color:rgba(255,255,255,.62);transition:color .15s;}
+.sitenav nav a:hover{color:var(--primary);}
+.sitenav nav a.active{color:#fff;font-weight:600;}
+.sitenav nav .nav-btn{background:var(--primary);color:#fff;padding:.3rem .9rem;border-radius:6px;font-weight:700;font-size:.82rem;transition:background .15s;}
+.sitenav nav .nav-btn:hover{background:var(--primary-d);}
+.nav-drop-wrap{position:relative;display:inline-block;}
+.nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;letter-spacing:.01em;}
+.nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(8,145,178,.25);border-color:var(--primary);color:#fff;}
+.nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+.nav-drop-btn.open .arr{transform:rotate(180deg);}
+.nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+.nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+.nav-drop-menu a:hover{background:rgba(8,145,178,.18);color:#fff;}
+.nav-drop-menu a.cur{color:var(--primary);font-weight:700;}
+.nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+.nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+
+/* ── Module Hero ── */
+.module-hero{background:linear-gradient(135deg,#071320 0%,#0a2540 50%,#0e1a3d 100%);padding:3rem max(16px,env(safe-area-inset-left,0px));text-align:center;position:relative;overflow:hidden;}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.3;pointer-events:none;}
+.mod-eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--primary);text-transform:uppercase;margin-bottom:.6rem;position:relative;}
+.module-hero h1{font-size:clamp(1.7rem,4vw,2.6rem);color:#fff;margin-bottom:.6rem;font-weight:900;position:relative;text-wrap:balance;}
+.module-hero h1 em{font-style:normal;color:var(--primary);}
+.module-hero .sub{font-size:.95rem;color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 1.4rem;line-height:1.6;position:relative;}
+.module-meta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;}
+.meta-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;color:rgba(255,255,255,.8);font-weight:600;}
+/* ── Progress Bar ── */
+.prog-bar-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:.55rem 0;}
+.prog-bar-inner{max-width:880px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:1rem;}
+.prog-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);white-space:nowrap;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--green));border-radius:3px;transition:width .5s ease;width:0%;}
+.prog-pct{font-size:.7rem;font-weight:700;color:var(--primary);white-space:nowrap;font-variant-numeric:tabular-nums;}
+/* ── Layout ── */
+.wrap{max-width:880px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px));}
+main{padding:2rem 0 4rem;}
+/* ── Section Accordion ── */
+.mod-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;transition:box-shadow .2s;}
+.mod-section:hover{box-shadow:var(--shadow);}
+.mod-section-header{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.4rem;cursor:pointer;user-select:none;}
+.section-badge{width:52px;height:52px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.56rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fff;flex-shrink:0;gap:2px;}
+.section-badge .badge-icon{font-size:1.3rem;line-height:1;}
+.badge-see{background:linear-gradient(135deg,var(--blue),#1D4ED8);}
+.badge-think{background:linear-gradient(135deg,var(--purple),#5B21B6);}
+.badge-exp{background:linear-gradient(135deg,var(--primary),var(--primary-d));}
+.badge-marv{background:linear-gradient(135deg,var(--green),#047857);}
+.badge-build{background:linear-gradient(135deg,var(--orange),#D97706);}
+.section-header-text{flex:1;min-width:0;}
+.section-header-text h2{font-size:1rem;font-weight:700;color:var(--fg);line-height:1.3;}
+.sec-meta{display:flex;align-items:center;gap:.8rem;margin-top:.25rem;}
+.sec-time{font-size:.72rem;color:var(--fg3);}
+.sec-status{font-size:.7rem;font-weight:600;padding:.18rem .6rem;border-radius:10px;background:rgba(8,145,178,.12);color:var(--primary);}
+.sec-status.done{background:rgba(5,150,105,.12);color:var(--green);}
+.sec-chev{font-size:1.1rem;color:var(--fg3);transition:transform .3s;flex-shrink:0;}
+.mod-section.open .sec-chev{transform:rotate(180deg);}
+.mod-section-body{display:none;padding:0 1.4rem 1.4rem;}
+.mod-section.open .mod-section-body{display:block;}
+/* ── Content Cards ── */
+.concept-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1rem;}
+.concept-card h3{font-size:.9rem;font-weight:700;color:var(--fg);margin-bottom:.5rem;}
+.concept-card p{font-size:.88rem;color:var(--fg2);line-height:1.65;}
+.callout{border-left:3px solid var(--primary);background:rgba(8,145,178,.08);border-radius:0 8px 8px 0;padding:.9rem 1rem;margin:1rem 0;font-size:.87rem;color:var(--fg2);}
+.callout strong{color:var(--fg);}
+.callout.warn{border-color:var(--orange);background:rgba(245,158,11,.08);}
+.callout.success{border-color:var(--green);background:rgba(5,150,105,.08);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;}
+@media(max-width:600px){.grid2{grid-template-columns:1fr;}}
+.sec-divider{height:1px;background:var(--border);margin:1.2rem 0;}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s;}
+.reveal.visible{opacity:1;transform:none;}
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.3rem;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:.88rem;font-weight:700;transition:all .15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-d);}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
+.btn-outline:hover{background:rgba(8,145,178,.1);}
+.btn-sm{padding:.35rem .9rem;font-size:.8rem;}
+/* ── Tags ── */
+.tag{display:inline-block;padding:.2rem .65rem;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.04em;}
+.tag-blue{background:rgba(37,99,235,.15);color:#60A5FA;}
+.tag-green{background:rgba(5,150,105,.15);color:#34D399;}
+.tag-orange{background:rgba(245,158,11,.15);color:#FCD34D;}
+.tag-purple{background:rgba(124,58,237,.15);color:#A78BFA;}
+/* ── Problem Cards (5.1) ── */
+.ai-problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;}
+@media(max-width:600px){.ai-problem-grid{grid-template-columns:1fr;}}
+.ai-prob-card{background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:.9rem 1rem;cursor:pointer;transition:all .2s;}
+.ai-prob-card:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(8,145,178,.15);}
+.ai-prob-card.correct{border-color:var(--green);background:rgba(5,150,105,.08);}
+.ai-prob-card.wrong{border-color:var(--red);background:rgba(220,38,38,.08);}
+.ai-prob-card.selected{border-color:var(--primary);background:rgba(8,145,178,.1);}
+.ai-prob-title{font-size:.88rem;font-weight:700;color:var(--fg);margin-bottom:.3rem;}
+.ai-prob-desc{font-size:.78rem;color:var(--fg3);}
+/* ── Data Collection (5.2) ── */
+.data-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:1rem 0;}
+@media(max-width:500px){.data-grid{grid-template-columns:repeat(2,1fr);}}
+.data-sample{border:2px solid var(--border);border-radius:8px;padding:.6rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);}
+.data-sample:hover{border-color:var(--primary);}
+.data-sample .ds-icon{font-size:1.8rem;line-height:1;margin-bottom:.3rem;}
+.data-sample .ds-label{font-size:.7rem;font-weight:700;color:var(--fg3);}
+.data-sample.class-a{border-color:var(--blue);background:rgba(37,99,235,.1);}
+.data-sample.class-a .ds-label{color:#60A5FA;}
+.data-sample.class-b{border-color:var(--orange);background:rgba(245,158,11,.1);}
+.data-sample.class-b .ds-label{color:#FCD34D;}
+.balance-bar-wrap{background:var(--surface2);border-radius:8px;padding:1rem;margin:1rem 0;}
+.balance-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem;}
+.balance-label{font-size:.78rem;font-weight:600;width:80px;flex-shrink:0;}
+.balance-track{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden;}
+.balance-fill-a{height:100%;background:var(--blue);border-radius:5px;transition:width .4s;}
+.balance-fill-b{height:100%;background:var(--orange);border-radius:5px;transition:width .4s;}
+.balance-count{font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;width:30px;text-align:right;}
+/* ── Training Canvas (5.3) ── */
+#trainCanvas53{border-radius:10px;background:#0a1929;display:block;width:100%;max-width:100%;}
+.train-controls{display:flex;align-items:center;gap:1rem;margin:1rem 0;flex-wrap:wrap;}
+.slider-wrap{display:flex;flex-direction:column;gap:.3rem;flex:1;min-width:140px;}
+.slider-wrap label{font-size:.72rem;font-weight:600;color:var(--fg3);}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--primary);}
+/* ── Confusion Matrix (5.4) ── */
+.conf-matrix{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px;margin:1rem 0;max-width:360px;}
+.conf-cell{border-radius:6px;padding:.6rem;text-align:center;font-size:.85rem;font-weight:700;}
+.conf-header{background:transparent;font-size:.7rem;color:var(--fg3);font-weight:600;display:flex;align-items:center;justify-content:center;}
+.conf-tp{background:rgba(5,150,105,.45);color:#34d399;border:1.5px solid rgba(52,211,153,.5);}
+.conf-tn{background:rgba(5,150,105,.45);color:#34d399;border:1.5px solid rgba(52,211,153,.5);}
+.conf-fp{background:rgba(220,38,38,.38);color:#fc8181;border:1.5px solid rgba(248,113,113,.5);}
+.conf-fn{background:rgba(220,38,38,.38);color:#fc8181;border:1.5px solid rgba(248,113,113,.5);}
+.conf-sub{font-size:.65rem;font-weight:500;opacity:.8;}
+/* ── AI Wizard (5.5) ── */
+.wizard-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:1rem;}
+.wizard-steps{display:flex;background:var(--surface2);border-bottom:1px solid var(--border);}
+.wiz-step{flex:1;padding:.65rem .4rem;text-align:center;font-size:.72rem;font-weight:700;color:var(--fg3);border-bottom:3px solid transparent;transition:all .2s;cursor:default;}
+.wiz-step.active{color:var(--primary);border-color:var(--primary);}
+.wiz-step.done{color:var(--green);border-color:var(--green);}
+.wiz-panel{display:none;padding:1.4rem;}
+.wiz-panel.active{display:block;}
+.wiz-panel h3{font-size:1rem;font-weight:700;margin-bottom:.4rem;}
+.wiz-panel .wiz-sub{font-size:.83rem;color:var(--fg3);margin-bottom:1.2rem;}
+.prob-cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+@media(max-width:500px){.prob-cards{grid-template-columns:1fr;}}
+.prob-card{border:2px solid var(--border);border-radius:10px;padding:1rem;cursor:pointer;transition:all .2s;background:var(--surface2);}
+.prob-card:hover{border-color:var(--primary);}
+.prob-card.chosen{border-color:var(--primary);background:rgba(8,145,178,.1);}
+.prob-card .pc-icon{font-size:2rem;margin-bottom:.4rem;}
+.prob-card .pc-name{font-size:.88rem;font-weight:700;color:var(--fg);}
+.prob-card .pc-desc{font-size:.75rem;color:var(--fg3);margin-top:.2rem;}
+.prob-card .pc-diff{font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:10px;display:inline-block;margin-top:.4rem;}
+/* Wizard Step 2 — collect data */
+.collect-area{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:1rem 0;}
+@media(max-width:480px){.collect-area{grid-template-columns:repeat(2,1fr);}}
+.collect-card{border:2px solid var(--border);border-radius:8px;padding:.7rem .5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);}
+.collect-card:hover{border-color:var(--primary);}
+.collect-card.labeled-a{border-color:var(--blue);background:rgba(37,99,235,.12);}
+.collect-card.labeled-b{border-color:var(--orange);background:rgba(245,158,11,.12);}
+.collect-card.lbl-a{border-color:#3b82f6;background:rgba(59,130,246,.15);}
+.collect-card.lbl-b{border-color:#f59e0b;background:rgba(245,158,11,.15);}
+.collect-card.labelled{border-color:var(--primary);}
+.collect-btns{display:flex;gap:.4rem;justify-content:center;margin-top:.4rem;}
+.btn-a,.btn-b{font-size:.68rem;padding:.25rem .5rem;border-radius:6px;border:1.5px solid;cursor:pointer;font-weight:600;transition:all .15s;}
+.btn-a{background:rgba(59,130,246,.12);color:#60a5fa;border-color:#3b82f6;}
+.btn-b{background:rgba(245,158,11,.12);color:#fbbf24;border-color:#f59e0b;}
+.btn-a.active{background:#3b82f6;color:#fff;}
+.btn-b.active{background:#f59e0b;color:#1a1a1a;}
+.btn-a:hover{background:rgba(59,130,246,.3);}
+.btn-b:hover{background:rgba(245,158,11,.3);}
+.collect-tag{font-size:.65rem;font-weight:700;margin-top:.3rem;min-height:.9rem;}
+/* ── Section 5.6 styles ── */
+.aud-btn{padding:.4rem .85rem;border-radius:20px;border:1.5px solid var(--border);background:var(--surface2);color:var(--fg2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.aud-btn:hover,.aud-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.pt-slide{display:flex;align-items:center;gap:.6rem;padding:.45rem .7rem;border-radius:7px;border:1.5px solid var(--border);background:var(--surface);font-size:.8rem;transition:all .25s;}
+.pt-slide.active{border-color:var(--primary);background:rgba(8,145,178,.1);}
+.pt-slide.done{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08);}
+.pt-slide .pt-dot{width:9px;height:9px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s;}
+.pt-slide.active .pt-dot{background:var(--primary);}
+.pt-slide.done .pt-dot{background:#34d399;}
+.pt-slide .pt-dur{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--fg3);}
+.ra-item{display:flex;align-items:flex-start;gap:.65rem;padding:.55rem .8rem;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .2s;user-select:none;}
+.ra-item:hover{border-color:var(--primary);}
+.ra-item.checked{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.08);}
+.ra-item .ra-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;margin-top:.1rem;}
+.ra-item.checked .ra-box{background:#34d399;border-color:#34d399;color:#1a1a1a;}
+.ra-item .ra-text{font-size:.82rem;color:var(--fg2);line-height:1.4;}
+.ra-item.checked .ra-text{color:var(--fg);}
+.pres-sec{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.pres-sec:hover{border-color:var(--primary);}
+.pres-sec.read{border-color:rgba(52,211,153,.4);}
+.pres-hdr{padding:.65rem .9rem;display:flex;justify-content:space-between;align-items:center;background:var(--surface2);font-size:.85rem;font-weight:700;}
+.pres-body{display:none;padding:.8rem .9rem;font-size:.82rem;color:var(--fg2);line-height:1.5;}
+.arc-node:hover .arc-circle{border-color:var(--primary)!important;}
+#presPanel [style*="grid-template-columns"]{display:grid;}
+@media(max-width:540px){#presPanel [style*="grid-template-columns"]{grid-template-columns:1fr!important;}#presPanel [style*="border-right"]{border-right:none!important;border-bottom:1px solid var(--border);}}
+.qa-item{background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.qa-q{padding:.5rem .8rem;font-size:.8rem;font-weight:700;color:var(--fg);}
+.qa-a{padding:.4rem .8rem .7rem;font-size:.78rem;color:var(--fg2);line-height:1.5;border-top:1px solid var(--border);}
+.collect-card .cc-icon{font-size:1.6rem;}
+.collect-card .cc-text{font-size:.65rem;color:var(--fg3);margin-top:.25rem;line-height:1.3;}
+.collect-card .cc-badge{font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:8px;margin-top:.3rem;display:inline-block;}
+.collect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.6rem;margin:1rem 0;}
+.collect-emoji{font-size:2rem;line-height:1;}
+.labeled-a .cc-badge{background:rgba(37,99,235,.2);color:#60A5FA;}
+.labeled-b .cc-badge{background:rgba(245,158,11,.2);color:#FCD34D;}
+.data-stats{display:flex;gap:1rem;padding:.8rem;background:var(--surface2);border-radius:8px;margin-top:.75rem;flex-wrap:wrap;}
+.data-stat{text-align:center;flex:1;}
+.data-stat .ds-val{font-size:1.2rem;font-weight:900;color:var(--primary);}
+.data-stat .ds-lbl{font-size:.65rem;color:var(--fg3);font-weight:600;}
+/* Wizard Step 3 — train */
+#wizTrainCanvas{border-radius:8px;background:#0a1929;display:block;width:100%;}
+.train-status{font-size:.82rem;color:var(--fg3);margin:.5rem 0;min-height:1.4em;}
+.train-result{display:none;background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.3);border-radius:8px;padding:.9rem;margin-top:.8rem;text-align:center;}
+.train-result .tr-acc{font-size:2rem;font-weight:900;color:var(--green);}
+.train-result .tr-label{font-size:.75rem;color:var(--fg3);}
+/* Wizard Step 4 — test */
+.test-examples{display:flex;flex-direction:column;gap:.75rem;margin:1rem 0;}
+.test-ex{border:2px solid var(--border);border-radius:10px;padding:.9rem 1rem;background:var(--surface2);}
+.test-ex-top{display:flex;align-items:center;gap:1rem;}
+.test-ex-icon{font-size:1.8rem;flex-shrink:0;}
+.test-ex-info{flex:1;min-width:0;}
+.test-ex-desc{font-size:.82rem;color:var(--fg);font-weight:500;}
+.test-ex-features{font-size:.72rem;color:var(--fg3);margin-top:.2rem;}
+.conf-bar-wrap{margin-top:.7rem;display:none;}
+.conf-bar-label{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.25rem;}
+.conf-bar-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.conf-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;width:0%;}
+.fill-a{background:var(--blue);}
+.fill-b{background:var(--orange);}
+.test-verdict{display:none;font-size:.78rem;font-weight:700;margin-top:.5rem;}
+.verdict-correct{color:var(--green);}
+.verdict-wrong{color:#F87171;}
+.test-score{display:flex;align-items:center;gap:.5rem;padding:.7rem;background:var(--surface2);border-radius:8px;margin-top:.5rem;}
+.score-big{font-size:1.5rem;font-weight:900;color:var(--primary);}
+.score-label{font-size:.75rem;color:var(--fg3);}
+/* Wizard Step 5 — summary */
+.project-card{border:1px solid var(--primary);border-radius:12px;padding:1.4rem;background:rgba(8,145,178,.05);}
+.proj-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+.proj-icon{font-size:2.5rem;}
+.proj-title{font-size:1.1rem;font-weight:800;color:var(--fg);}
+.proj-sub{font-size:.78rem;color:var(--fg3);}
+.proj-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem;}
+.proj-stat{text-align:center;background:var(--surface2);border-radius:8px;padding:.7rem;}
+.proj-stat-val{font-size:1.4rem;font-weight:900;color:var(--primary);}
+.proj-stat-lbl{font-size:.67rem;color:var(--fg3);font-weight:600;}
+.proj-findings{font-size:.82rem;color:var(--fg2);line-height:1.6;background:var(--surface2);border-radius:8px;padding:.9rem;margin-bottom:1rem;}
+.wiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);}
+/* ── Footer ── */
+footer{background:var(--nav-bg);color:rgba(255,255,255,.7);text-align:center;padding:2rem max(16px,env(safe-area-inset-left,0px));}
+.footer-inner{max-width:880px;margin:0 auto;}
+.footer-title{font-size:1rem;font-weight:900;color:#fff;letter-spacing:.05em;}
+.footer-sub{font-size:.72rem;color:rgba(255,255,255,.4);margin:.25rem 0 1rem;}
+
+.sep{color:rgba(255,255,255,.2);}
+.footer-copy{display:flex;align-items:center;justify-content:center;gap:.7rem;font-size:.72rem;color:rgba(255,255,255,.35);flex-wrap:wrap;margin-top:.5rem;}
+
+/* ── 5.1 enriched ── */
+.pipeline-wrap{background:var(--nav-bg);border-radius:12px;padding:1.4rem;margin:1.2rem 0;}
+.pipeline-track{display:flex;align-items:flex-start;justify-content:space-between;}
+.pipe-node{display:flex;flex-direction:column;align-items:center;gap:.4rem;flex:1;}
+.pipe-node-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.pipe-node-icon.blue{background:rgba(8,145,178,.18);border:2px solid rgba(8,145,178,.4);}
+.pipe-node-icon.purple{background:rgba(124,58,237,.18);border:2px solid rgba(124,58,237,.4);}
+.pipe-node-icon.green{background:rgba(5,150,105,.18);border:2px solid rgba(5,150,105,.4);}
+.pipe-node-label{font-size:.78rem;font-weight:700;color:var(--fg);text-align:center;margin-top:.2rem;}
+.pipe-node-sub{font-size:.68rem;color:var(--fg3);text-align:center;line-height:1.4;}
+.pipe-arrow{flex:0 0 36px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding-top:14px;}
+.pipe-arrow-track{width:36px;height:8px;position:relative;overflow:hidden;}
+.pipe-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);position:absolute;top:0;animation:pipeDot 1.6s linear infinite;}
+@keyframes pipeDot{0%{left:-7px;opacity:0;}15%{opacity:1;}85%{opacity:1;}100%{left:36px;opacity:0;}}
+.prob-types{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.ptype-btn{padding:.38rem .8rem;border:1.5px solid var(--border);border-radius:20px;background:transparent;color:var(--fg2);font-size:.77rem;cursor:pointer;transition:all .2s;}
+.ptype-btn.active,.ptype-btn:hover{background:var(--primary);border-color:var(--primary);color:#fff;}
+.ptype-panel{display:none;animation:fadeInUp .3s ease;}
+.ptype-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;align-items:start;}
+@media(max-width:540px){.ptype-panel.active{grid-template-columns:1fr;}}
+.ptype-info{padding:.85rem 1rem;background:var(--bg2);border-radius:8px;font-size:.81rem;}
+.ptype-info strong{display:block;margin-bottom:.35rem;font-size:.88rem;color:var(--primary);}
+.ptype-note{margin-top:.4rem;font-size:.72rem;color:var(--fg3);}
+.ptype-cv-wrap{background:var(--nav-bg);border-radius:8px;overflow:hidden;}
+.ptype-cv-wrap canvas{display:block;width:100%;height:110px;}
+.radar-row{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;}
+.radar-legend{display:flex;flex-direction:column;gap:.5rem;font-size:.75rem;padding-top:.5rem;}
+.radar-leg-item{display:flex;align-items:center;gap:.4rem;}
+.radar-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+#radarTip{font-size:.76rem;color:var(--primary);min-height:1.3em;text-align:left;margin-top:.5rem;font-style:italic;}
+.dyp-wrap{background:linear-gradient(135deg,rgba(8,145,178,.07),rgba(124,58,237,.05));border:1.5px solid rgba(8,145,178,.22);border-radius:12px;padding:1.2rem;}
+.dyp-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem;}
+@media(max-width:520px){.dyp-row{grid-template-columns:1fr;}}
+.dyp-field label{display:block;font-size:.71rem;font-weight:700;color:var(--fg2);margin-bottom:.28rem;text-transform:uppercase;letter-spacing:.05em;}
+.dyp-field select{width:100%;padding:.45rem .65rem;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--fg);font-size:.81rem;}
+.dyp-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem;}
+.dyp-chip{padding:.3rem .65rem;border-radius:6px;font-size:.73rem;font-weight:600;transition:all .4s;}
+.dyp-chip.pass{background:rgba(5,150,105,.18);color:#34d399;}
+.dyp-chip.fail{background:rgba(248,113,113,.12);color:#F87171;}
+#dypVerdict{margin-top:.55rem;font-size:.82rem;font-weight:600;}
+
+/* ── Lang toggle ── */
+
+/* ── Dual-language spans ── */
+.lang-ms { display: none; }
+
+.lang-toggle-btn{
+  background:rgba(255,255,255,.09);
+  border:1.5px solid rgba(255,255,255,.22);
+  color:#e2e8f0;
+  border-radius:20px;
+  padding:3px 12px;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:background .2s,border-color .2s;
+  white-space:nowrap;
+  align-self:center;
+}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);}
+
+/* Quiz styles */
+.quiz-q{font-size:.93rem;font-weight:600;margin-bottom:.75rem}
+.quiz-opts{display:grid;gap:.45rem;margin-bottom:.9rem}
+.quiz-opt{padding:.65rem 1rem;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;font-size:.88rem;transition:.2s;text-align:left;font-family:var(--font);color:var(--fg)}
+.quiz-opt:hover{border-color:var(--primary)}
+.quiz-opt.correct{border-color:var(--green);background:rgba(5,150,105,.1)}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(220,38,38,.1)}
+.quiz-fb.ok{background:rgba(5,150,105,.1);color:var(--green);padding:.6rem .9rem;border-radius:8px;margin-top:.4rem;font-size:.85rem}
+.quiz-fb.no{background:rgba(220,38,38,.1);color:var(--red);padding:.6rem .9rem;border-radius:8px;margin-top:.4rem;font-size:.85rem}
+.quiz-progress{display:flex;gap:.4rem;margin-bottom:1rem}
+.q-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:.3s}
+.q-dot.done{background:var(--green)}
+.q-dot.cur{background:var(--primary)}
+
+
+.act-cta-wrap{text-align:center;padding:2.5rem 1rem 1rem;border-top:1px solid rgba(255,255,255,.08);margin-top:2.5rem;}
+.act-cta-label{font-size:.9rem;color:var(--muted,rgba(255,255,255,.5));margin-bottom:1.1rem;}
+.act-cta-btn{display:inline-flex;align-items:center;gap:.7rem;background:var(--primary);color:#fff;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;padding:.85rem 2rem;border-radius:10px;text-decoration:none;transition:filter .2s,transform .15s;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+.act-cta-btn:hover{filter:brightness(1.12);transform:translateY(-2px);}
+.act-cta-tiers{font-size:.78rem;font-weight:400;opacity:.82;letter-spacing:.02em;}
+
+.module-nav{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:2rem auto 0;max-width:900px;padding:0 max(16px,env(safe-area-inset-left,0px));}
+.module-nav .mn-card{display:block;padding:1.1rem 1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:background .2s;}
+.module-nav .mn-card:hover{background:rgba(255,255,255,.13);}
+.module-nav .mn-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.3rem;}
+.module-nav .mn-title{font-size:.97rem;font-weight:700;color:#fff;}
+.module-nav .mn-next{text-align:right;}
+
+/* ── Active student chip ── */
+#activeStudentChip{display:none;align-items:center;gap:.4rem;background:rgba(8,145,178,.18);border:1px solid rgba(8,145,178,.4);border-radius:999px;padding:.22rem .75rem .22rem .5rem;font-size:.72rem;color:#67e8f9;white-space:nowrap;max-width:180px;}
+#activeStudentChip .chip-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0;}
+#activeStudentChip .chip-name{overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+</style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+
+<!-- Chevron Strip -->
+<div class="chev-strip" aria-label="UMPSA STEM Lab">
+  <span>See</span><span>Think</span><span>Explore</span><span>Marvel</span>
+</div>
+
+<!-- Site Nav -->
+<nav class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand"><em>AI</em>&nbsp;Adventure<span class="brand-sub">&nbsp;· STEM Lab</span></a>
+    <nav>
+      <div class="nav-drop-wrap"><button class="nav-drop-btn" id="modDropBtn">Modules <span class="arr">▾</span></button><div class="nav-drop-menu" id="modDropMenu"><a href="module-1.html"><span class="mn">M1</span>Why AI?</a>
+<a href="module-2.html"><span class="mn">M2</span>Supervised Learning</a>
+<a href="module-3.html"><span class="mn">M3</span>Unsupervised Learning</a>
+<a href="module-4.html"><span class="mn">M4</span>Reinforcement Learning</a>
+<a href="module-5.html" class="cur"><span class="mn">M5</span>Build Your Own AI</a>
+<a href="module-6.html"><span class="mn">M6</span>What's Next in AI?</a>
+<div class="sep-line"></div>
+<a href="index.html"><span class="mn">🏠</span>Home</a></div></div>
+    
+    <div id="activeStudentChip"><div class="chip-avatar" id="chipAvatar"></div><span class="chip-name" id="chipName"></span></div>
+  <button id="langToggle" class="lang-toggle-btn" onclick="setLang(document.documentElement.lang==='ms'?'en':'ms')" title="Tukar Bahasa / Switch Language">BM</button>
+</nav>
+  </div>
+</nav>
+
+<!-- Module Hero -->
+<section class="module-hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="mod-eyebrow">Module 5 · Build Your Own AI</div>
+    <h1>From <em>Data</em> to <em>Prototype</em></h1>
+    <p class="sub"><span class="lang-en">Problem &rarr; Data &rarr; Train &rarr; Test &rarr; Present &mdash; build a real AI project from scratch</span><span class="lang-ms">Masalah &rarr; Data &rarr; Latih &rarr; Uji &rarr; Bentang &mdash; bina projek AI sebenar dari awal</span></p>
+    <div class="module-meta">
+      <span class="meta-chip"><span data-en="🔍 Problem Framing" data-ms="🔍 Penentuan Masalah">🔍 Problem Framing</span></span>
+      <span class="meta-chip"><span data-en="🗂 Data Collection" data-ms="🗂 Pengumpulan Data">🗂 Data Collection</span></span>
+      <span class="meta-chip"><span data-en="🤖 Model Training" data-ms="🤖 Latihan Model">🤖 Model Training</span></span>
+      <span class="meta-chip"><span data-en="🧪 Testing" data-ms="🧪 Pengujian">🧪 Testing</span></span>
+      <span class="meta-chip">⏱ ~90 min</span>
+    </div>
+  </div>
+</section>
+
+<!-- Progress Bar -->
+<div class="prog-bar-wrap">
+  <div class="prog-bar-inner">
+    <span class="prog-label"><span data-en="Progress" data-ms="Kemajuan">Progress</span></span>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <span class="prog-pct" id="progPct">0%</span>
+  </div>
+</div>
+
+<main>
+<div class="wrap">
+
+<!-- ══════════════════ SECTION 5.1 ══════════════════ -->
+<div class="mod-section reveal" id="sec51">
+  <div class="mod-section-header" onclick="toggleSection('sec51')">
+    <div class="section-badge badge-see"><span class="badge-icon">🔍</span>SEE</div>
+    <div class="section-header-text">
+      <h2><span data-en="5.1 — Identifying a Real-World Problem" data-ms="5.1 — Mengenal Pasti Masalah Dunia Sebenar">5.1 — Identifying a Real-World Problem</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~12 min</span>
+        <span class="sec-status" id="st51">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+    <div class="mod-section-body">
+    <div class="concept-card" style="border-left:3px solid var(--primary);margin-bottom:1rem;">
+      <h3>What makes a problem right for AI?</h3>
+      <p style="font-size:.88rem;line-height:1.6;"><span class="lang-en">Not every problem needs AI. The best candidates share three qualities:</span><span class="lang-ms">Tidak semua masalah memerlukan AI. Calon terbaik berkongsi tiga kualiti:</span></p>
+<ul style="margin:.5rem 0 .8rem 1.1rem;line-height:1.7;color:var(--text-muted,#cbd5e1);font-size:.85rem;">
+  <li><strong style="color:#fff;">Learnable patterns exist in data</strong> — the input reliably predicts the output.</li>
+  <li><strong style="color:#fff;">Too slow or costly for humans at scale</strong> — automation saves real time or money.</li>
+  <li><strong style="color:#fff;">Labelled examples can be collected</strong> — you can teach the model with real cases.</li>
+</ul>
+<p style="font-size:.85rem;line-height:1.6;color:var(--text-muted,#cbd5e1);"><span class="lang-en">Watch the pipeline below — this is how every AI system starts.</span><span class="lang-ms">Tonton saluran paip di bawah — inilah cara setiap sistem AI bermula.</span></p>
+    </div>
+    <div class="pipeline-wrap">
+      <div style="font-size:.72rem;font-weight:700;color:var(--fg3);letter-spacing:.09em;margin-bottom:1.1rem;">THE AI PROBLEM PIPELINE</div>
+      <div class="pipeline-track">
+        <div class="pipe-node">
+          <div class="pipe-node-icon blue">📷</div>
+          <div class="pipe-node-label">Raw Input</div>
+          <div class="pipe-node-sub">Photos · Text<br>Sensor · Audio</div>
+        </div>
+        <div class="pipe-arrow"><div class="pipe-arrow-track">
+          <div class="pipe-dot" style="animation-delay:0s"></div>
+          <div class="pipe-dot" style="animation-delay:.55s"></div>
+          <div class="pipe-dot" style="animation-delay:1.1s"></div>
+        </div></div>
+        <div class="pipe-node">
+          <div class="pipe-node-icon purple">🧠</div>
+          <div class="pipe-node-label">AI Learns</div>
+          <div class="pipe-node-sub">Finds hidden rules<br>from 100s of examples</div>
+        </div>
+        <div class="pipe-arrow"><div class="pipe-arrow-track">
+          <div class="pipe-dot" style="animation-delay:.28s"></div>
+          <div class="pipe-dot" style="animation-delay:.83s"></div>
+          <div class="pipe-dot" style="animation-delay:1.38s"></div>
+        </div></div>
+        <div class="pipe-node">
+          <div class="pipe-node-icon green">✅</div>
+          <div class="pipe-node-label">Prediction</div>
+          <div class="pipe-node-sub">Category · Number<br>Label · Sequence</div>
+        </div>
+      </div>
+    </div>
+    <h3 style="margin:.9rem 0 .55rem;font-size:.9rem;font-weight:700;">🗂 Five AI Problem Types — click to explore</h3>
+    <div class="prob-types">
+      <button class="ptype-btn active" onclick="showPtype(0)">Classification</button>
+      <button class="ptype-btn" onclick="showPtype(1)">Regression</button>
+      <button class="ptype-btn" onclick="showPtype(2)">Detection</button>
+      <button class="ptype-btn" onclick="showPtype(3)">Generation</button>
+      <button class="ptype-btn" onclick="showPtype(4)">Recommendation</button>
+    </div>
+    <div id="ptype0" class="ptype-panel active">
+      <div class="ptype-info"><strong>Classification</strong>
+        <p><span class="lang-en">Assigns input to one of N categories. Is this leaf <em>healthy</em> or <em>diseased</em>?</span><span class="lang-ms">Menetapkan input kepada salah satu daripada N kategori. Adakah daun ini <em>sihat</em> atau <em>sakit</em>?</span></p>
+        <div class="ptype-note">Output: a discrete label · Used in: medical diagnosis, spam filters, image tagging</div>
+      </div><div class="ptype-cv-wrap"><canvas id="ptcv0"></canvas></div>
+    </div>
+    <div id="ptype1" class="ptype-panel">
+      <div class="ptype-info"><strong>Regression</strong>
+        <p><span class="lang-en">Predicts a continuous number. What will tomorrow's temperature be?</span><span class="lang-ms">Meramalkan nombor berterusan. Berapakah suhu esok hari?</span></p>
+        <div class="ptype-note">Output: a number · Used in: price forecasting, weather, energy demand</div>
+      </div><div class="ptype-cv-wrap"><canvas id="ptcv1"></canvas></div>
+    </div>
+    <div id="ptype2" class="ptype-panel">
+      <div class="ptype-info"><strong>Detection</strong>
+        <p><span class="lang-en">Finds and locates objects inside an image. Where is the tumour in this scan?</span><span class="lang-ms">Mencari dan mengesan objek dalam imej. Di mana tumor dalam imbasan ini?</span></p>
+        <div class="ptype-note">Output: bounding box + label · Used in: self-driving cars, medical imaging, security</div>
+      </div><div class="ptype-cv-wrap"><canvas id="ptcv2"></canvas></div>
+    </div>
+    <div id="ptype3" class="ptype-panel">
+      <div class="ptype-info"><strong>Generation</strong>
+        <p><span class="lang-en">Creates new content — text, images, audio — from a prompt or pattern.</span><span class="lang-ms">Mencipta kandungan baharu — teks, imej, audio — daripada gesaan atau corak.</span></p>
+        <div class="ptype-note">Output: new data · Used in: chatbots, image synthesis, code completion</div>
+      </div><div class="ptype-cv-wrap"><canvas id="ptcv3"></canvas></div>
+    </div>
+    <div id="ptype4" class="ptype-panel">
+      <div class="ptype-info"><strong>Recommendation</strong>
+        <p><span class="lang-en">Suggests items based on past behaviour and similar users. What song next?</span><span class="lang-ms">Mencadangkan item berdasarkan tingkah laku lalu dan pengguna yang serupa. Lagu apa seterusnya?</span></p>
+        <div class="ptype-note">Output: ranked list · Used in: streaming, e-commerce, news feeds</div>
+      </div><div class="ptype-cv-wrap"><canvas id="ptcv4"></canvas></div>
+    </div>
+    <h3 style="margin:1rem 0 .3rem;font-size:.9rem;font-weight:700;">📡 AI Suitability Radar</h3>
+    <p style="font-size:.8rem;color:var(--fg2);margin-bottom:.6rem;"><span class="lang-en">Hover an axis to learn what each criterion means. <span style="color:#34d399;font-weight:600;">Green</span> = good fit &nbsp;·&nbsp; <span style="color:#F87171;font-weight:600;">Red</span> = poor fit.</span><span class="lang-ms">Layangkan tetikus pada paksi untuk mengetahui maksud setiap kriteria. <span style="color:#34d399;font-weight:600;">Hijau</span> = sesuai &nbsp;·&nbsp; <span style="color:#F87171;font-weight:600;">Merah</span> = tidak sesuai.</span></p>
+    <div class="radar-row">
+      <canvas id="radar51" width="300" height="240"></canvas>
+      <div style="flex:1;min-width:130px;">
+        <div class="radar-legend">
+          <div class="radar-leg-item"><div class="radar-leg-dot" style="background:#34d399"></div><span>Good AI problem<br><em style="color:var(--fg3)">e.g. leaf disease detection</em></span></div>
+          <div class="radar-leg-item" style="margin-top:.3rem;"><div class="radar-leg-dot" style="background:#F87171"></div><span>Poor fit<br><em style="color:var(--fg3)">e.g. predicting lottery numbers</em></span></div>
+        </div>
+        <div id="radarTip"></div>
+      </div>
+    </div>
+    <div class="sec-divider"></div>
+    <h3 style="margin:.4rem 0 .7rem;font-size:.9rem;font-weight:700;">🛠 Design Your Own AI Problem</h3>
+    <div class="dyp-wrap">
+      <div class="dyp-row">
+        <div class="dyp-field"><label>Problem domain</label>
+          <select id="dypDomain"><option value="">— choose —</option><option value="health">Healthcare</option><option value="agri">Agriculture</option><option value="edu">Education</option><option value="env">Environment</option><option value="transport">Transport</option></select>
+        </div>
+        <div class="dyp-field"><label>Input data type</label>
+          <select id="dypInput"><option value="">— choose —</option><option value="image">Images / Photos</option><option value="sensor">Sensor readings</option><option value="text">Text / Documents</option><option value="audio">Audio / Speech</option><option value="tabular">Structured tables</option></select>
+        </div>
+      </div>
+      <div class="dyp-row">
+        <div class="dyp-field"><label>Output type</label>
+          <select id="dypOutput"><option value="">— choose —</option><option value="class">A category (yes/no, A/B/C)</option><option value="number">A number (forecast)</option><option value="location">A location (bounding box)</option><option value="text">Generated content</option></select>
+        </div>
+        <div class="dyp-field"><label>Data availability</label>
+          <select id="dypData"><option value="">— choose —</option><option value="abundant">Abundant — 1000+ examples easy</option><option value="moderate">Moderate — 100–1000, some effort</option><option value="scarce">Scarce — hard to collect</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="evaluateProblem51()">Evaluate my problem →</button>
+      <div class="dyp-chips" id="dypChips" style="display:none;"></div>
+      <div id="dypVerdict"></div>
+    </div>
+    <div class="sec-divider"></div>
+    <p style="font-size:.87rem;color:var(--fg2);margin-bottom:.75rem;font-weight:600;"><span class="lang-en">🎮 Quick check — which are good AI problems? Click to reveal:</span><span class="lang-ms">🎮 Semak pantas — yang mana masalah AI yang baik? Klik untuk dedahkan:</span></p>
+    <div class="ai-problem-grid" id="probGrid51">
+      <div class="ai-prob-card" data-good="1" onclick="checkProblem(this)"><div class="ai-prob-title">🐾 Identify animal species from camera-trap photos</div><div class="ai-prob-desc">Thousands of photos per day, clear visual patterns</div></div>
+      <div class="ai-prob-card" data-good="0" onclick="checkProblem(this)"><div class="ai-prob-title">🎲 Predict tomorrow's lottery numbers</div><div class="ai-prob-desc">Completely random — no pattern to learn</div></div>
+      <div class="ai-prob-card" data-good="1" onclick="checkProblem(this)"><div class="ai-prob-title">📧 Filter spam emails automatically</div><div class="ai-prob-desc">Clear linguistic patterns, millions of examples available</div></div>
+      <div class="ai-prob-card" data-good="1" onclick="checkProblem(this)"><div class="ai-prob-title">🌿 Detect diseased crop leaves with a phone</div><div class="ai-prob-desc">Visual patterns, farmers can label examples</div></div>
+      <div class="ai-prob-card" data-good="0" onclick="checkProblem(this)"><div class="ai-prob-title">💡 Decide if a new law is morally right</div><div class="ai-prob-desc">Value judgement — no single objective correct label</div></div>
+      <div class="ai-prob-card" data-good="1" onclick="checkProblem(this)"><div class="ai-prob-title">🎵 Recommend songs based on listening history</div><div class="ai-prob-desc">Rich behavioural patterns, implicit feedback signal</div></div>
+    </div>
+    <div id="prob51Feedback" style="font-size:.83rem;color:var(--fg3);margin-top:.5rem;min-height:1.2em;"></div>
+    <div class="sec-divider"></div>
+    <div style="text-align:right;"><button class="btn btn-primary btn-sm" onclick="markDone('51')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button></div>
+
+  </div>
+</div>
+
+<!-- ══════════════════ SECTION 5.2 ══════════════════ -->
+<div class="mod-section reveal" id="sec52">
+  <div class="mod-section-header" onclick="toggleSection('sec52')">
+    <div class="section-badge badge-think"><span class="badge-icon">🗂</span>THINK</div>
+    <div class="section-header-text">
+      <h2><span data-en="5.2 — Collecting and Preparing Data" data-ms="5.2 — Mengumpul dan Menyediakan Data">5.2 — Collecting and Preparing Data</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~15 min</span>
+        <span class="sec-status" id="st52">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="mod-section-body">
+
+    <div class="concept-card">
+      <h3>"Garbage in, garbage out"</h3>
+      <p style="font-size:.88rem;"><span class="lang-en">The quality and quantity of your data determines the ceiling of your model's performance. Data preparation is often <strong>70–80% of a real AI project</strong>.</span><span class="lang-ms">Kualiti dan kuantiti data anda menentukan siling prestasi model anda. Penyediaan data sering menjadi <strong>70–80% daripada projek AI sebenar</strong>.</span></p>
+    </div>
+
+    <!-- ── Animated Data Journey pipeline ── -->
+    <p style="font-size:.82rem;font-weight:700;color:var(--fg2);margin:.9rem 0 .4rem;"><span class="lang-en">📡 The Data Journey — every AI project follows these stages:</span><span class="lang-ms">📡 Perjalanan Data — setiap projek AI mengikuti peringkat ini:</span></p>
+    <div class="pipeline-wrap" id="pipe52wrap">
+      <div class="pipeline-track" style="gap:.3rem;">
+        <div class="pipe-node">
+          <div class="pipe-node-icon blue" style="font-size:1.3rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;">📁</div>
+          <span style="font-size:.67rem;font-weight:700;color:var(--fg2);text-align:center;">Collect<br>Raw Data</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(8,145,178,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:0s"></div>
+          <div class="pipe-dot" style="animation-delay:.5s"></div>
+        </div>
+        <div class="pipe-node">
+          <div class="pipe-node-icon blue" style="font-size:1.3rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;">🔍</div>
+          <span style="font-size:.67rem;font-weight:700;color:var(--fg2);text-align:center;">Inspect<br>& Audit</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(8,145,178,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:.3s"></div>
+          <div class="pipe-dot" style="animation-delay:.8s"></div>
+        </div>
+        <div class="pipe-node">
+          <div class="pipe-node-icon blue" style="font-size:1.3rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;">🧹</div>
+          <span style="font-size:.67rem;font-weight:700;color:var(--fg2);text-align:center;">Clean<br>& Fix</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(8,145,178,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:.6s"></div>
+          <div class="pipe-dot" style="animation-delay:1.1s"></div>
+        </div>
+        <div class="pipe-node">
+          <div class="pipe-node-icon blue" style="font-size:1.3rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;">✂️</div>
+          <span style="font-size:.67rem;font-weight:700;color:var(--fg2);text-align:center;">Split<br>Train/Test</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(8,145,178,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:.9s"></div>
+          <div class="pipe-dot" style="animation-delay:1.4s"></div>
+        </div>
+        <div class="pipe-node">
+          <div class="pipe-node-icon blue" style="font-size:1.3rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(5,150,105,.18);border-color:rgba(5,150,105,.4);">🏷️</div>
+          <span style="font-size:.67rem;font-weight:700;color:var(--fg2);text-align:center;">Label<br>& Train</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:.9rem;">
+      <div class="concept-card">
+        <h3>🏷 Labels</h3>
+        <p style="font-size:.83rem;"><span class="lang-en">Each training example needs a <strong>label</strong> — the correct answer. In supervised learning, a human expert provides labels. Quality labels require clear criteria and consistency.</span><span class="lang-ms">Setiap contoh latihan memerlukan <strong>label</strong> — jawapan yang betul. Dalam pembelajaran terarah, pakar manusia memberikan label. Label berkualiti memerlukan kriteria yang jelas dan konsisten.</span></p>
+      </div>
+      <div class="concept-card">
+        <h3>✂ Train / Val / Test split</h3>
+        <p style="font-size:.83rem;"><span class="lang-en">Never test your model on the same data it trained on. Typical split: <strong>70% training</strong>, 15% validation, 15% test. The test set is <em>sacred</em> — touch it only at the very end.</span><span class="lang-ms">Jangan sekali-kali uji model anda pada data yang sama yang ia dilatih. Pembahagian tipikal: <strong>70% latihan</strong>, 15% pengesahan, 15% ujian. Set ujian adalah <em>suci</em> — sentuh hanya pada penghujungnya.</span></p>
+      </div>
+    </div>
+
+    <!-- ── Interactive Split Visualizer ── -->
+    <div class="pipeline-wrap" style="margin-top:1rem;">
+      <p style="font-size:.82rem;font-weight:700;color:var(--primary);margin:0 0 .7rem;"><span class="lang-en">🎛 Interactive Split Visualizer — drag the slider to see how splitting works</span><span class="lang-ms">🎛 Penggambar Pembahagian Interaktif — seret gelangsar untuk lihat cara pembahagian berfungsi</span></p>
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.7rem;flex-wrap:wrap;">
+        <label style="font-size:.8rem;color:var(--fg2);flex:1;min-width:180px;">
+          Training %: <strong id="trainPct52">70</strong>%
+          <input type="range" id="splitSlider52" min="50" max="85" value="70" oninput="drawSplit52()" style="width:100%;margin-top:.3rem;">
+        </label>
+        <div style="display:flex;gap:1rem;font-size:.75rem;">
+          <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:12px;height:12px;border-radius:3px;background:#0891B2;display:inline-block;"></span>Train</span>
+          <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:12px;height:12px;border-radius:3px;background:#059669;display:inline-block;"></span>Validation</span>
+          <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:12px;height:12px;border-radius:3px;background:#F59E0B;display:inline-block;"></span>Test</span>
+        </div>
+      </div>
+      <div id="splitBlocks52" style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:.65rem;"></div>
+      <div id="splitCounts52" style="font-size:.78rem;color:var(--fg3);display:flex;gap:1.5rem;flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- ── Class Imbalance Simulator ── -->
+    <div class="pipeline-wrap" style="margin-top:1rem;">
+      <p style="font-size:.82rem;font-weight:700;color:var(--primary);margin:0 0 .5rem;"><span class="lang-en">⚖ Class Imbalance Simulator — see how bias affects model accuracy</span><span class="lang-ms">⚖ Simulator Ketidakseimbangan Kelas — lihat cara kecenderungan mempengaruhi ketepatan model</span></p>
+      <p style="font-size:.78rem;color:var(--fg3);margin:0 0 .7rem;"><span class="lang-en">Drag to set how many Diseased samples you have (out of 200 total):</span><span class="lang-ms">Seret untuk tetapkan berapa banyak sampel Sakit yang anda ada (daripada 200 jumlah):</span></p>
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.6rem;flex-wrap:wrap;">
+        <label style="font-size:.8rem;color:var(--fg2);flex:1;min-width:180px;">
+          Diseased samples: <strong id="imbalVal52">20</strong>
+          <input type="range" id="imbalSlider52" min="5" max="100" value="20" oninput="updateImbal52()" style="width:100%;margin-top:.3rem;">
+        </label>
+      </div>
+      <canvas id="imbalCanvas52" height="90" style="width:100%;border-radius:8px;"></canvas>
+      <div id="imbalMsg52" style="margin-top:.6rem;font-size:.8rem;border-radius:8px;padding:.55rem .8rem;"></div>
+    </div>
+
+    <div class="callout warn" style="margin-top:.9rem;">
+      <strong>⚠ Watch for class imbalance!</strong> If 95% of your examples are "healthy" and only 5% "diseased," a model that always predicts "healthy" scores 95% accuracy — but is completely useless.
+    </div>
+
+    <div class="sec-divider"></div>
+
+    <!-- ── Spot the data problems ── -->
+    <p style="font-size:.88rem;color:var(--fg2);margin-bottom:.5rem;font-weight:600;"><span class="lang-en">🎮 Spot the data problems — click on issues in this dataset:</span><span class="lang-ms">🎮 Kesan masalah data — klik pada isu dalam set data ini:</span></p>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+      <div style="font-size:.78rem;font-weight:700;color:var(--fg3);margin-bottom:.6rem;">PLANT HEALTH DATASET — 200 samples</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem;">
+        <div class="data-issue-row" data-issue="1" onclick="flagDataIssue(this)" style="display:flex;align-items:center;gap:.75rem;padding:.5rem .7rem;border-radius:7px;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);">
+          <span style="font-size:1.1rem;">⚖</span>
+          <div style="flex:1;font-size:.8rem;"><strong>Class distribution:</strong> 180 Healthy · 20 Diseased</div>
+          <span class="issue-flag" style="font-size:.72rem;opacity:0;">⚠ Imbalanced!</span>
+        </div>
+        <div class="data-issue-row" data-issue="1" onclick="flagDataIssue(this)" style="display:flex;align-items:center;gap:.75rem;padding:.5rem .7rem;border-radius:7px;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);">
+          <span style="font-size:1.1rem;">🌅</span>
+          <div style="flex:1;font-size:.8rem;"><strong>Photo conditions:</strong> 180 taken indoors, 20 taken outside in sunlight</div>
+          <span class="issue-flag" style="font-size:.72rem;opacity:0;">⚠ Confounding variable!</span>
+        </div>
+        <div class="data-issue-row" data-issue="0" onclick="flagDataIssue(this)" style="display:flex;align-items:center;gap:.75rem;padding:.5rem .7rem;border-radius:7px;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);">
+          <span style="font-size:1.1rem;">📐</span>
+          <div style="flex:1;font-size:.8rem;"><strong>Image size:</strong> All resized to 224×224 pixels</div>
+          <span class="issue-flag" style="font-size:.72rem;opacity:0;">✓ Good practice!</span>
+        </div>
+        <div class="data-issue-row" data-issue="1" onclick="flagDataIssue(this)" style="display:flex;align-items:center;gap:.75rem;padding:.5rem .7rem;border-radius:7px;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);">
+          <span style="font-size:1.1rem;">🏷</span>
+          <div style="flex:1;font-size:.8rem;"><strong>Labels:</strong> Added by a single intern over one afternoon</div>
+          <span class="issue-flag" style="font-size:.72rem;opacity:0;">⚠ Needs expert review!</span>
+        </div>
+      </div>
+    </div>
+    <div id="data52Feedback" style="font-size:.83rem;color:var(--fg3);min-height:1.2em;"></div>
+
+    <div class="sec-divider"></div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary btn-sm" onclick="markDone('52')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ SECTION 5.3 ══════════════════ -->
+<div class="mod-section reveal" id="sec53">
+  <div class="mod-section-header" onclick="toggleSection('sec53')">
+    <div class="section-badge badge-exp"><span class="badge-icon">🤖</span>EXP</div>
+    <div class="section-header-text">
+      <h2><span data-en="5.3 — Training an AI Model" data-ms="5.3 — Melatih Model AI">5.3 — Training an AI Model</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~15 min</span>
+        <span class="sec-status" id="st53">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="mod-section-body">
+
+    <div class="concept-card">
+      <h3>The training loop</h3>
+      <p style="font-size:.88rem;"><span class="lang-en">Training is an iterative process: the model makes a prediction → compares to the label (calculates <strong>loss</strong>) → adjusts its internal weights to reduce that loss → repeats. One complete pass through all training data is called an <strong>epoch</strong>.</span><span class="lang-ms">Latihan adalah proses berulang: model membuat ramalan → bandingkan dengan label (kira <strong>kehilangan</strong>) → laras pemberat dalaman untuk mengurangkan kehilangan → ulang. Satu laluan lengkap melalui semua data latihan dipanggil <strong>epoch</strong>.</span></p>
+    </div>
+
+    <!-- ── Animated Training Loop Diagram ── -->
+    <p style="font-size:.82rem;font-weight:700;color:var(--fg2);margin:.9rem 0 .4rem;">🔄 How one training step works:</p>
+    <div class="pipeline-wrap" id="loop53wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.4rem;flex-wrap:nowrap;">
+        <div class="pipe-node" style="flex:1;">
+          <div class="pipe-node-icon blue" style="font-size:1.1rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;">📸</div>
+          <span style="font-size:.63rem;font-weight:700;color:var(--fg2);text-align:center;">Input<br>Data</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(8,145,178,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:0s"></div>
+        </div>
+        <div class="pipe-node" style="flex:1;">
+          <div class="pipe-node-icon blue" style="font-size:1.1rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;">🧠</div>
+          <span style="font-size:.63rem;font-weight:700;color:var(--fg2);text-align:center;">Model<br>Predicts</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(248,113,113,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:.4s;background:#F87171;"></div>
+        </div>
+        <div class="pipe-node" style="flex:1;">
+          <div class="pipe-node-icon blue" style="font-size:1.1rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4);">📉</div>
+          <span style="font-size:.63rem;font-weight:700;color:var(--fg2);text-align:center;">Calculate<br>Loss</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(245,158,11,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:.8s;background:#F59E0B;"></div>
+        </div>
+        <div class="pipe-node" style="flex:1;">
+          <div class="pipe-node-icon blue" style="font-size:1.1rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);">⚙️</div>
+          <span style="font-size:.63rem;font-weight:700;color:var(--fg2);text-align:center;">Update<br>Weights</span>
+        </div>
+        <div class="pipe-arrow" style="position:relative;flex:1;height:4px;background:rgba(5,150,105,.18);align-self:center;border-radius:2px;overflow:visible;">
+          <div class="pipe-dot" style="animation-delay:1.2s;background:#34d399;"></div>
+        </div>
+        <div class="pipe-node" style="flex:1;">
+          <div class="pipe-node-icon blue" style="font-size:1.1rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(5,150,105,.18);border-color:rgba(5,150,105,.4);">🔁</div>
+          <span style="font-size:.63rem;font-weight:700;color:var(--fg2);text-align:center;">Next<br>Epoch</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--fg3);margin-top:.6rem;padding:0 .2rem;">
+        <span>Input →</span><span>Forward pass →</span><span>Loss calc →</span><span>Backprop →</span><span>Repeat ↺</span>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:.9rem;">
+      <div class="concept-card">
+        <h3>📉 Loss</h3>
+        <p style="font-size:.83rem;"><span class="lang-en">Loss measures how wrong the model is. <strong>Lower is better.</strong> Cross-entropy (classification), mean squared error (regression). Loss must fall each epoch.</span><span class="lang-ms">Kehilangan mengukur seberapa salah model. <strong>Lebih rendah lebih baik.</strong> Entropi silang (klasifikasi), ralat min kuasa dua (regresi). Kehilangan mesti turun setiap epoch.</span></p>
+      </div>
+      <div class="concept-card">
+        <h3>⚡ Learning Rate</h3>
+        <p style="font-size:.83rem;"><span class="lang-en">How large a step the model takes when updating weights. Too high → overshoots. Too low → stuck. Typical start: <code>0.001</code>.</span><span class="lang-ms">Seberapa besar langkah yang diambil model semasa mengemas kini pemberat. Terlalu tinggi → terlampaui. Terlalu rendah → tersekat. Permulaan tipikal: <code>0.001</code>.</span></p>
+      </div>
+    </div>
+
+    <!-- ── Overfitting Visualizer ── -->
+    <div class="callout warn" style="margin-top:.9rem;">
+      <strong>Overfitting:</strong> The model memorises training data instead of learning general patterns. Training loss keeps falling, but validation loss rises — the model fails on new data.
+    </div>
+    <div class="pipeline-wrap" style="margin:.8rem 0;">
+      <p style="font-size:.82rem;font-weight:700;color:var(--primary);margin:0 0 .5rem;"><span class="lang-en">🔬 Overfitting Explorer — see how too many epochs causes divergence</span><span class="lang-ms">🔬 Penjelajah Lampau-padanan — lihat cara terlalu banyak epoch menyebabkan penyelewengan</span></p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem;">
+        <label style="font-size:.8rem;color:var(--fg2);flex:1;min-width:140px;">Epochs: <strong id="ep53xLabel">30</strong>
+          <input type="range" id="ep53x" min="5" max="60" value="30" oninput="drawOverfit53()" style="width:100%;margin-top:.3rem;">
+        </label>
+        <label style="font-size:.8rem;color:var(--fg2);flex:1;min-width:140px;">Model Complexity: <strong id="cx53Label">Medium</strong>
+          <input type="range" id="cx53" min="1" max="3" value="2" oninput="drawOverfit53()" style="width:100%;margin-top:.3rem;">
+        </label>
+      </div>
+      <canvas id="overfitCanvas53" height="160" style="width:100%;border-radius:8px;"></canvas>
+      <div id="overfitMsg53" style="margin-top:.5rem;font-size:.79rem;padding:.5rem .75rem;border-radius:8px;"></div>
+      <div style="display:flex;gap:1.5rem;margin:.4rem 0;font-size:.73rem;color:var(--fg3);">
+        <span><span style="display:inline-block;width:12px;height:3px;background:#0891B2;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Train Loss</span>
+        <span><span style="display:inline-block;width:12px;height:3px;background:#F59E0B;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Val Loss</span>
+        <span style="margin-left:.5rem;color:#F87171;font-style:italic;" id="overfitZoneLabel"></span>
+      </div>
+    </div>
+
+    <!-- ── Weight Ball Simulation ── -->
+    <div class="pipeline-wrap" style="margin:.8rem 0;">
+      <p style="font-size:.82rem;font-weight:700;color:var(--primary);margin:0 0 .4rem;"><span class="lang-en">⚽ Learning Rate Simulator — watch the ball find the loss minimum</span><span class="lang-ms">⚽ Simulator Kadar Pembelajaran — tonton bola mencari minimum kehilangan</span></p>
+      <p style="font-size:.76rem;color:var(--fg3);margin:0 0 .6rem;"><span class="lang-en">The ball represents the model's weights. It needs to roll into the valley (minimum loss).</span><span class="lang-ms">Bola mewakili pemberat model. Ia perlu bergolek masuk ke lembah (kehilangan minimum).</span></p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem;">
+        <label style="font-size:.8rem;color:var(--fg2);flex:1;min-width:160px;">Learning Rate: <strong id="lrBallLabel">0.05</strong>
+          <input type="range" id="lrBall53" min="1" max="10" value="3" oninput="updateBall53()" style="width:100%;margin-top:.3rem;">
+        </label>
+        <button class="btn btn-primary btn-sm" onclick="runBall53()" style="align-self:flex-end;"><span data-en="<span data-en="▶ Run" data-ms="▶ Jalankan">▶ Run</span>" data-ms="▶ Jalankan">▶ Run</span></button>
+        <button class="btn btn-sm" onclick="resetBall53()" style="align-self:flex-end;background:var(--surface2);color:var(--fg2);border:1px solid var(--border);"><span data-en="<span data-en="↺ Reset" data-ms="↺ Tetapkan Semula">↺ Reset</span>" data-ms="↺ Tetapkan Semula">↺ Reset</span></button>
+      </div>
+      <canvas id="ballCanvas53" height="130" style="width:100%;border-radius:8px;"></canvas>
+      <div id="ballMsg53" style="font-size:.78rem;color:var(--fg3);margin-top:.4rem;min-height:1.4em;text-align:center;"></div>
+    </div>
+
+    <div class="sec-divider"></div>
+    <p style="font-size:.88rem;color:var(--fg2);margin-bottom:.75rem;font-weight:600;"><span class="lang-en">🎮 Adjust settings and watch the model train:</span><span class="lang-ms">🎮 Laraskan tetapan dan tonton model dilatih:</span></p>
+    <div class="train-controls">
+      <div class="slider-wrap">
+        <label>Learning Rate: <strong id="lr53Label">0.010</strong></label>
+        <input type="range" id="lr53" min="1" max="5" value="3" oninput="updateLR53()">
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--fg3);"><span>0.001 (slow)</span><span>0.1 (fast)</span></div>
+      </div>
+      <div class="slider-wrap">
+        <label>Epochs: <strong id="ep53Label">20</strong></label>
+        <input type="range" id="ep53" min="5" max="40" value="20" oninput="updateEp53()">
+      </div>
+    </div>
+    <canvas id="trainCanvas53" height="200"></canvas>
+    <div style="display:flex;gap:1.5rem;margin:.5rem 0;font-size:.75rem;color:var(--fg3);">
+      <span><span style="display:inline-block;width:12px;height:3px;background:#0891B2;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Train Loss</span>
+      <span><span style="display:inline-block;width:12px;height:3px;background:#059669;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>Validation Loss</span>
+      <span><span style="display:inline-block;width:12px;height:3px;background:#F59E0B;border-radius:2px;vertical-align:middle;margin-right:4px;border-top:1px dashed;"></span>Val Accuracy</span>
+    </div>
+    <div id="trainExplain53" style="display:none;margin:.75rem 0;"></div>
+    <div style="text-align:center;margin-top:.75rem;">
+      <button class="btn btn-primary btn-sm" id="trainBtn53" onclick="runTrain53()">▶ Run Training</button>
+    </div>
+    <div style="text-align:right;margin-top:1rem;">
+      <button class="btn btn-primary btn-sm" onclick="markDone('53')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ SECTION 5.4 ══════════════════ -->
+<div class="mod-section reveal" id="sec54">
+  <div class="mod-section-header" onclick="toggleSection('sec54')">
+    <div class="section-badge badge-think"><span class="badge-icon">🧪</span>THINK</div>
+    <div class="section-header-text">
+      <h2><span data-en="5.4 — Testing and Improving Your Model" data-ms="5.4 — Menguji dan Memperbaiki Model Anda">5.4 — Testing and Improving Your Model</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~12 min</span>
+        <span class="sec-status" id="st54">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="mod-section-body">
+    <div class="concept-card">
+      <h3>Accuracy isn't everything</h3>
+      <p style="font-size:.87rem;line-height:1.65;margin-bottom:.65rem;"><span class="lang-en">
+        A model that correctly labels 99% of emails as "not spam" — simply by <em>ignoring spam entirely</em> — 
+        achieves 99% accuracy but catches zero actual spam. That number looks great on paper while the model 
+        is completely useless in practice. To get an honest picture, we need richer metrics that measure 
+        <em>where</em> the model succeeds and fails:
+      </span><span class="lang-ms">Model yang melabel 99% e-mel dengan betul sebagai "bukan spam" — semata-mata dengan <em>mengabaikan spam sepenuhnya</em> — mencapai ketepatan 99% tetapi tidak menangkap satu pun spam sebenar. Angka itu kelihatan bagus di atas kertas sedangkan model tersebut tidak berguna sama sekali dalam amalan. Untuk mendapat gambaran jujur, kita memerlukan metrik yang lebih kaya yang mengukur <em>di mana</em> model berjaya dan gagal:</span></p>
+      <ul style="margin:.1rem 0 .7rem 1.1rem;line-height:1.8;font-size:.85rem;">
+        <li>
+          <strong style="color:#fff;">Precision</strong> — 
+          of every item the model <em>predicted</em> as positive, how many were actually positive? 
+          High precision means few false alarms.
+          <span style="display:inline-block;margin-left:.3rem;font-size:.78rem;color:var(--fg3);">e.g. "90% of flagged emails really were spam"</span>
+        </li>
+        <li>
+          <strong style="color:#fff;">Recall</strong> — 
+          of every item that <em>was actually</em> positive, how many did the model catch? 
+          High recall means few missed cases.
+          <span style="display:inline-block;margin-left:.3rem;font-size:.78rem;color:var(--fg3);">e.g. "we caught 85% of all spam that arrived"</span>
+        </li>
+        <li>
+          <strong style="color:#fff;">F1 Score</strong> — 
+          the harmonic mean of Precision and Recall. It penalises models that sacrifice one for the other, 
+          giving a single balanced score that only stays high when both are high.
+        </li>
+      </ul>
+      <p style="font-size:.82rem;color:var(--fg2);line-height:1.6;margin-top:.1rem;"><span class="lang-en">
+        There is always a trade-off: tuning a model to catch <em>every</em> positive (high recall) usually 
+        means more false alarms (lower precision), and vice versa. The right balance depends on the cost 
+        of each type of mistake in your specific problem.
+      </span><span class="lang-ms">Sentiasa ada pertukaran: menala model untuk menangkap <em>setiap</em> positif (daya ingat tinggi) biasanya bermakna lebih banyak penggera palsu (ketepatan rendah), dan sebaliknya. Imbangan yang betul bergantung pada kos setiap jenis kesilapan dalam masalah khusus anda.</span></p>
+
+      <!-- ── Precision / Recall Simulator ── -->
+      <div style="margin-top:1rem;padding:.9rem 1rem;background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.1);">
+        <p style="font-size:.78rem;font-weight:700;color:#0891B2;margin:0 0 .65rem;"><span class="lang-en">🎯 Try it — Spam Filter Simulator</span><span class="lang-ms">🎯 Cuba ia — Simulator Penapis Spam</span></p>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:.7rem;">
+          <label style="font-size:.77rem;color:var(--fg2);flex:1;min-width:200px;">
+            Detection sensitivity: <strong id="threshLabel54">Balanced (≥50%)</strong><br>
+            <input type="range" id="thresh54" min="1" max="9" value="5" oninput="renderPRF54()" style="width:100%;margin-top:.3rem;">
+            <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--fg3);"><span>Lenient</span><span>Strict</span></div>
+          </label>
+          <label style="font-size:.75rem;color:var(--fg3);cursor:pointer;display:flex;align-items:center;gap:.4rem;white-space:nowrap;">
+            <input type="checkbox" id="lazy54" onchange="renderPRF54()">
+            <span>☠️ Lazy model<br><em style="font-size:.68rem;">(always says "not spam")</em></span>
+          </label>
+        </div>
+
+        <!-- Email grid -->
+        <div id="emailGrid54" style="display:flex;flex-wrap:wrap;gap:5px;margin:.5rem 0;min-height:60px;"></div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin:.35rem 0 .65rem;font-size:.67rem;color:var(--fg3);">
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#34d399;margin-right:3px;vertical-align:middle;"></span>Spam caught ✓</span>
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#F87171;margin-right:3px;vertical-align:middle;"></span>Spam missed ✗</span>
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#F59E0B;margin-right:3px;vertical-align:middle;"></span>False alarm ✗</span>
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:rgba(255,255,255,.15);margin-right:3px;vertical-align:middle;"></span>Correct pass ✓</span>
+        </div>
+
+        <!-- Metric bars -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem .9rem;margin:.5rem 0;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:.71rem;margin-bottom:.18rem;"><span style="color:var(--fg3);">Accuracy</span><strong id="acc54Val" style="color:#60a5fa;">—</strong></div>
+            <div style="height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;"><div id="acc54Bar" style="height:100%;width:0%;background:#60a5fa;transition:width .35s;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:.71rem;margin-bottom:.18rem;"><span style="color:var(--fg3);">Precision</span><strong id="prec54Val" style="color:#34d399;">—</strong></div>
+            <div style="height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;"><div id="prec54Bar" style="height:100%;width:0%;background:#34d399;transition:width .35s;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:.71rem;margin-bottom:.18rem;"><span style="color:var(--fg3);">Recall</span><strong id="rec54Val" style="color:#a78bfa;">—</strong></div>
+            <div style="height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;"><div id="rec54Bar" style="height:100%;width:0%;background:#a78bfa;transition:width .35s;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:.71rem;margin-bottom:.18rem;"><span style="color:var(--fg3);">F1 Score</span><strong id="f154Val" style="color:#F59E0B;">—</strong></div>
+            <div style="height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;"><div id="f154Bar" style="height:100%;width:0%;background:#F59E0B;transition:width .35s;border-radius:4px;"></div></div>
+          </div>
+        </div>
+
+        <!-- Insight callout -->
+        <div id="insight54" style="font-size:.74rem;padding:.45rem .7rem;border-radius:7px;background:rgba(255,255,255,.04);border-left:3px solid #0891B2;color:var(--fg2);margin-top:.4rem;line-height:1.6;min-height:2.2em;"></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>The Confusion Matrix</strong> shows exactly where your model gets confused — which classes it mixes up. It's the foundation of every evaluation metric.
+    </div>
+
+    <!-- Interactive Confusion Matrix -->
+    <div style="margin:1rem 0;">
+      <p style="font-size:.78rem;font-weight:700;color:var(--fg3);margin-bottom:.4rem;"><span class="lang-en">Confusion Matrix — Plant Classifier</span><span class="lang-ms">Matriks Kekeliruan — Pengklasifikasi Tumbuhan</span></p>
+      <!-- Threshold slider -->
+      <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem;flex-wrap:wrap;">
+        <span style="font-size:.72rem;color:var(--fg3);white-space:nowrap;">🎯 Decision threshold:</span>
+        <span style="font-size:.7rem;color:var(--fg3);white-space:nowrap;">Lenient</span>
+        <input type="range" id="cmThresh" min="0" max="100" value="50"
+          style="flex:1;min-width:120px;max-width:260px;accent-color:#0891B2;cursor:pointer;"
+          oninput="updateCM54()">
+        <span style="font-size:.7rem;color:var(--fg3);white-space:nowrap;">Strict</span>
+        <span id="cmThreshLbl" style="font-size:.72rem;font-weight:700;color:#0891B2;min-width:30px;text-align:right;">50</span>
+      </div>
+      <!-- Matrix + metrics side by side -->
+      <div style="display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;">
+        <div>
+          <div class="conf-matrix">
+            <div class="conf-header"></div>
+            <div class="conf-header">Pred: Healthy</div>
+            <div class="conf-header">Pred: Diseased</div>
+            <div class="conf-header" style="text-align:right;font-size:.68rem;">Actual:<br>Healthy</div>
+            <div class="conf-cell conf-tp" id="cm54tp"><span id="cm54tpN">42</span><div class="conf-sub">True Positive</div></div>
+            <div class="conf-cell conf-fp" id="cm54fp"><span id="cm54fpN">3</span><div class="conf-sub">False Positive</div></div>
+            <div class="conf-header" style="text-align:right;font-size:.68rem;">Actual:<br>Diseased</div>
+            <div class="conf-cell conf-fn" id="cm54fn"><span id="cm54fnN">8</span><div class="conf-sub">False Negative</div></div>
+            <div class="conf-cell conf-tn" id="cm54tn"><span id="cm54tnN">37</span><div class="conf-sub">True Negative</div></div>
+          </div>
+          <!-- mini legend -->
+          <p style="font-size:.65rem;color:var(--fg3);margin-top:.4rem;line-height:1.7;">
+            <span style="color:#34d399">■</span> TP = correctly called Healthy &nbsp;
+            <span style="color:#F87171">■</span> FP = Healthy called Diseased<br>
+            <span style="color:#F87171">■</span> FN = Diseased missed &nbsp;
+            <span style="color:#34d399">■</span> TN = correctly called Diseased
+          </p>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <div class="concept-card" style="margin:0;">
+            <h3>Calculating metrics:</h3>
+            <p id="cm54metrics" style="font-family:var(--mono);font-size:.8rem;line-height:2.1;"></p>
+          </div>
+          <div id="cm54insight" style="margin-top:.6rem;font-size:.73rem;padding:.45rem .7rem;border-radius:7px;background:rgba(255,255,255,.04);border-left:3px solid #0891B2;color:var(--fg2);line-height:1.6;"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+    (function(){
+      // Total: 90 plants. Actual Healthy=45, Actual Diseased=45
+      // At threshold 50 → TP=42,FP=3,FN=8,TN=37
+      // Lenient (0): catches all diseased but many false alarms → TP=45,FP=18,FN=0,TN=27
+      // Strict  (100): rarely flags diseased → TP=10,FP=0,FN=35,TN=45
+      var AH=45, AD=45;
+      function interp(a,b,t){return Math.round(a+(b-a)*t);}
+      function getVals(s){
+        var t=s/100;
+        // TP: from 45 (lenient) through 42 (mid) to 10 (strict)
+        var tp, fp, fn, tn;
+        if(t<=0.5){
+          var u=t/0.5; // 0→1 across lenient→mid
+          tp=interp(45,42,u); fp=interp(18,3,u);
+        } else {
+          var u=(t-0.5)/0.5;
+          tp=interp(42,10,u); fp=interp(3,0,u);
+        }
+        fn=AD-tp; tn=AH-fp;
+        // clamp
+        tp=Math.max(0,Math.min(AD,tp));
+        fp=Math.max(0,Math.min(AH,fp));
+        fn=Math.max(0,Math.min(AD,fn));
+        tn=Math.max(0,Math.min(AH,tn));
+        return {tp:tp,fp:fp,fn:fn,tn:tn};
+      }
+      function pct(n,d){return d?((n/d)*100).toFixed(1)+'%':'—';}
+      function animNum(el,val){
+        var old=parseInt(el.textContent)||0;
+        if(old===val){return;}
+        var steps=8,diff=val-old,i=0;
+        var iv=setInterval(function(){
+          i++;
+          el.textContent=Math.round(old+diff*(i/steps));
+          if(i>=steps){clearInterval(iv);el.textContent=val;}
+        },20);
+      }
+      window.updateCM54=function(){
+        var s=parseInt(document.getElementById('cmThresh').value);
+        document.getElementById('cmThreshLbl').textContent=s;
+        var v=getVals(s);
+        animNum(document.getElementById('cm54tpN'),v.tp);
+        animNum(document.getElementById('cm54fpN'),v.fp);
+        animNum(document.getElementById('cm54fnN'),v.fn);
+        animNum(document.getElementById('cm54tnN'),v.tn);
+        // highlight cells by magnitude
+        var tpEl=document.getElementById('cm54tp');
+        var fpEl=document.getElementById('cm54fp');
+        var fnEl=document.getElementById('cm54fn');
+        var tnEl=document.getElementById('cm54tn');
+        tpEl.style.opacity=0.5+v.tp/AD*0.5;
+        tnEl.style.opacity=0.5+v.tn/AH*0.5;
+        fpEl.style.opacity=0.3+v.fp/AH*0.7;
+        fnEl.style.opacity=0.3+v.fn/AD*0.7;
+        // metrics
+        var tot=v.tp+v.fp+v.fn+v.tn;
+        var acc=(v.tp+v.tn)/tot;
+        var prec=v.tp+v.fp>0?v.tp/(v.tp+v.fp):1;
+        var rec=v.tp+v.fn>0?v.tp/(v.tp+v.fn):0;
+        var f1=prec+rec>0?2*prec*rec/(prec+rec):0;
+        var fmt=function(n){return (n*100).toFixed(1)+'%';};
+        document.getElementById('cm54metrics').innerHTML=
+          'Accuracy&nbsp; = ('+v.tp+'+'+v.tn+')/'+tot+' = <strong>'+fmt(acc)+'</strong><br>'+
+          'Precision = '+v.tp+'/('+v.tp+'+'+v.fp+') = <strong>'+fmt(prec)+'</strong><br>'+
+          'Recall&nbsp;&nbsp;&nbsp; = '+v.tp+'/('+v.tp+'+'+v.fn+') = <strong>'+fmt(rec)+'</strong><br>'+
+          'F1 score&nbsp; = 2×(P×R)/(P+R) = <strong>'+fmt(f1)+'</strong>';
+        // insight
+        var msg='';
+        if(s<25){msg='⚡ Very lenient — catches almost all diseased plants but triggers many false alarms. High recall, low precision.';}
+        else if(s<40){msg='🎯 Lenient threshold — good recall (few missed cases), some false alarms acceptable.';}
+        else if(s<60){msg='✅ Balanced — a reasonable trade-off between catching disease and avoiding false alarms.';}
+        else if(s<75){msg='🔬 Strict threshold — very few false alarms, but some diseased plants slip through undetected.';}
+        else{msg='⚠️ Very strict — almost no false positives, but many real diseased plants are missed (high false negatives).';}
+        document.getElementById('cm54insight').textContent=msg;
+      };
+      // init
+      setTimeout(window.updateCM54,100);
+    })();
+    </script>
+
+    <div class="grid2">
+      <div class="concept-card">
+        <h3>🔧 How to improve</h3>
+        <p><span class="lang-en">Low accuracy? → Collect more data or fix class imbalance. High train / low val accuracy? → Reduce overfitting with dropout or more data. Consistently wrong on one class? → Examine those examples carefully.</span><span class="lang-ms">Ketepatan rendah? → Kumpul lebih banyak data atau betulkan ketidakseimbangan kelas. Ketepatan latihan tinggi / pengesahan rendah? → Kurangkan lampau-padanan dengan dropout atau lebih banyak data. Sentiasa salah pada satu kelas? → Periksa contoh-contoh tersebut dengan teliti.</span></p>
+      </div>
+      <div class="concept-card">
+        <h3>🔄 Iterative refinement</h3>
+        <p><span class="lang-en">AI development is never linear. You collect → train → test → find failures → improve data or model → repeat. Each cycle gets you closer to a reliable system.</span><span class="lang-ms">Pembangunan AI tidak pernah linear. Anda kumpul → latih → uji → cari kegagalan → tambah baik data atau model → ulang. Setiap kitaran menghampirkan anda kepada sistem yang boleh dipercayai.</span></p>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <strong>✓ The test set is sacred.</strong> Evaluate on your test set only once — at the very end. If you look at test results and tune based on them, you are now indirectly training on them, and your reported accuracy will be optimistic.
+    </div>
+
+    <div class="sec-divider"></div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary btn-sm" onclick="markDone('54')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ SECTION 5.5 — AI PROJECT WIZARD ══════════════════ -->
+<div class="mod-section reveal" id="sec55">
+  <div class="mod-section-header" onclick="toggleSection('sec55')">
+    <div class="section-badge badge-build"><span class="badge-icon">🏗</span>BUILD</div>
+    <div class="section-header-text">
+      <h2><span data-en="5.5 — Building an AI Prototype" data-ms="5.5 — Membina Prototaip AI">5.5 — Building an AI Prototype</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~20 min</span>
+        <span class="sec-status" id="st55">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="mod-section-body">
+    <div class="callout" style="margin-bottom:1.2rem;">
+      <strong>🤖 AI Project Wizard</strong> — Follow the 5-step workflow to build your own AI classifier. Choose a real-world problem, collect training examples, train your model, test it on new data, and generate a project summary.
+    </div>
+
+    <div class="wizard-wrap">
+      <!-- Step tabs -->
+      <div class="wizard-steps" id="wizSteps">
+        <div class="wiz-step active" id="wtab1">1 · Problem</div>
+        <div class="wiz-step" id="wtab2">2 · Data</div>
+        <div class="wiz-step" id="wtab3">3 · Train</div>
+        <div class="wiz-step" id="wtab4">4 · Test</div>
+        <div class="wiz-step" id="wtab5">5 · Present</div>
+      </div>
+
+      <!-- Step 1: Choose problem -->
+      <div class="wiz-panel active" id="wpanel1">
+        <h3>Choose your AI problem</h3>
+        <p class="wiz-sub"><span class="lang-en">Select the real-world problem you want to solve with AI.</span><span class="lang-ms">Pilih masalah dunia nyata yang ingin anda selesaikan dengan AI.</span></p>
+        <div class="prob-cards" id="probCards">
+          <div class="prob-card" onclick="selectProblem(this,'plant')" data-id="plant">
+            <div class="pc-icon">🌿</div>
+            <div class="pc-name">Plant Health Detector</div>
+            <div class="pc-desc">Classify leaf photos as Healthy or Diseased</div>
+            <span class="pc-diff tag tag-green">Beginner</span>
+          </div>
+          <div class="prob-card" onclick="selectProblem(this,'spam')" data-id="spam">
+            <div class="pc-icon">📧</div>
+            <div class="pc-name">Spam Email Classifier</div>
+            <div class="pc-desc">Detect spam vs legitimate emails by content</div>
+            <span class="pc-diff tag tag-green">Beginner</span>
+          </div>
+          <div class="prob-card" onclick="selectProblem(this,'face')" data-id="face">
+            <div class="pc-icon">🙂</div>
+            <div class="pc-name">Emotion Detector</div>
+            <div class="pc-desc">Detect if a face looks Happy or Sad</div>
+            <span class="pc-diff tag tag-orange">Intermediate</span>
+          </div>
+          <div class="prob-card" onclick="selectProblem(this,'weather')" data-id="weather">
+            <div class="pc-icon">🌦️</div>
+            <div class="pc-name">Weather Classifier</div>
+            <div class="pc-desc">Classify weather photos as Sunny or Rainy</div>
+            <span class="pc-diff tag tag-orange">Intermediate</span>
+          </div>
+        </div>
+        <div id="probDetail" style="display:none;background:var(--surface2);border-radius:8px;padding:.9rem;margin-top:1rem;font-size:.83rem;color:var(--fg2);"></div>
+        <div class="wiz-nav">
+          <div></div>
+          <button class="btn btn-primary" id="w1next" onclick="wizNext()" disabled>Next: Collect Data &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Collect data -->
+      <div class="wiz-panel" id="wpanel2">
+        <h3 id="w2title">Collect &amp; Label Examples</h3>
+        <p class="wiz-sub" id="w2sub"><span class="lang-en">Click each example card to label it as Class A or Class B. You need at least 8 of each.</span><span class="lang-ms">Klik setiap kad contoh untuk melabelkannya sebagai Kelas A atau Kelas B. Anda memerlukan sekurang-kurangnya 8 setiap satu.</span></p>
+        <div class="collect-area" id="collectArea"></div>
+        <div class="data-stats">
+          <div class="data-stat"><div class="ds-val" id="dsTotalVal">0</div><div class="ds-lbl">Total</div></div>
+          <div class="data-stat"><div class="ds-val" style="color:#60A5FA;" id="dsAVal">0</div><div class="ds-lbl" id="dsALbl">Class A</div></div>
+          <div class="data-stat"><div class="ds-val" style="color:#FCD34D;" id="dsBVal">0</div><div class="ds-lbl" id="dsBLbl">Class B</div></div>
+          <div class="data-stat"><div class="ds-val" id="dsBalVal">—</div><div class="ds-lbl">Balance</div></div>
+        </div>
+        <div id="dataMsg" style="font-size:.8rem;margin-top:.5rem;color:var(--fg3);">Label at least 4 of each class (8 total) to continue.</div>
+        <div class="wiz-nav">
+          <button class="btn btn-outline btn-sm" onclick="wizBack()"><span data-en="← Back" data-ms="← Kembali">← Back</span></button>
+          <button class="btn btn-primary" id="w2next" onclick="wizNext()" disabled>Next: Train &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Train model -->
+      <div class="wiz-panel" id="wpanel3">
+        <h3>Train Your Model</h3>
+        <p class="wiz-sub"><span class="lang-en">Watch your AI learn from the data you collected.</span><span class="lang-ms">Tonton AI anda belajar daripada data yang anda kumpulkan.</span></p>
+        <canvas id="wizTrainCanvas" height="180"></canvas>
+        <div style="display:flex;gap:1.5rem;margin:.4rem 0;font-size:.72rem;color:var(--fg3);">
+          <span><span style="display:inline-block;width:10px;height:2px;background:#0891B2;border-radius:2px;vertical-align:middle;margin-right:3px;"></span>Training Loss</span>
+          <span><span style="display:inline-block;width:10px;height:2px;background:#059669;border-radius:2px;vertical-align:middle;margin-right:3px;"></span>Accuracy</span>
+        </div>
+        <div class="train-status" id="trainStatus3">Ready to train.</div>
+        <div class="train-result" id="trainResult3">
+          <div class="tr-acc" id="trainAccDisplay">—</div>
+          <div class="tr-label">Training Accuracy</div>
+          <div style="font-size:.78rem;color:var(--fg3);margin-top:.4rem;" id="trainNote3"></div>
+        </div>
+        <div class="wiz-nav">
+          <button class="btn btn-outline btn-sm" onclick="wizBack()"><span data-en="← Back" data-ms="← Kembali">← Back</span></button>
+          <div style="display:flex;gap:.75rem;">
+            <button class="btn btn-outline btn-sm" id="w3trainBtn" onclick="startWizTrain()"><span data-en="<span data-en="<span data-en="▶ Start" data-ms="▶ Mula">▶ Start</span> Training" data-ms="▶ Mula Latihan">▶ Start Training</span>" data-ms="▶ Mula Latihan">▶ Start Training</span></button>
+            <button class="btn btn-primary" id="w3next" onclick="wizNext()" disabled>Next: Test &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Test model -->
+      <div class="wiz-panel" id="wpanel4">
+        <h3>Test on New Examples</h3>
+        <p class="wiz-sub" id="w4sub"><span class="lang-en">These examples were not in your training data. Click "Predict" to see how your model performs.</span><span class="lang-ms">Contoh-contoh ini tidak ada dalam data latihan anda. Klik "Ramal" untuk lihat prestasi model anda.</span></p>
+        <div class="test-examples" id="testExamples"></div>
+        <div class="test-score">
+          <div class="score-big" id="testScoreDisplay">0/0</div>
+          <div class="score-label">correct predictions</div>
+          <div style="margin-left:auto;font-size:.8rem;color:var(--fg3);" id="testAccLabel"></div>
+        </div>
+        <div class="wiz-nav">
+          <button class="btn btn-outline btn-sm" onclick="wizBack()"><span data-en="← Back" data-ms="← Kembali">← Back</span></button>
+          <button class="btn btn-primary" id="w4next" onclick="wizNext()">Generate Report &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Summary -->
+      <div class="wiz-panel" id="wpanel5">
+        <h3>Your AI Project Report</h3>
+        <p class="wiz-sub"><span class="lang-en">You completed the full AI development cycle. Here is your project summary.</span><span class="lang-ms">Anda telah menyelesaikan kitaran pembangunan AI penuh. Berikut adalah ringkasan projek anda.</span></p>
+        <div class="project-card" id="projCard">
+          <div class="proj-header">
+            <div class="proj-icon" id="projIcon">🤖</div>
+            <div>
+              <div class="proj-title" id="projTitle">AI Project</div>
+              <div class="proj-sub" id="projSubTitle">UMPSA STEM Lab · AI Adventure Module 5</div>
+            </div>
+          </div>
+          <div class="proj-stats">
+            <div class="proj-stat"><div class="proj-stat-val" id="psTotalData">—</div><div class="proj-stat-lbl">Training Examples</div></div>
+            <div class="proj-stat"><div class="proj-stat-val" id="psTrainAcc">—</div><div class="proj-stat-lbl">Training Accuracy</div></div>
+            <div class="proj-stat"><div class="proj-stat-val" id="psTestAcc">—</div><div class="proj-stat-lbl">Test Accuracy</div></div>
+          </div>
+          <div class="proj-findings" id="projFindings">Building your project summary...</div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="copyReport()"><span data-en="<span data-en="📋 Copy Summary" data-ms="📋 Salin Ringkasan">📋 Copy Summary</span>" data-ms="📋 Salin Ringkasan">📋 Copy Summary</span></button>
+          <button class="btn btn-outline btn-sm" onclick="restartWizard()">🔄 Start Over</button>
+        </div>
+        <div class="wiz-nav" style="margin-top:0;padding-top:.75rem;">
+          <div></div>
+          <button class="btn btn-primary btn-sm" onclick="markDone('55')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ SECTION 5.6 ══════════════════ -->
+<div class="mod-section reveal" id="sec56">
+  <div class="mod-section-header" onclick="toggleSection('sec56')">
+    <div class="section-badge badge-marv"><span class="badge-icon">🎤</span>MARV</div>
+    <div class="section-header-text">
+      <h2><span data-en="5.6 — Presenting Your AI Solution" data-ms="5.6 — Membentangkan Penyelesaian AI Anda">5.6 — Presenting Your AI Solution</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~10 min</span>
+        <span class="sec-status" id="st56">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="mod-section-body">
+
+    <!-- Intro concept card -->
+    <div class="concept-card" style="background:linear-gradient(135deg,rgba(8,145,178,.12),rgba(124,58,237,.1));border-color:rgba(8,145,178,.3);">
+      <h3>🎤 Tell your AI's story</h3>
+      <p style="margin-bottom:.75rem;"><span class="lang-en">A great AI presentation must answer <strong>three questions</strong> — in every audience's language:</span><span class="lang-ms">Pembentangan AI yang hebat mesti menjawab <strong>tiga soalan</strong> — dalam bahasa setiap penonton:</span></p>
+      <ul style="margin:.1rem 0 .9rem 1.1rem;padding:0;display:flex;flex-direction:column;gap:.4rem;list-style:none;">
+        <li style="display:flex;align-items:baseline;gap:.5rem;"><span style="color:var(--primary);font-weight:700;">❶</span><span><strong>What problem does it solve?</strong> — lead with the human need, not the technology.</span></li>
+        <li style="display:flex;align-items:baseline;gap:.5rem;"><span style="color:var(--primary);font-weight:700;">❷</span><span><strong>How does it work?</strong> — keep it visual; one good diagram beats a page of equations.</span></li>
+        <li style="display:flex;align-items:baseline;gap:.5rem;"><span style="color:var(--primary);font-weight:700;">❸</span><span><strong>Can we trust it?</strong> — be honest about accuracy, bias, and limitations.</span></li>
+      </ul>
+      <p style="font-size:.84rem;color:var(--fg2);border-top:1px solid var(--border);padding-top:.7rem;margin-top:.1rem;"><span class="lang-en">Non-technical audiences care most about <em>impact</em>; technical reviewers focus on <em>methodology and robustness</em>. Use the simulations below to practise all three before your real presentation.</span><span class="lang-ms">Penonton bukan teknikal paling peduli tentang <em>impak</em>; pengulas teknikal memberi tumpuan kepada <em>metodologi dan keteguhan</em>. Gunakan simulasi di bawah untuk berlatih ketiga-tiga sebelum pembentangan sebenar anda.</span></p>
+    </div>
+
+    <!-- ── 1. PRESENTATION PITCH TIMER ── -->
+    <div class="sec-divider"></div>
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.5rem;">⏱ Pitch Timer — Practise Your 5-Minute AI Pitch</h3>
+    <p style="font-size:.83rem;color:var(--fg2);margin-bottom:.9rem;"><span class="lang-en">Each section has a suggested time. Press ▶ Start to begin. The timer turns orange when 80% done, red when time is up.</span><span class="lang-ms">Setiap bahagian mempunyai masa yang dicadangkan. Tekan ▶ Mula untuk bermula. Pemasa bertukar oren apabila 80% selesai, merah apabila masa habis.</span></p>
+
+    <div id="pitchTimer" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:1rem;">
+      <div id="ptSlides" style="display:flex;flex-direction:column;gap:.45rem;margin-bottom:.9rem;">
+        <!-- slides injected by JS -->
+      </div>
+      <div style="display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;">
+        <button id="ptBtn" onclick="ptControl()" class="btn btn-primary btn-sm" style="min-width:110px;"><span data-en="▶ Start" data-ms="▶ Mula">▶ Start</span></button>
+        <button onclick="ptReset()" class="btn btn-outline btn-sm"><span data-en="↺ Reset" data-ms="↺ Tetapkan Semula">↺ Reset</span></button>
+        <div style="flex:1;min-width:140px;">
+          <div style="font-size:.72rem;color:var(--fg3);margin-bottom:.3rem;" id="ptSlideLabel">Press ▶ Start — coaching tips for each section appear here</div>
+          <div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;">
+            <div id="ptBar" style="height:100%;width:0%;background:var(--primary);transition:width .5s;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div id="ptClock" style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--primary);min-width:56px;text-align:right;">0:00</div>
+      </div>
+    </div>
+
+    <!-- ── 2. AUDIENCE SIMULATOR ── -->
+    <div class="sec-divider"></div>
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.5rem;">🎭 Audience Simulator — Who are you presenting to?</h3>
+    <p style="font-size:.83rem;color:var(--fg2);margin-bottom:.9rem;"><span class="lang-en">Different audiences ask very different questions. Pick one to see what they care about — and how to answer them.</span><span class="lang-ms">Penonton berbeza mengemukakan soalan yang sangat berbeza. Pilih satu untuk melihat apa yang mereka peduli — dan cara menjawabnya.</span></p>
+
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem;" id="audBtns">
+      <button class="aud-btn" onclick="setAudience('student')">🎒 Students</button>
+      <button class="aud-btn" onclick="setAudience('teacher')">📚 Teachers</button>
+      <button class="aud-btn" onclick="setAudience('engineer')">⚙️ Engineers</button>
+      <button class="aud-btn" onclick="setAudience('investor')">💼 Investors</button>
+    </div>
+
+    <div id="audPanel" style="display:none;background:var(--surface2);border-radius:12px;border:1.5px solid var(--border);overflow:hidden;">
+      <div id="audHeader" style="padding:.7rem 1rem;font-weight:700;font-size:.88rem;"></div>
+      <div id="audQAs" style="padding:.7rem 1rem;display:flex;flex-direction:column;gap:.6rem;"></div>
+    </div>
+
+    <!-- ── 3. BIAS vs FAIR SIMULATION ── -->
+    <div class="sec-divider"></div>
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.5rem;">⚖️ Bias Simulator — See how data imbalance affects your AI</h3>
+    <p style="font-size:.83rem;color:var(--fg2);margin-bottom:.9rem;"><span class="lang-en">Drag the slider to change the ratio of Class A vs Class B in your training data. Watch what happens to the model's predictions.</span><span class="lang-ms">Seret gelangsar untuk menukar nisbah Kelas A lawan Kelas B dalam data latihan anda. Perhatikan apa yang berlaku kepada ramalan model.</span></p>
+
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <span style="font-size:.8rem;font-weight:600;color:var(--fg2);">Class A ratio:</span>
+        <span style="font-size:.78rem;color:#60a5fa;">10%</span>
+        <input type="range" id="biasSlider" min="5" max="95" value="50" oninput="updateBias()" style="flex:1;min-width:120px;">
+        <span style="font-size:.78rem;color:#fbbf24;">90%</span>
+        <span id="biasRatioLbl" style="font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--fg);min-width:80px;text-align:right;">50% / 50%</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.9rem;">
+        <div style="text-align:center;">
+          <div style="font-size:.72rem;font-weight:700;color:var(--fg3);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;">Training Data</div>
+          <canvas id="biasDataChart" width="200" height="100" style="width:100%;border-radius:8px;"></canvas>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.72rem;font-weight:700;color:var(--fg3);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;">Model Predictions</div>
+          <canvas id="biasPredChart" width="200" height="100" style="width:100%;border-radius:8px;"></canvas>
+        </div>
+      </div>
+
+      <div id="biasInsight" style="font-size:.8rem;padding:.6rem .9rem;border-radius:8px;border:1px solid var(--border);line-height:1.5;"></div>
+    </div>
+
+    <!-- ── 4. RESPONSIBLE AI CHECKLIST ── -->
+    <div class="sec-divider"></div>
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.5rem;">✅ Responsible AI Checklist — Before you deploy</h3>
+    <p style="font-size:.83rem;color:var(--fg2);margin-bottom:.9rem;"><span class="lang-en">Every AI system should pass these checks. Tick each one — your score animates as you go.</span><span class="lang-ms">Setiap sistem AI harus lulus semakan ini. Tandakan setiap satu — skor anda beranimasi semasa anda bergerak.</span></p>
+
+    <div style="margin-bottom:.9rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+        <span style="font-size:.78rem;color:var(--fg3);">Responsibility score</span>
+        <span id="raScore" style="font-family:var(--mono);font-size:.88rem;font-weight:700;color:var(--primary);">0 / 8</span>
+      </div>
+      <div style="background:var(--surface);border-radius:4px;height:8px;overflow:hidden;">
+        <div id="raBar" style="height:100%;width:0%;background:linear-gradient(90deg,#0891B2,#7c3aed);transition:width .5s;border-radius:4px;"></div>
+      </div>
+    </div>
+
+    <div id="raChecklist" style="display:flex;flex-direction:column;gap:.45rem;margin-bottom:1rem;"></div>
+    <div id="raResult" style="display:none;font-size:.85rem;font-weight:600;padding:.7rem 1rem;border-radius:8px;text-align:center;margin-bottom:.5rem;"></div>
+
+    <!-- ── 5. PRESENTATION STORY ARC ── -->
+    <div class="sec-divider"></div>
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem;">🗺️ Your Presentation Story Arc</h3>
+    <p style="font-size:.83rem;color:var(--fg2);margin-bottom:.9rem;"><span class="lang-en">Click any stage to see what to say, a mock slide layout, and coaching tips. Stages glow green once read.</span><span class="lang-ms">Klik mana-mana peringkat untuk melihat apa yang perlu dikatakan, susun atur slaid tiruan, dan petua bimbingan. Peringkat menyinar hijau setelah dibaca.</span></p>
+    <!-- Arc nodes -->
+    <div id="presArc" style="position:relative;margin-bottom:1.2rem;"></div>
+    <!-- Detail panel -->
+    <div id="presPanel" style="display:none;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.8rem;transition:all .3s;"></div>
+
+    <div class="sec-divider"></div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary btn-sm" onclick="markDone('56')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button>
+    </div>
+
+  </div><!-- mod-section-body -->
+</div><!-- sec56 -->
+
+
+<!-- ══════════════════ SECTION 5.7 — MODULE QUIZ ══════════════════ -->
+<div class="mod-section reveal" id="sec57">
+  <div class="mod-section-header" onclick="toggleSection('sec57')">
+    <div class="section-badge badge-think"><span class="badge-icon">🧠</span>QUIZ</div>
+    <div class="section-header-text">
+      <h2><span data-en="Module Quiz" data-ms="Kuiz Modul">Module Quiz</span></h2>
+      <div class="sec-meta">
+        <span class="sec-time">⏱ ~5 min</span>
+        <span class="sec-status" id="st57">Not started</span>
+      </div>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="mod-section-body">
+    <div class="concept-card" style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(8,145,178,.1));border-color:rgba(124,58,237,.3);margin-bottom:1rem;">
+      <p style="font-size:.88rem;color:var(--fg2);margin:0;"><span class="lang-en">Test your understanding of Module 5 — AI Project Lifecycle.</span><span class="lang-ms">Uji pemahaman anda tentang Modul 5 — Kitaran Hayat Projek AI.</span></p>
+    </div>
+    <div class="quiz-progress" id="qProg5"></div>
+    <div id="quizArea5"></div>
+    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+      <button class="btn btn-primary btn-sm" onclick="markDone('57')"><span data-en="Mark complete ✓" data-ms="Tandai Selesai ✓">Mark complete ✓</span></button>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- .wrap -->
+
+  <!-- ── ACTIVITY CTA ── -->
+  <div class="act-cta-wrap">
+    <p class="act-cta-label"><span class="lang-en">You've covered all the concepts for Module 5. Time to apply them.</span><span class="lang-ms">Anda telah mempelajari semua konsep untuk Modul 5. Masa untuk mengaplikasikannya.</span></p>
+    <a href="activity-5.html" class="act-cta-btn">
+      <span class="lang-en">Start Activities →</span><span class="lang-ms">Mula Aktiviti →</span>
+      <span class="act-cta-tiers">Tier 1 → 2 → 3 → 4</span>
+    </a>
+  </div>
+
+<div class="module-nav">
+  <a href="module-4.html" class="mn-card mn-prev">
+    <div class="mn-label">Previous</div>
+    <div class="mn-title">← Module 4: AI in Action</div>
+  </a>
+  <a href="module-6.html" class="mn-card mn-next">
+    <div class="mn-label">Next</div>
+    <div class="mn-title">Module 6: Beyond AI →</div>
+  </a>
+</div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-sub">UMPSA STEM LAB &middot; AI Adventure</div>
+    <div class="footer-copy">
+      <span>&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research page" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </a>
+      <a href="mailto:hazlina@umpsa.edu.my" title="Email" style="width:30px;height:30px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);transition:background .15s;flex-shrink:0;" onmouseover="this.style.background='rgba(8,145,178,.35)'" onmouseout="this.style.background='rgba(8,145,178,.18)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+var M5={done:[]};
+try{var s=localStorage.getItem("m5");if(s)M5=JSON.parse(s);}catch(e){}
+function saveM5(){try{localStorage.setItem("m5",JSON.stringify(M5));}catch(e){}}
+function updateProgress(){
+  var n=M5.done.length,pct=Math.round(n/6*100);
+  document.getElementById("progFill").style.width=pct+"%";
+  document.getElementById("progPct").textContent=pct+"%";
+}
+function markDone(id){
+  if(!M5.done.includes(id))M5.done.push(id);
+  saveM5();updateProgress();
+  var el=document.getElementById("st5"+id);
+  if(el){el.textContent="Complete ✓";el.classList.add("done");}
+}
+updateProgress();
+M5.done.forEach(function(id){markDone(id);});
+
+(function(){
+  var cv=document.getElementById("heroCanvas"),ctx=cv.getContext("2d"),W,H,nd=[];
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;}
+  function mk(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4};}
+  function init(){resize();nd=[];for(var i=0;i<60;i++)nd.push(mk());}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<nd.length;i++){
+      var n=nd[i];n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
+      ctx.beginPath();ctx.arc(n.x,n.y,2,0,Math.PI*2);ctx.fillStyle="rgba(8,145,178,.8)";ctx.fill();
+      for(var j=i+1;j<nd.length;j++){
+        var m=nd[j],dx=m.x-n.x,dy=m.y-n.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);
+          ctx.strokeStyle="rgba(8,145,178,"+(1-d/120)*.3+")";ctx.lineWidth=.8;ctx.stroke();}
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener("resize",init);init();draw();
+})();
+function toggleSection(id){document.getElementById(id).classList.toggle("open");}
+var rv=document.querySelectorAll(".reveal");
+var io=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){x.target.classList.add("visible");io.unobserve(x.target);}});},{threshold:.1});
+rv.forEach(function(el){io.observe(el);});
+
+var p51d=0;
+function checkProblem(card){
+  if(card.classList.contains("correct")||card.classList.contains("wrong"))return;
+  var good=card.getAttribute("data-good")==="1";
+  card.classList.add(good?"correct":"wrong");card.style.pointerEvents="none";p51d++;
+  var fb=document.getElementById("prob51Feedback");
+  fb.textContent=good?"✓ Correct! This is a good AI problem.": "✗ Not ideal — this lacks learnable patterns or objective labels.";
+  fb.style.color=good?"var(--green)":"#F87171";
+  if(p51d>=document.querySelectorAll("#probGrid51 .ai-prob-card").length){fb.textContent="🎉 All done! Great at spotting AI-suitable problems.";fb.style.color="var(--primary)";}
+}
+var d52n=0;
+function flagDataIssue(row){
+  if(row.classList.contains("flagged"))return;
+  row.classList.add("flagged");
+  var isIssue=row.getAttribute("data-issue")==="1";
+  var flag=row.querySelector(".issue-flag");flag.style.opacity="1";
+  row.style.borderColor=isIssue?"var(--orange)":"var(--green)";
+  flag.style.color=isIssue?"var(--orange)":"var(--green)";
+  d52n++;
+  if(d52n>=document.querySelectorAll(".data-issue-row").length){
+    document.getElementById("data52Feedback").textContent="✓ Found all issues! Class imbalance, confounding variables, and labelling quality are the most common AI data problems.";
+  }
+}
+var lr53=0.01,ep53=20,ta53=null;
+function updateLR53(){var m=[0.001,0.003,0.01,0.03,0.1];lr53=m[document.getElementById("lr53").value-1];document.getElementById("lr53Label").textContent=lr53.toFixed(3);}
+function updateEp53(){ep53=parseInt(document.getElementById("ep53").value);document.getElementById("ep53Label").textContent=ep53;}
+function runTrain53(){
+  var cv=document.getElementById("trainCanvas53"),ctx=cv.getContext("2d");
+  var CW=cv.width=cv.offsetWidth,CH=cv.height=200,epochs=ep53,lr=lr53,overfit=lr>0.03;
+  var tl=[],vl=[],va=[];
+  for(var i=0;i<=epochs;i++){
+    var t=i/epochs,tv=0.9*Math.exp(-3.5*t*(1+lr*5))+0.08+(Math.random()-.5)*0.02;
+    var vlv,vav;
+    if(overfit&&t>0.5){vlv=0.25+(t-.5)*0.6+(Math.random()-.5)*0.04;vav=0.78-(t-.5)*0.15+(Math.random()-.5)*0.02;}
+    else{vlv=tv+0.06+(Math.random()-.5)*0.03;vav=Math.min(0.96,0.5+0.46*(1-Math.exp(-4*t))+(Math.random()-.5)*0.015);}
+    tl.push(Math.max(0.05,tv));vl.push(Math.max(0.05,vlv));va.push(Math.min(0.99,Math.max(0,vav)));
+  }
+  var pad={l:40,r:16,t:16,b:36},frame=0;
+  if(ta53)clearInterval(ta53);
+  document.getElementById('trainExplain53').style.display='none';
+  ta53=setInterval(function(){
+    ctx.fillStyle="#0a1929";ctx.fillRect(0,0,CW,CH);
+    ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,CH-pad.b);ctx.lineTo(CW-pad.r,CH-pad.b);ctx.stroke();
+    function xp(i){return pad.l+(CW-pad.l-pad.r)*i/epochs;}
+    function yp(v){return CH-pad.b-(CH-pad.t-pad.b)*v;}
+    [[tl,"#0891B2"],[vl,"#059669"]].forEach(function(s){
+      ctx.beginPath();ctx.strokeStyle=s[1];ctx.lineWidth=2;
+      for(var i=0;i<=frame;i++){var x=xp(i),y=yp(s[0][i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.stroke();
+    });
+    ctx.setLineDash([4,3]);ctx.beginPath();ctx.strokeStyle="#F59E0B";ctx.lineWidth=1.5;
+    for(var i=0;i<=frame;i++){var x=xp(i),y=yp(va[i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle="rgba(255,255,255,.35)";ctx.font="10px sans-serif";ctx.textAlign="center";
+    ctx.fillText("Epoch "+frame+"/"+epochs,CW/2,CH-8);
+    frame++;
+    if(frame>epochs){clearInterval(ta53);showTrainExplain53(lr,epochs,tl,vl,va,overfit);}
+  },80);
+}
+
+function showTrainExplain53(lr,epochs,tl,vl,va,overfit){
+  var el=document.getElementById('trainExplain53');
+  if(!el)return;
+
+  // compute final values
+  var finalTL=tl[tl.length-1],finalVL=vl[vl.length-1],finalAcc=va[va.length-1];
+  var midVL=vl[Math.floor(vl.length/2)];
+  var diverged=finalVL>midVL*1.15; // val loss rose from midpoint
+  var gap=finalVL-finalTL;
+
+  // LR interpretation
+  var lrLabel,lrColor,lrIcon,lrDesc;
+  if(lr<=0.001){lrIcon='🐢';lrLabel='Very Slow';lrColor='#60a5fa';
+    lrDesc='Tiny steps — the model learns carefully but needs many epochs to converge. Safe but slow.';}
+  else if(lr<=0.003){lrIcon='🚶';lrLabel='Slow';lrColor='#34d399';
+    lrDesc='Small, steady steps. Good for fine-tuning. Convergence is reliable but may need more epochs.';}
+  else if(lr<=0.01){lrIcon='🚴';lrLabel='Moderate';lrColor='#34d399';
+    lrDesc='A balanced pace — the sweet spot for most training runs. Converges well without overshooting.';}
+  else if(lr<=0.03){lrIcon='🏃';lrLabel='Fast';lrColor='#F59E0B';
+    lrDesc='Larger steps speed up training but risk overshooting the minimum. Watch val loss carefully.';}
+  else{lrIcon='🚀';lrLabel='Very Fast';lrColor='#F87171';
+    lrDesc='Aggressive steps — the model may overshoot and oscillate. Loss can become unstable.';}
+
+  // Epoch interpretation
+  var epLabel,epColor,epDesc;
+  if(epochs<=10){epLabel='Undertrained';epColor='#60a5fa';
+    epDesc='Too few passes — the model has not seen enough data to learn properly. Both losses are still high.';}
+  else if(epochs<=20){epLabel='Just Right (early)';epColor='#34d399';
+    epDesc='A conservative run. Usually safe from overfitting. Good starting point to check convergence.';}
+  else if(epochs<=30){epLabel='Moderate';epColor='#34d399';
+    epDesc='Enough epochs for solid learning. Watch whether val loss starts to diverge near the end.';}
+  else{epLabel='Risk Zone';epColor='#F59E0B';
+    epDesc='Many passes — the model may start memorising training data if complexity is high.';}
+
+  // Outcome interpretation
+  var fitLabel,fitColor,fitBg,fitIcon,fitDesc,fitTip;
+  if(diverged){
+    fitLabel='Overfitting';fitColor='#F87171';fitBg='rgba(239,68,68,.1)';fitIcon='⚠️';
+    fitDesc='Train loss keeps falling but Val loss <strong>rose</strong> after the midpoint — the model memorised training data instead of learning general patterns.';
+    fitTip='<strong>Fix:</strong> Reduce epochs, lower LR, or simplify the model.';}
+  else if(gap>0.15){
+    fitLabel='Mild Overfit';fitColor='#F59E0B';fitBg='rgba(245,158,11,.1)';fitIcon='⚡';
+    fitDesc='A noticeable gap between Train and Val loss — the model generalises, but not perfectly. Some memorisation is happening.';
+    fitTip='<strong>Tip:</strong> Try a few fewer epochs or a slightly smaller learning rate.';}
+  else{
+    fitLabel='Good Fit';fitColor='#34d399';fitBg='rgba(52,211,153,.1)';fitIcon='✅';
+    fitDesc='Train and Val loss track close together and both trend downward — the model is generalising well to unseen data.';
+    fitTip='<strong>Result:</strong> Val Accuracy ~'+Math.round(finalAcc*100)+'%. This is a healthy training run.';}
+
+  el.innerHTML=
+    '<div style="border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;font-size:.8rem;">'+
+    // header
+    '<div style="background:rgba(8,145,178,.15);padding:.55rem 1rem;display:flex;align-items:center;gap:.5rem;">'+
+    '<span style="font-size:1rem;">📊</span>'+
+    '<strong style="color:#0891B2;font-size:.85rem;">Training Run Analysis</strong>'+
+    '<span style="margin-left:auto;font-size:.72rem;color:var(--fg3);">LR='+lr.toFixed(3)+' · Epochs='+epochs+'</span>'+
+    '</div>'+
+    // three cards row
+    '<div style="display:flex;gap:0;flex-wrap:wrap;">'+
+    // card 1: LR
+    '<div style="flex:1;min-width:140px;padding:.7rem 1rem;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);">'+
+    '<div style="font-size:.68rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">⚡ Learning Rate</div>'+
+    '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.35rem;">'+
+    '<span style="font-size:1.1rem;">'+lrIcon+'</span>'+
+    '<span style="font-weight:700;color:'+lrColor+';">'+lrLabel+'</span>'+
+    '</div>'+
+    '<div style="color:var(--fg2);line-height:1.5;font-size:.76rem;">'+lrDesc+'</div>'+
+    '</div>'+
+    // card 2: Epochs
+    '<div style="flex:1;min-width:140px;padding:.7rem 1rem;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);">'+
+    '<div style="font-size:.68rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">🔁 Epochs</div>'+
+    '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.35rem;">'+
+    '<span style="font-size:1.1rem;">📅</span>'+
+    '<span style="font-weight:700;color:'+epColor+';">'+epLabel+'</span>'+
+    '</div>'+
+    '<div style="color:var(--fg2);line-height:1.5;font-size:.76rem;">'+epDesc+'</div>'+
+    '</div>'+
+    // card 3: Outcome
+    '<div style="flex:1;min-width:140px;padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);background:'+fitBg+';">'+
+    '<div style="font-size:.68rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">🎯 Outcome</div>'+
+    '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.35rem;">'+
+    '<span style="font-size:1.1rem;">'+fitIcon+'</span>'+
+    '<span style="font-weight:700;color:'+fitColor+';">'+fitLabel+'</span>'+
+    '</div>'+
+    '<div style="color:var(--fg2);line-height:1.5;font-size:.76rem;">'+fitDesc+'</div>'+
+    '</div>'+
+    '</div>'+
+    // metrics row
+    '<div style="display:flex;gap:0;border-top:1px solid rgba(255,255,255,.07);">'+
+    '<div style="flex:1;padding:.5rem 1rem;text-align:center;border-right:1px solid rgba(255,255,255,.07);">'+
+    '<div style="font-size:.65rem;color:var(--fg3);margin-bottom:.15rem;">Final Train Loss</div>'+
+    '<div style="font-weight:700;color:#0891B2;font-size:.9rem;">'+finalTL.toFixed(3)+'</div>'+
+    '</div>'+
+    '<div style="flex:1;padding:.5rem 1rem;text-align:center;border-right:1px solid rgba(255,255,255,.07);">'+
+    '<div style="font-size:.65rem;color:var(--fg3);margin-bottom:.15rem;">Final Val Loss</div>'+
+    '<div style="font-weight:700;color:#059669;font-size:.9rem;">'+finalVL.toFixed(3)+'</div>'+
+    '</div>'+
+    '<div style="flex:1;padding:.5rem 1rem;text-align:center;border-right:1px solid rgba(255,255,255,.07);">'+
+    '<div style="font-size:.65rem;color:var(--fg3);margin-bottom:.15rem;">Val Accuracy</div>'+
+    '<div style="font-weight:700;color:#F59E0B;font-size:.9rem;">'+Math.round(finalAcc*100)+'%</div>'+
+    '</div>'+
+    '<div style="flex:1;padding:.5rem 1rem;text-align:center;">'+
+    '<div style="font-size:.65rem;color:var(--fg3);margin-bottom:.15rem;">Train/Val Gap</div>'+
+    '<div style="font-weight:700;color:'+(gap>0.15?'#F59E0B':'#34d399')+';font-size:.9rem;">'+gap.toFixed(3)+'</div>'+
+    '</div>'+
+    '</div>'+
+    // tip bar
+    '<div style="padding:.55rem 1rem;background:rgba(255,255,255,.03);font-size:.76rem;color:var(--fg2);border-top:1px solid rgba(255,255,255,.07);">'+
+    fitTip+
+    '</div>'+
+    '</div>';
+
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+var PROBS={
+  plant:{icon:'🌿',title:'Plant Disease Detector',desc:'Classify leaf images as healthy or diseased.',labelA:'Healthy',labelB:'Diseased',
+    samples:[{img:'🍃',trueLabel:'A'},{img:'🍂',trueLabel:'B'},{img:'🌿',trueLabel:'A'},{img:'🥁',trueLabel:'B'},
+              {img:'🌾',trueLabel:'A'},{img:'💦',trueLabel:'B'},{img:'🍃',trueLabel:'A'},{img:'🥂',trueLabel:'B'}],
+    tests:[{img:'🌿',ans:'A',hint:'Bright green - healthy'},{img:'💦',ans:'B',hint:'Spots visible - diseased'},
+           {img:'🍃',ans:'A',hint:'Normal colouring'},{img:'🥁',ans:'B',hint:'Unusual texture'}]},
+  spam:{icon:'📧',title:'Email Spam Filter',desc:'Classify emails as spam or not spam.',labelA:'Not Spam',labelB:'Spam',
+    samples:[{img:'📬',trueLabel:'A'},{img:'💰',trueLabel:'B'},{img:'📜',trueLabel:'A'},{img:'🔥',trueLabel:'B'},
+              {img:'📋',trueLabel:'A'},{img:'🎰',trueLabel:'B'},{img:'📰',trueLabel:'A'},{img:'💳',trueLabel:'B'}],
+    tests:[{img:'📬',ans:'A',hint:'Normal subject line'},{img:'🔥',ans:'B',hint:'Urgent money claim'},
+           {img:'📜',ans:'A',hint:'Work newsletter'},{img:'🎰',ans:'B',hint:'Prize winner alert'}]},
+  face:{icon:'🙂',title:'Emotion Detector',desc:'Detect if a person looks happy or sad.',labelA:'Happy',labelB:'Sad',
+    samples:[{img:'😄',trueLabel:'A'},{img:'😞',trueLabel:'B'},{img:'😁',trueLabel:'A'},{img:'😢',trueLabel:'B'},
+              {img:'😃',trueLabel:'A'},{img:'😔',trueLabel:'B'},{img:'😀',trueLabel:'A'},{img:'😥',trueLabel:'B'}],
+    tests:[{img:'😄',ans:'A',hint:'Smiling face'},{img:'😢',ans:'B',hint:'Crying face'},
+           {img:'😁',ans:'A',hint:'Big grin'},{img:'😔',ans:'B',hint:'Downcast expression'}]},
+  weather:{icon:'🌦️',title:'Weather Classifier',desc:'Classify weather photos as sunny or rainy.',labelA:'Sunny',labelB:'Rainy',
+    samples:[{img:'☀️',trueLabel:'A'},{img:'🌧️',trueLabel:'B'},{img:'🌞',trueLabel:'A'},{img:'⛈️',trueLabel:'B'},
+              {img:'🏖️',trueLabel:'A'},{img:'🌂',trueLabel:'B'},{img:'🌻',trueLabel:'A'},{img:'🌬️',trueLabel:'B'}],
+    tests:[{img:'☀️',ans:'A',hint:'Clear sky'},{img:'🌧️',ans:'B',hint:'Rain cloud'},
+           {img:'🌞',ans:'A',hint:'Bright sunlight'},{img:'🌂',ans:'B',hint:'Umbrella needed'}]}
+};
+
+var wiz={step:1,prob:null,labels:{},totalSamples:0,wizAcc:0,testScore:0,testTotal:0};
+function showWizStep(n){
+  wiz.step=n;
+  for(var i=1;i<=5;i++){
+    var tab=document.getElementById('wtab'+i);
+    var panel=document.getElementById('wpanel'+i);
+    if(tab){tab.className='wiz-step'+(i<n?' done':i===n?' active':'');}
+    if(panel){panel.className='wiz-panel'+(i===n?' active':'');}
+  }
+  // per-panel nav buttons exist; no global wizBackBtn/wizNextBtn needed
+}
+function wizNext(){
+  var n=wiz.step;
+  if(n===1){if(!wiz.prob){alert('Please choose a problem first!');return;}showWizStep(2);buildCollect();}
+  else if(n===2){if(wiz.totalSamples<4){alert('Label at least 4 examples!');return;}showWizStep(3);}
+  else if(n===3){showWizStep(4);buildTests();}
+  else if(n===4){showWizStep(5);buildSummary();}
+  else{restartWizard();}
+}
+function wizBack(){if(wiz.step>1)showWizStep(wiz.step-1);}
+function selectProblem(card,id){
+  document.querySelectorAll('.prob-card').forEach(function(c){c.classList.remove('chosen');});
+  card.classList.add('chosen');
+  wiz.prob=id;wiz.labels={};wiz.totalSamples=0;
+  var nb=document.getElementById('w1next');
+  if(nb){nb.removeAttribute('disabled');}
+  // Show brief detail
+  var det=document.getElementById('probDetail');
+  var details={
+    plant:'🌿 <strong>Plant Health Detector</strong> — Collect leaf photos and label them Healthy or Diseased. Great for agricultural AI applications.',
+    spam:'📧 <strong>Spam Email Classifier</strong> — Label emails as Spam or Legitimate. Classic NLP classification problem.',
+    face:'🙂 <strong>Emotion Detector</strong> — Label facial expressions as Happy or Sad. A classic computer vision problem used in social robotics and UX research.',
+    weather:'🌦️ <strong>Weather Classifier</strong> — Classify weather images as Sunny or Rainy. Environmental sensing AI used in smart cameras and agriculture.'
+  };
+  if(det){det.style.display='block';det.innerHTML=details[id]||'';}
+}
+
+function buildCollect(){
+  var p=PROBS[wiz.prob],area=document.getElementById('collectArea');
+  var elA=document.getElementById('dsALbl');if(elA)elA.textContent=p.labelA;
+  var elB=document.getElementById('dsBLbl');if(elB)elB.textContent=p.labelB;
+  var grid=document.createElement('div');
+  grid.className='collect-grid';
+  p.samples.forEach(function(s,idx){
+    var card=document.createElement('div');
+    card.className='collect-card'; card.id='cc'+idx;
+    card.addEventListener('click',function(e){
+      if(!e.target.closest('.collect-btns')){unlabelSmp(idx);}
+    });
+    var em=document.createElement('div');
+    em.className='collect-emoji'; em.textContent=s.img;
+    var btns=document.createElement('div');
+    btns.className='collect-btns';
+    var btnA=document.createElement('button');
+    btnA.className='btn-a'; btnA.id='btnA'+idx; btnA.textContent=p.labelA;
+    btnA.addEventListener('click',function(e){e.stopPropagation();labelSmpAs(idx,'A');});
+    var btnB=document.createElement('button');
+    btnB.className='btn-b'; btnB.id='btnB'+idx; btnB.textContent=p.labelB;
+    btnB.addEventListener('click',function(e){e.stopPropagation();labelSmpAs(idx,'B');});
+    btns.appendChild(btnA); btns.appendChild(btnB);
+    var tag=document.createElement('div');
+    tag.className='collect-tag'; tag.id='ctag'+idx;
+    card.appendChild(em); card.appendChild(btns); card.appendChild(tag);
+    grid.appendChild(card);
+  });
+  area.innerHTML='';
+  area.appendChild(grid);
+  wiz.labels={};wiz.totalSamples=0;updateDS();
+}
+function unlabelSmp(i){
+  delete wiz.labels[i];
+  var tag=document.getElementById('ctag'+i);
+  if(tag)tag.textContent='';
+  var card=document.getElementById('cc'+i);
+  if(card)card.className='collect-card';
+  var btnA=document.getElementById('btnA'+i);
+  var btnB=document.getElementById('btnB'+i);
+  if(btnA)btnA.classList.remove('active');
+  if(btnB)btnB.classList.remove('active');
+  updateDS();
+}
+function labelSmp(i){unlabelSmp(i);}
+function labelSmpAs(i,lbl){
+  var p=PROBS[wiz.prob];
+  wiz.labels[i]=lbl;
+  var tag=document.getElementById('ctag'+i);
+  if(tag)tag.textContent=lbl==='A'?p.labelA:p.labelB;
+  var card=document.getElementById('cc'+i);
+  if(card)card.className='collect-card labelled '+(lbl==='A'?'lbl-a':'lbl-b');
+  var btnA=document.getElementById('btnA'+i);
+  var btnB=document.getElementById('btnB'+i);
+  if(btnA)btnA.classList.toggle('active',lbl==='A');
+  if(btnB)btnB.classList.toggle('active',lbl==='B');
+  updateDS();
+}
+function updateDS(){
+  var aCount=0,bCount=0;
+  Object.values(wiz.labels).forEach(function(v){if(v==='A')aCount++;else bCount++;});
+  var tot=aCount+bCount;wiz.totalSamples=tot;
+  var p=PROBS[wiz.prob];
+  document.getElementById('dsTotalVal').textContent=tot;
+  document.getElementById('dsAVal').textContent=aCount+' '+p.labelA;
+  document.getElementById('dsBVal').textContent=bCount+' '+p.labelB;
+  var bal=tot===0?0:Math.round(Math.min(aCount,bCount)/Math.max(aCount,bCount,1)*100);
+  document.getElementById('dsBalVal').textContent=bal+'%';
+  // Enable Next button when at least 4 of each class are labeled
+  var nb=document.getElementById('w2next');
+  if(nb){
+    var ready=aCount>=4&&bCount>=4;
+    if(ready){nb.removeAttribute('disabled');}else{nb.setAttribute('disabled','');}
+  }
+  // Update the hint message
+  var msg=document.getElementById('dataMsg');
+  if(msg){
+    if(aCount>=4&&bCount>=4){
+      msg.style.color='#34d399';
+      msg.textContent='Great dataset! You can proceed to training.';
+    } else {
+      msg.style.color='';
+      var needA=Math.max(0,4-aCount), needB=Math.max(0,4-bCount);
+      msg.textContent='Label at least 4 of each class (8 total) to continue. Need: '+needA+' more '+p.labelA+(needB>0?', '+needB+' more '+p.labelB:'')+'.';
+    }
+  }
+}
+
+function startWizTrain(){
+  var cv=document.getElementById('wizTrainCanvas'),ctx=cv.getContext('2d');
+  var CW=cv.width=cv.offsetWidth,CH=cv.height=180,epochs=30,frame=0;
+  var tl=[],va=[];
+  for(var i=0;i<=epochs;i++){
+    var t=i/epochs;
+    tl.push(Math.max(0.06,0.88*Math.exp(-3.2*t)+0.07+(Math.random()-.5)*0.025));
+    va.push(Math.min(0.98,0.5+0.46*(1-Math.exp(-3.8*t))+(Math.random()-.5)*0.018));
+  }
+  var pad={l:36,r:12,t:12,b:32};
+  document.getElementById('trainStatus3').textContent='Training…';
+  document.getElementById('trainResult3').textContent='';
+  var anim=setInterval(function(){
+    ctx.fillStyle='#0a1929';ctx.fillRect(0,0,CW,CH);
+    ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,CH-pad.b);ctx.lineTo(CW-pad.r,CH-pad.b);ctx.stroke();
+    function xp(i){return pad.l+(CW-pad.l-pad.r)*i/epochs;}
+    function yp(v){return CH-pad.b-(CH-pad.t-pad.b)*v;}
+    [[tl,'#0891B2'],[va,'#F59E0B']].forEach(function(s){
+      ctx.beginPath();ctx.strokeStyle=s[1];ctx.lineWidth=2;
+      for(var i=0;i<=frame;i++){var x=xp(i),y=yp(s[0][i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+      ctx.stroke();
+    });
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Epoch '+frame+'/'+epochs,CW/2,CH-8);
+    frame++;
+    if(frame>epochs){
+      clearInterval(anim);
+      wiz.wizAcc=Math.round(va[epochs]*100);
+      document.getElementById('trainStatus3').textContent='Training complete!';
+      document.getElementById('trainResult3').textContent='Model accuracy: '+wiz.wizAcc+'%';
+      var tad=document.getElementById('trainAccDisplay');if(tad)tad.textContent=wiz.wizAcc+'%';
+      var nb3=document.getElementById('w3next');if(nb3){nb3.removeAttribute('disabled');}
+      markDone(5);
+    }
+  },90);
+}
+
+function buildTests(){
+  var p=PROBS[wiz.prob],area=document.getElementById('testExamples');
+  wiz.testScore=0;wiz.testTotal=p.tests.length;
+  area.innerHTML='';
+  p.tests.forEach(function(t,idx){
+    var div=document.createElement('div');
+    div.className='test-ex'; div.id='tex'+idx;
+    var img=document.createElement('div');
+    img.className='test-img'; img.textContent=t.img;
+    var btns=document.createElement('div');
+    btns.className='test-btns';
+    var bA=document.createElement('button');
+    bA.textContent=p.labelA;
+    bA.addEventListener('click',function(){predEx(idx,'A');});
+    var bB=document.createElement('button');
+    bB.textContent=p.labelB;
+    bB.addEventListener('click',function(){predEx(idx,'B');});
+    btns.appendChild(bA); btns.appendChild(bB);
+    var res=document.createElement('div');
+    res.className='test-result'; res.id='tres'+idx;
+    div.appendChild(img); div.appendChild(btns); div.appendChild(res);
+    area.appendChild(div);
+  });
+  document.getElementById('testScoreDisplay').textContent='0/'+wiz.testTotal;
+  document.getElementById('testAccLabel').textContent='';
+}
+function predEx(i,guess){
+  var p=PROBS[wiz.prob],t=p.tests[i];
+  var card=document.getElementById('tex'+i);
+  if(card.classList.contains('answered'))return;
+  card.classList.add('answered');
+  var correct=guess===t.ans;
+  if(correct)wiz.testScore++;
+  var res=document.getElementById('tres'+i);
+  res.textContent=correct?'✓ Correct! '+t.hint:'✗ Wrong. '+t.hint;
+  res.style.color=correct?'var(--green)':'#F87171';
+  updTestScore();
+}
+function updTestScore(){
+  var answered=document.querySelectorAll('.test-ex.answered').length;
+  document.getElementById('testScoreDisplay').textContent=wiz.testScore+'/'+wiz.testTotal;
+  if(answered===wiz.testTotal){
+    var pct=Math.round(wiz.testScore/wiz.testTotal*100);
+    document.getElementById('testAccLabel').textContent=pct+'% test accuracy - '+(pct>=75?'Great result!':'Keep improving!');
+  }
+}
+
+function buildSummary(){
+  if(!wiz.prob)return;
+  var p=PROBS[wiz.prob];
+  var testPct=Math.round(wiz.testScore/wiz.testTotal*100);
+  document.getElementById('projIcon').textContent=p.icon;
+  document.getElementById('projTitle').textContent=p.title;
+  document.getElementById('psTotalData').textContent=wiz.totalSamples+' labelled examples';
+  document.getElementById('psTrainAcc').textContent=(wiz.wizAcc||'--')+'%';
+  document.getElementById('psTestAcc').textContent=testPct+'%';
+  var findings='Your '+p.title+' model was trained on '+wiz.totalSamples+' examples. ';
+  findings+='It achieved '+wiz.wizAcc+'% training accuracy and '+testPct+'% on the test set. ';
+  if(testPct>=80)findings+='Excellent performance! The model generalises well.';
+  else if(testPct>=60)findings+='Good start. More diverse training data would improve results.';
+  else findings+='The model needs more examples and better balanced classes to improve.';
+  document.getElementById('projFindings').textContent=findings;
+  markDone(5);
+}
+function copyReport(){
+  var p=wiz.prob?PROBS[wiz.prob]:{title:'N/A'};
+  var testPct=Math.round(wiz.testScore/Math.max(wiz.testTotal,1)*100);
+  var text='AI PROJECT REPORT\n==================\nProject: '+p.title+'\nTraining Data: '+wiz.totalSamples+' examples\nTraining Accuracy: '+(wiz.wizAcc||'--')+'%\nTest Accuracy: '+testPct+'%\nGenerated: '+new Date().toLocaleDateString();
+  navigator.clipboard.writeText(text).then(function(){alert('Report copied to clipboard!');}).catch(function(){alert(text);});
+}
+function restartWizard(){
+  wiz={step:1,prob:null,labels:{},totalSamples:0,wizAcc:0,testScore:0,testTotal:0};
+  document.querySelectorAll('.prob-card').forEach(function(c){c.classList.remove('chosen');});
+  showWizStep(1);
+}
+function togglePres(el){
+  var body=el.nextElementSibling;
+  var open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  var arr=el.querySelector('.pres-arrow')||el.querySelector('div>span:last-child');if(arr)arr.textContent=open?'▶':'▼';
+}
+
+
+/* ── 5.2 Split Visualizer ── */
+function drawSplit52(){
+  var sl=document.getElementById('splitSlider52');
+  if(!sl)return;
+  var trainPct=parseInt(sl.value),rest=100-trainPct,valPct=Math.round(rest/2),testPct=rest-valPct;
+  document.getElementById('trainPct52').textContent=trainPct;
+  var container=document.getElementById('splitBlocks52');
+  if(!container)return;
+  container.innerHTML='';
+  var total=100;
+  for(var i=0;i<total;i++){
+    var sq=document.createElement('div');
+    sq.style.cssText='width:9px;height:18px;border-radius:2px;transition:background .3s;';
+    if(i<trainPct) sq.style.background='#0891B2';
+    else if(i<trainPct+valPct) sq.style.background='#059669';
+    else sq.style.background='#F59E0B';
+    container.appendChild(sq);
+  }
+  var counts=document.getElementById('splitCounts52');
+  if(counts) counts.innerHTML='<span>🔵 Train: <strong>'+trainPct+'</strong> samples</span>'
+    +'<span>🟢 Validation: <strong>'+valPct+'</strong> samples</span>'
+    +'<span>🟡 Test: <strong>'+testPct+'</strong> samples</span>';
+}
+
+/* ── 5.2 Class Imbalance Simulator ── */
+function updateImbal52(){
+  var sl=document.getElementById('imbalSlider52');
+  if(!sl)return;
+  var diseased=parseInt(sl.value),healthy=200-diseased;
+  document.getElementById('imbalVal52').textContent=diseased;
+  var cv=document.getElementById('imbalCanvas52');
+  if(!cv)return;
+  cv.width=cv.offsetWidth||400;
+  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pad=12,barH=28,gap=14;
+  ctx.fillStyle='#071B2E';ctx.fillRect(0,0,W,H);
+  var maxW=W-pad*2-60;
+  // Healthy bar
+  var hw=maxW*(healthy/200);
+  ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(pad,pad,maxW,barH);
+  ctx.fillStyle='#0891B2';ctx.fillRect(pad,pad,hw,barH);
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(pad,pad,hw,barH);
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('🌿 Healthy',pad+6,pad+barH*.68);
+  ctx.textAlign='right';ctx.fillText(healthy,W-pad-4,pad+barH*.68);
+  // Diseased bar
+  var dy=pad+barH+gap,dw=maxW*(diseased/200);
+  ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(pad,dy,maxW,barH);
+  var dc=diseased<30?'#F87171':'#F59E0B';
+  ctx.fillStyle=dc;ctx.fillRect(pad,dy,dw,barH);
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(pad,dy,dw,barH);
+  ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.textAlign='left';
+  ctx.fillText('🦠 Diseased',pad+6,dy+barH*.68);
+  ctx.textAlign='right';ctx.fillText(diseased,W-pad-4,dy+barH*.68);
+  // Cheat accuracy
+  var cheatAcc=Math.round((healthy/200)*100);
+  var msg=document.getElementById('imbalMsg52');
+  if(!msg)return;
+  var ok=diseased>=60;
+  msg.style.background=ok?'rgba(5,150,105,.14)':'rgba(248,113,113,.12)';
+  msg.style.color=ok?'#34d399':'#F87171';
+  msg.style.border='1px solid '+(ok?'rgba(52,211,153,.3)':'rgba(248,113,113,.25)');
+  msg.innerHTML=(ok
+    ?'<strong>✓ Balanced enough!</strong> A cheat classifier (always predicts Healthy) gets only <strong>'+cheatAcc+'%</strong> accuracy. Your model needs to actually learn.'
+    :'<strong>⚠ Danger zone!</strong> A lazy classifier that always predicts "Healthy" gets <strong>'+cheatAcc+'%</strong> accuracy without learning anything. Add more Diseased samples!');
+}
+
+/* init 5.2 interactives when section opens */
+(function(){
+  var _ot52=window.toggleSection;
+  window.toggleSection=function(id){
+    _ot52(id);
+    if(id==='sec52'&&document.getElementById('sec52').classList.contains('open')){
+      setTimeout(function(){drawSplit52();updateImbal52();},80);
+    }
+  };
+  // also init on load in case section starts open
+  setTimeout(function(){
+    if(document.getElementById('sec52')&&document.getElementById('sec52').classList.contains('open')){
+      drawSplit52();updateImbal52();
+    }
+  },600);
+})();
+
+
+/* ── 5.3 Overfitting Explorer ── */
+function drawOverfit53(){
+  var epEl=document.getElementById('ep53x'),cxEl=document.getElementById('cx53');
+  if(!epEl||!cxEl)return;
+  var ep=parseInt(epEl.value),cx=parseInt(cxEl.value);
+  document.getElementById('ep53xLabel').textContent=ep;
+  document.getElementById('cx53Label').textContent=['','Simple','Medium','Complex'][cx];
+  var cv=document.getElementById('overfitCanvas53');
+  if(!cv)return;
+  cv.width=cv.offsetWidth||500;
+  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pad=32,bw=W-pad*2;
+  ctx.fillStyle='#071B2E';ctx.fillRect(0,0,W,H);
+  // Generate train/val curves
+  var overStart=Math.max(3,Math.round(ep*(0.45-cx*.08)));
+  var trainPts=[],valPts=[];
+  for(var i=0;i<=ep;i++){
+    var t=i/ep;
+    var trainL=0.9*Math.exp(-t*(2+cx*.6))+0.05+0.01*(Math.random()-.5);
+    var valDelta=i>overStart?(i-overStart)/ep*(0.18+cx*.12):0;
+    var valL=trainL+0.08+valDelta+0.015*(Math.random()-.5);
+    trainPts.push(Math.max(0.03,Math.min(0.95,trainL)));
+    valPts.push(Math.max(0.03,Math.min(0.98,valL)));
+  }
+  var maxL=Math.max.apply(null,trainPts.concat(valPts));
+  function py(v){return pad+(1-v/maxL)*(H-pad*2);}
+  function px(i){return pad+i/ep*bw;}
+  // shade overfitting zone
+  if(overStart<ep){
+    ctx.fillStyle='rgba(248,113,113,.07)';
+    ctx.fillRect(px(overStart),pad,bw-(px(overStart)-pad),H-pad*2);
+    ctx.strokeStyle='rgba(248,113,113,.3)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(px(overStart),pad);ctx.lineTo(px(overStart),H-pad);ctx.stroke();ctx.setLineDash([]);
+    document.getElementById('overfitZoneLabel').textContent='← Overfitting zone';
+  } else {
+    document.getElementById('overfitZoneLabel').textContent='';
+  }
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+  for(var g=0;g<=4;g++){var gy=pad+g*(H-pad*2)/4;ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(W-pad,gy);ctx.stroke();}
+  // axes labels
+  ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='9px sans-serif';ctx.textAlign='left';
+  ctx.fillText('Loss',4,pad+4);ctx.textAlign='center';ctx.fillText('Epochs →',W/2,H-4);
+  // train loss line
+  ctx.strokeStyle='#0891B2';ctx.lineWidth=2;ctx.beginPath();
+  trainPts.forEach(function(v,i){i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v));});ctx.stroke();
+  // val loss line
+  ctx.strokeStyle='#F59E0B';ctx.lineWidth=2;ctx.setLineDash([6,3]);ctx.beginPath();
+  valPts.forEach(function(v,i){i===0?ctx.moveTo(px(i),py(v)):ctx.lineTo(px(i),py(v));});ctx.stroke();ctx.setLineDash([]);
+  // message
+  var msg=document.getElementById('overfitMsg53');if(!msg)return;
+  var isOverfit=overStart<ep-2&&ep>overStart+4;
+  msg.style.background=isOverfit?'rgba(248,113,113,.12)':'rgba(5,150,105,.12)';
+  msg.style.color=isOverfit?'#F87171':'#34d399';
+  msg.style.border='1px solid '+(isOverfit?'rgba(248,113,113,.3)':'rgba(52,211,153,.3)');
+  msg.textContent=isOverfit
+    ?'⚠ Overfitting detected after epoch '+overStart+'! Val loss rises while train loss keeps falling. Try fewer epochs or a simpler model.'
+    :'✓ Model is generalising well. Both losses decrease together — stop training near the lowest validation loss.';
+}
+
+/* ── 5.3 Learning Rate Ball Simulation ── */
+var ballAnim53=null,ballX53=0,ballVx53=0;
+var lrVals53=[0.005,0.02,0.05,0.1,0.2,0.35,0.5,0.7,0.9,1.4];
+function getLR53Ball(){return lrVals53[parseInt(document.getElementById('lrBall53').value)-1]||0.05;}
+function updateBall53(){
+  var lr=getLR53Ball();
+  document.getElementById('lrBallLabel').textContent=lr.toFixed(3);
+  drawBallBase53(null,null);
+}
+function drawBallBase53(bx,step){
+  var cv=document.getElementById('ballCanvas53');if(!cv)return;
+  cv.width=cv.offsetWidth||500;
+  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pad=22;
+  ctx.fillStyle='#071B2E';ctx.fillRect(0,0,W,H);
+  // U-shaped bowl: minimum at BOTTOM-CENTER, sides rise UP
+  // canvas y: 0=top, H=bottom => minimum=large y, edges=small y
+  var minX=W/2,vals=[];
+  for(var x=pad;x<W-pad;x++){
+    var nx=(x-minX)/(W*.46);
+    var loss=nx*nx; // 0 at centre, 1 at edges
+    var y=(H-pad)-loss*(H-pad*2-10); // centre→bottom, edges→top
+    vals.push({x:x,y:Math.max(pad,Math.min(H-pad,y))});
+  }
+  // fill above curve (the valley walls)
+  ctx.beginPath();ctx.moveTo(pad,pad);
+  vals.forEach(function(v){ctx.lineTo(v.x,v.y);});
+  ctx.lineTo(W-pad,pad);ctx.closePath();
+  ctx.fillStyle='rgba(8,145,178,.09)';ctx.fill();
+  // curve
+  ctx.strokeStyle='rgba(8,145,178,.75)';ctx.lineWidth=2.5;ctx.beginPath();
+  vals.forEach(function(v,i){i===0?ctx.moveTo(v.x,v.y):ctx.lineTo(v.x,v.y);});ctx.stroke();
+  // axis labels -- separated so they don't overlap
+  ctx.fillStyle='rgba(255,255,255,.32)';ctx.font='9px sans-serif';
+  ctx.textAlign='left';ctx.fillText('↑ High loss',pad+2,pad+13);
+  // x-axis label at very bottom
+  ctx.textAlign='center';
+  ctx.fillText('← Weight value →',W/2,H-2);
+  // minimum marker: small tick + label just above curve bottom
+  ctx.strokeStyle='rgba(52,211,153,.5)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W/2,H-pad);ctx.lineTo(W/2,H-pad+5);ctx.stroke();
+  ctx.fillStyle='rgba(52,211,153,.6)';ctx.font='bold 9px sans-serif';
+  ctx.fillText('★ min',W/2,H-pad-3);
+  // draw ball
+  if(bx!==null){
+    var bxPx=pad+(bx+1)/2*(W-pad*2);
+    var nx2=(bxPx-minX)/(W*.46);
+    var loss2=nx2*nx2;
+    var byPx=(H-pad)-loss2*(H-pad*2-10)-9;
+    byPx=Math.max(pad+10,Math.min(H-pad-2,byPx));
+    var lr=getLR53Ball();
+    var col=lr>0.3?'#F87171':lr>0.12?'#F59E0B':'#34d399';
+    ctx.beginPath();ctx.arc(bxPx,byPx,9,0,Math.PI*2);
+    ctx.fillStyle=col+'44';ctx.fill();
+    ctx.beginPath();ctx.arc(bxPx,byPx,7,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.fill();
+    if(step!==null&&step>0){
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='bold 9px sans-serif';ctx.textAlign='center';
+      ctx.fillText('step '+step,bxPx,byPx-14);
+    }
+  }
+}
+function runBall53(){
+  if(ballAnim53)clearInterval(ballAnim53);
+  var lr=getLR53Ball();
+  ballX53=0.85;ballVx53=0;var step=0;
+  var msg=document.getElementById('ballMsg53');
+  drawBallBase53(ballX53,step);
+  ballAnim53=setInterval(function(){
+    var grad=2*ballX53;
+    ballX53-=lr*grad*(1+0.05*(Math.random()-.5));
+    step++;
+    drawBallBase53(ballX53,step);
+    var settled=Math.abs(ballX53)<0.04;
+    var diverged=Math.abs(ballX53)>1.1;
+    if(msg){
+      if(diverged) msg.textContent='💥 Diverged! Learning rate '+lr+' is too large — the ball bounces out of control.';
+      else if(settled) msg.textContent='✓ Converged in '+step+' steps! LR '+lr+' found the minimum.';
+      else msg.textContent='Step '+step+' — loss: '+Math.abs(ballX53).toFixed(4);
+    }
+    if(settled||diverged||step>80){clearInterval(ballAnim53);ballAnim53=null;}
+  },90);
+}
+function resetBall53(){
+  if(ballAnim53){clearInterval(ballAnim53);ballAnim53=null;}
+  ballX53=0.85;
+  drawBallBase53(null,null);
+  var msg=document.getElementById('ballMsg53');if(msg)msg.textContent='';
+}
+
+/* init 5.3 new sims on section open */
+(function(){
+  var _ot53=window.toggleSection;
+  window.toggleSection=function(id){
+    _ot53(id);
+    if(id==='sec53'&&document.getElementById('sec53').classList.contains('open')){
+      setTimeout(function(){drawOverfit53();drawBallBase53(null,null);},80);
+    }
+  };
+})();
+
+/* ── Precision / Recall Simulator (5.4) ── */
+(function(){
+  var EM=[
+    {ic:'💰',sp:true,sc:.95},{ic:'🎰',sp:true,sc:.85},{ic:'🔥',sp:true,sc:.75},{ic:'💳',sp:true,sc:.62},
+    {ic:'🔔',sp:true,sc:.44},{ic:'💸',sp:true,sc:.30},
+    {ic:'📬',sp:false,sc:.27},{ic:'📋',sp:false,sc:.22},{ic:'📰',sp:false,sc:.17},{ic:'📜',sp:false,sc:.14},
+    {ic:'📑',sp:false,sc:.11},{ic:'📧',sp:false,sc:.09},{ic:'📩',sp:false,sc:.07},{ic:'📨',sp:false,sc:.06},
+    {ic:'✉️',sp:false,sc:.05},{ic:'📮',sp:false,sc:.04},{ic:'📫',sp:false,sc:.03},{ic:'🗂️',sp:false,sc:.02},
+    {ic:'📄',sp:false,sc:.01},{ic:'📝',sp:false,sc:.01}
+  ];
+  var COL={tp:'#34d399',fp:'#F59E0B',fn:'#F87171',tn:'rgba(255,255,255,.13)'};
+  var BG={tp:'rgba(52,211,153,.13)',fp:'rgba(245,158,11,.13)',fn:'rgba(248,113,113,.13)',tn:'rgba(255,255,255,.04)'};
+  var NAMES=['Very lenient','Lenient','Balanced','Balanced','Strict','Strict','Very strict','Very strict','Very strict'];
+
+  function renderPRF54(){
+    var lazyEl=document.getElementById('lazy54');
+    var thrEl=document.getElementById('thresh54');
+    var grid=document.getElementById('emailGrid54');
+    if(!lazyEl||!thrEl||!grid)return;
+    var lazy=lazyEl.checked;
+    var sv=parseInt(thrEl.value);
+    var thresh=(10-sv)/10;
+    var tp=0,fp=0,fn=0,tn=0;
+    grid.innerHTML='';
+    EM.forEach(function(e){
+      var flagged=lazy?false:(e.sc>=thresh);
+      var t=flagged?(e.sp?'tp':'fp'):(e.sp?'fn':'tn');
+      if(t==='tp')tp++;else if(t==='fp')fp++;else if(t==='fn')fn++;else tn++;
+      var el=document.createElement('div');
+      el.style.cssText='width:40px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;border:2px solid '+COL[t]+';background:'+BG[t]+';font-size:1.1rem;box-sizing:border-box;';
+      el.title={tp:'✓ Spam caught',fp:'✗ False alarm — real email flagged',fn:'✗ Spam slipped through!',tn:'✓ Real email, correctly passed'}[t];
+      el.innerHTML=e.ic+'<span style="font-size:.5rem;color:'+COL[t]+';margin-top:1px;">'+Math.round(e.sc*100)+'%</span>';
+      grid.appendChild(el);
+    });
+    var prec=tp+fp>0?tp/(tp+fp):null;
+    var rec=tp+fn>0?tp/(tp+fn):0;
+    var f1=(prec!==null&&prec+rec>0)?2*prec*rec/(prec+rec):0;
+    var acc=(tp+tn)/EM.length;
+    function sb(id,val,col){
+      var pct=val!==null?Math.round(val*100):0;
+      var lab=val!==null?pct+'%':'N/A';
+      var ve=document.getElementById(id+'Val'),be=document.getElementById(id+'Bar');
+      if(ve)ve.textContent=lab;
+      if(be){be.style.width=(val!==null?pct:0)+'%';be.style.background=col;}
+    }
+    sb('acc54',acc,'#60a5fa');sb('prec54',prec,'#34d399');
+    sb('rec54',rec,'#a78bfa');sb('f154',f1,'#F59E0B');
+    var tl=document.getElementById('threshLabel54');
+    if(tl)tl.textContent=lazy?'— (disabled)':NAMES[sv-1]+' (≥'+Math.round(thresh*100)+'%)';
+    var ins=document.getElementById('insight54');if(!ins)return;
+    var msg='';
+    if(lazy){
+      msg='<strong style="color:#F87171;">⚠️ Lazy model:</strong> Accuracy = '+Math.round(acc*100)+'% — sounds decent! But Recall = 0% and F1 = 0%. It never catches a single spam email. This is why accuracy alone lies.';
+    } else if(tp===0&&fp===0){
+      msg='Filter catches nothing — all emails pass through. Slide right to start detecting.';
+    } else if(fn===0&&fp>3){
+      msg='<strong style="color:#a78bfa;">Max Recall (100%) ↑ but low Precision ↓</strong> — every spam is caught, but '+fp+' innocent emails are wrongly flagged. Your inbox is paranoid.';
+    } else if(fp===0&&fn>2){
+      msg='<strong style="color:#34d399;">Max Precision ↑ but low Recall ↓</strong> — zero false alarms, but '+fn+' spam emails slipped through undetected. Too cautious.';
+    } else if(f1>0.75){
+      msg='<strong style="color:#F59E0B;">✓ Good balance:</strong> P='+Math.round(prec*100)+'% · R='+Math.round(rec*100)+'% · F1='+Math.round(f1*100)+'%. '+fn+' missed, '+fp+' false alarms. Solid trade-off.';
+    } else {
+      msg='P='+Math.round((prec||0)*100)+'% · R='+Math.round(rec*100)+'% · F1='+Math.round(f1*100)+'% — '+fn+' spam missed, '+fp+' false alarms. Try adjusting sensitivity.';
+    }
+    ins.innerHTML=msg;
+  }
+  window.renderPRF54=renderPRF54;
+  setTimeout(renderPRF54,150);
+})();
+
+/* ── 5.1 Problem Type canvases ── */
+var ptypeDrawers=[
+  function(cv){
+    var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    ctx.fillStyle='#0a1929';ctx.fillRect(0,0,W,H);
+    var lh=16,pad=10,mid=W/2;
+    var usableH=H-lh-pad*2;
+    // dots spread across full usable height using fractional coords
+    var A=[[.14,.08],[.26,.22],[.18,.40],[.10,.58],[.30,.72],[.22,.88]];
+    var B=[[.72,.10],[.84,.28],[.68,.44],[.80,.62],[.90,.78],[.76,.92]];
+    function dot(fx,fy,col){
+      var x=fx*W, y=pad+fy*usableH;
+      ctx.beginPath();ctx.arc(x,y,6.5,0,Math.PI*2);
+      ctx.fillStyle=col+'28';ctx.fill();
+      ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.fill();
+    }
+    // dashed divider full height
+    ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(mid,pad);ctx.lineTo(mid,H-lh-2);ctx.stroke();ctx.setLineDash([]);
+    A.forEach(function(p){dot(p[0],p[1],'#0891B2');});
+    B.forEach(function(p){dot(p[0],p[1],'#F59E0B');});
+    ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Class A',W*.25,H-3);ctx.fillText('Class B',W*.75,H-3);
+  },
+  function(cv){
+    var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    ctx.fillStyle='#0a1929';ctx.fillRect(0,0,W,H);
+    var lh=14,pad=14;
+    // best-fit line from bottom-left to top-right using full canvas
+    var x0=pad,y0=H-pad-lh,x1=W-pad,y1=pad+8;
+    ctx.strokeStyle='#F59E0B';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();
+    // scatter points with jitter spread across full height
+    var fxs=[.07,.18,.29,.40,.51,.62,.73,.84,.93];
+    var jitter=[-10,+14,-8,+16,-12,+10,-6,+14,-9];
+    fxs.forEach(function(fx,i){
+      var t=fx, lineY=y0+t*(y1-y0);
+      var x=pad+fx*(W-pad*2), y=lineY+jitter[i];
+      ctx.beginPath();ctx.arc(x,y,5.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(8,145,178,.3)';ctx.fill();
+      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+      ctx.fillStyle='#0891B2';ctx.fill();
+    });
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px sans-serif';
+    ctx.textAlign='center';ctx.fillText('input →',W/2,H-2);
+    ctx.textAlign='left';ctx.fillText('output',4,12);
+  },
+  function(cv){
+    var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    ctx.fillStyle='#0a1929';ctx.fillRect(0,0,W,H);
+    for(var x=14;x<W-8;x+=15)for(var y=14;y<H-8;y+=15){ctx.beginPath();ctx.arc(x,y,1.2,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.1)';ctx.fill();}
+    ctx.strokeStyle='#34d399';ctx.lineWidth=2.5;ctx.strokeRect(60,20,82,70);
+    ctx.fillStyle='#34d399';ctx.fillRect(60,20,82,15);
+    ctx.fillStyle='#0a1929';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillText('disease 94%',101,31);
+  },
+  function(cv){
+    var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    ctx.fillStyle='#0a1929';ctx.fillRect(0,0,W,H);
+    var rows=[{t:'> "A sunset over the sea"',c:'#F59E0B'},{t:'',c:''},{t:'AI generates:',c:'#0891B2'},
+              {t:'  Golden light ripples',c:'rgba(255,255,255,.75)'},{t:'  on the quiet horizon...',c:'rgba(255,255,255,.75)'}];
+    ctx.font='9px monospace';ctx.textAlign='left';
+    rows.forEach(function(r,i){if(r.t){ctx.fillStyle=r.c;ctx.fillText(r.t,10,20+i*17);}});
+  },
+  function(cv){
+    var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+    ctx.fillStyle='#0a1929';ctx.fillRect(0,0,W,H);
+    [['\u266b Starlight',0.95,'#34d399'],['\u266b Aurora',0.88,'#0891B2'],['\u266b Echoes',0.76,'#F59E0B'],['\u266b Bloom',0.60,'rgba(255,255,255,.28)']].forEach(function(it,i){
+      var n=4,pad=8,gap=7,rowH=Math.floor((H-pad*2-gap*(n-1))/n),y=pad+i*(rowH+gap),bw=(W-pad*2)*it[1];
+      ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(pad,y,W-pad*2,rowH);
+      ctx.fillStyle=it[2];ctx.fillRect(pad,y,bw,rowH);
+      ctx.fillStyle='rgba(0,0,0,.38)';ctx.fillRect(pad,y,bw,rowH);
+      ctx.fillStyle='#fff';ctx.font='bold '+Math.max(9,Math.floor(rowH*.52))+'px sans-serif';
+      ctx.textAlign='left';ctx.fillText(it[0],pad+5,y+rowH*.7);
+      ctx.textAlign='right';ctx.fillText(Math.round(it[1]*100)+'%',W-pad-5,y+rowH*.7);
+    });
+  }
+];
+function showPtype(n){
+  document.querySelectorAll('.ptype-btn').forEach(function(b,i){b.classList.toggle('active',i===n);});
+  document.querySelectorAll('.ptype-panel').forEach(function(p,i){p.classList.toggle('active',i===n);});
+  setTimeout(function(){var cv=document.getElementById('ptcv'+n);if(cv){cv.width=cv.offsetWidth||200;cv.height=170;ptypeDrawers[n](cv);}},30);
+}
+setTimeout(function(){var cv=document.getElementById('ptcv0');if(cv){cv.width=cv.offsetWidth||200;cv.height=170;ptypeDrawers[0](cv);}},500);
+
+/* ── 5.1 Radar ── */
+var radarAxes=[
+  {label:'Patterns\nexist',   tip:'Does the data have learnable regularities? Random outcomes (lottery draws) have none — AI cannot learn from pure randomness.'},
+  {label:'Scalable\nneed',   tip:'Would automating this save significant time or cost? If a human solves it in seconds with low volume, AI may not be worth training.'},
+  {label:'Labels\navailable',tip:'Can you collect enough labelled examples? Most tasks need 100–500 per class. Rare events and costly labelling are warning signs.'},
+  {label:'Consistent\ninput', tip:'Is the input format regular and machine-readable — images, structured text, sensor readings? Highly variable inputs add complexity.'},
+  {label:'Objective\noutput', tip:'Is there one agreed correct answer? Ethical judgements and highly subjective tasks are difficult to label consistently across people.'}
+];
+var rGood=[0.92,0.87,0.82,0.95,0.90],rBad=[0.04,0.18,0.28,0.55,0.08];
+var r51f=0,r51t=null;
+function drawRadar51(){
+  var cv=document.getElementById('radar51');if(!cv)return;
+  var ctx=cv.getContext('2d'),CW=cv.width,CH=cv.height,N=5;
+  var cx=CW/2,cy=CH/2+8,R=Math.min(cx,cy)-46,t=Math.min(r51f/45,1);
+  ctx.clearRect(0,0,CW,CH);
+  [.25,.5,.75,1].forEach(function(r){
+    ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;
+    for(var i=0;i<N;i++){var a=-Math.PI/2+i*2*Math.PI/N;i===0?ctx.moveTo(cx+Math.cos(a)*R*r,cy+Math.sin(a)*R*r):ctx.lineTo(cx+Math.cos(a)*R*r,cy+Math.sin(a)*R*r);}
+    ctx.closePath();ctx.stroke();
+  });
+  for(var i=0;i<N;i++){
+    var a=-Math.PI/2+i*2*Math.PI/N;
+    ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,.13)';ctx.lineWidth=1;
+    ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.stroke();
+    var lx=cx+Math.cos(a)*(R+32),ly=cy+Math.sin(a)*(R+32);
+    ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='8.5px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    radarAxes[i].label.split('\n').forEach(function(p,pi,arr){ctx.fillText(p,lx,ly+(pi-(arr.length-1)/2)*11);});
+  }
+  function shape(vals,color,alpha){
+    ctx.beginPath();
+    for(var i=0;i<N;i++){var a=-Math.PI/2+i*2*Math.PI/N,r=vals[i]*t*R;i===0?ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r):ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}
+    ctx.closePath();
+    ctx.fillStyle=color.replace('rgb(','rgba(').replace(')',','+alpha+')');ctx.fill();
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+    for(var i=0;i<N;i++){var a=-Math.PI/2+i*2*Math.PI/N,r=vals[i]*t*R;ctx.beginPath();ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}
+  }
+  shape(rGood,'rgb(52,211,153)',0.15);shape(rBad,'rgb(248,113,113)',0.12);
+}
+function startRadar51(){if(r51t)return;r51f=0;r51t=setInterval(function(){r51f++;if(r51f>=45)clearInterval(r51t);drawRadar51();},22);}
+var _rv51=document.getElementById('radar51');
+if(_rv51){
+  _rv51.addEventListener('mousemove',function(e){
+    var rc=_rv51.getBoundingClientRect(),mx=e.clientX-rc.left,my=e.clientY-rc.top;
+    var cx=_rv51.width/2,cy=_rv51.height/2+8,R=Math.min(cx,cy)-46,best=-1,bestD=48;
+    for(var i=0;i<5;i++){var a=-Math.PI/2+i*2*Math.PI/5,ax=cx+Math.cos(a)*R,ay=cy+Math.sin(a)*R;
+      var d=Math.hypot(mx-ax,my-ay);if(d<bestD){bestD=d;best=i;}}
+    document.getElementById('radarTip').textContent=best>=0?radarAxes[best].tip:'Hover an axis point to learn more.';
+  });
+  _rv51.addEventListener('mouseleave',function(){document.getElementById('radarTip').textContent='';});
+}
+var _ot=window.toggleSection;
+window.toggleSection=function(id){_ot(id);if(id==='sec51'&&document.getElementById('sec51').classList.contains('open'))startRadar51();};
+
+/* ── 5.1 Design Your Problem ── */
+function evaluateProblem51(){
+  var dom=document.getElementById('dypDomain').value,inp=document.getElementById('dypInput').value;
+  var out=document.getElementById('dypOutput').value,dat=document.getElementById('dypData').value;
+  if(!dom||!inp||!out||!dat){alert('Please fill in all four fields.');return;}
+  var checks=[
+    {label:'Patterns likely exist',pass:inp!==''},
+    {label:'Input is machine-readable',pass:!!inp},
+    {label:'Output is objective',pass:out==='class'||out==='number'||out==='location'},
+    {label:'Enough data available',pass:dat==='abundant'||dat==='moderate'},
+    {label:'Task is scalable',pass:!!dom}
+  ];
+  var score=checks.filter(function(c){return c.pass;}).length;
+  var chips=document.getElementById('dypChips');
+  chips.style.display='flex';
+  chips.innerHTML=checks.map(function(c){return '<span class="dyp-chip '+(c.pass?'pass':'fail')+'">'+(c.pass?'\u2713 ':'\u2717 ')+c.label+'</span>';}).join('');
+  var v=['❌ Very poor fit','\u26a0\ufe0f Weak candidate','\U0001f7e1 Possible with effort','\u2705 Strong candidate!','\u2b50 Excellent AI problem!'][score];
+  var verdicts=['Very poor fit for AI','Weak candidate — rethink data strategy','Possible with effort — improve labelling','Strong candidate!','Excellent AI problem! Mark this section complete.'];
+  document.getElementById('dypVerdict').textContent=verdicts[score]+' ('+score+'/5 criteria met)';
+  if(score>=4)markDone('51');
+}
+
+// ══════════════ SECTION 5.6 SIMULATIONS ══════════════
+
+// ── Pitch Timer ──
+var PT_SLIDES=[
+  {label:'1. Hook',dur:30,
+   say:['Open with a striking number or a real story — not "Hi, my name is..."','Example: "Every year, 1 in 5 doctors misses this pattern. We built an AI that doesn\'t."','Your first 10 seconds decide whether people tune in or tune out.'],
+   tip:'Keep it under 2 sentences. You want a raised eyebrow, not a nod.'},
+  {label:'2. The Problem',dur:60,
+   say:['Who has this problem? Be specific — name a real person, place, or situation.','What is it costing them? Time, money, safety, fairness?','Why is AI the right tool here — and not just a spreadsheet?'],
+   tip:'Audiences forget statistics. They remember people. Put a face on the problem.'},
+  {label:'3. Your Data',dur:60,
+   say:['How many examples did you collect? How were they labelled?','Show 2–3 real samples on screen — make the data feel tangible.','Address the class balance: was your dataset fair across categories?'],
+   tip:'Data is your evidence. If your data is weak, your model is weak. Own it.'},
+  {label:'4. Results & Demo',dur:90,
+   say:['State your accuracy clearly — and what it means in plain English.','Show a live prediction or walk through a worked example.','Show one case it got WRONG. Honesty builds more trust than cherry-picking.'],
+   tip:'A live demo is 10× more convincing than a slide of numbers. Practise it until it is smooth.'},
+  {label:'5. Limitations & Next Steps',dur:60,
+   say:['What would you do with more data or more time?','What ethical risks did you identify — who could be harmed if it is wrong?','What is the path to real-world use — what permissions, reviews, or tests are needed?'],
+   tip:'Ending with next steps shows you are thinking like an engineer, not just a student.'}
+];
+var ptState={running:false,cur:0,elapsed:0,tick:null};
+function ptBuildSlides(){
+  var c=document.getElementById('ptSlides');if(!c)return;
+  c.innerHTML='';
+  PT_SLIDES.forEach(function(s,i){
+    var d=document.createElement('div');d.className='pt-slide';d.id='pts'+i;
+    var mins=Math.floor(s.dur/60),secs=s.dur%60;
+    var timeStr=mins>0?mins+'m '+(secs>0?secs+'s':''):secs+'s';
+    d.innerHTML='<div class="pt-dot" id="ptdot'+i+'"></div>'
+      +'<div style="flex:1;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+      +'<span class="pt-label">'+s.label+'</span>'
+      +'<span class="pt-dur">'+timeStr+'</span>'
+      +'</div>'
+      +'<div class="pt-tips" id="pttips'+i+'" style="display:none;margin-top:.5rem;"></div>'
+      +'</div>';
+    c.appendChild(d);
+  });
+}
+function ptControl(){
+  if(ptState.running){
+    clearInterval(ptState.tick);ptState.running=false;
+    document.getElementById('ptBtn').textContent='▶ Resume';
+  } else {
+    if(ptState.elapsed===0){ptShowSlide(0);}
+    ptState.running=true;document.getElementById('ptBtn').textContent='⏸ Pause';
+    ptState.tick=setInterval(function(){ptState.elapsed++;ptTickUpdate();},1000);
+  }
+}
+function ptShowSlide(i){
+  // hide all tips, show current
+  PT_SLIDES.forEach(function(_,j){
+    var t=document.getElementById('pttips'+j);if(t)t.style.display='none';
+    var d=document.getElementById('ptdot'+j);if(d)d.className='pt-dot';
+  });
+  var tips=document.getElementById('pttips'+i);
+  if(tips&&PT_SLIDES[i].say){
+    tips.style.display='block';
+    tips.innerHTML='<div style="font-size:.73rem;color:var(--fg2);display:flex;flex-direction:column;gap:.25rem;">'
+      +PT_SLIDES[i].say.map(function(s){return '<div style="display:flex;gap:.4rem;"><span style="color:var(--primary);flex-shrink:0;">›</span><span>'+s+'</span></div>';}).join('')
+      +(PT_SLIDES[i].tip?'<div style="margin-top:.3rem;font-style:italic;color:var(--fg3);">💡 '+PT_SLIDES[i].tip+'</div>':'')
+      +'</div>';
+  }
+  var dot=document.getElementById('ptdot'+i);if(dot)dot.className='pt-dot active';
+}
+function ptTickUpdate(){
+  var total=0;
+  for(var i=0;i<PT_SLIDES.length;i++){
+    total+=PT_SLIDES[i].dur;
+    if(ptState.elapsed<=total){
+      if(ptState.cur!==i){
+        var prev=document.getElementById('pts'+ptState.cur);
+        if(prev){prev.className='pt-slide done';var pd=document.getElementById('pttips'+ptState.cur);if(pd)pd.style.display='none';}
+        ptState.cur=i;ptShowSlide(i);
+      }
+      var cur=document.getElementById('pts'+i);if(cur)cur.className='pt-slide active';
+      var slideStart=total-PT_SLIDES[i].dur,elapsed=ptState.elapsed-slideStart,pct=elapsed/PT_SLIDES[i].dur*100;
+      var bar=document.getElementById('ptBar'),clk=document.getElementById('ptClock'),lbl=document.getElementById('ptSlideLabel');
+      if(bar){bar.style.width=pct+'%';bar.style.background=pct>80?'#f87171':pct>60?'#fbbf24':'var(--primary)';}
+      if(clk){var rem=PT_SLIDES[i].dur-elapsed;clk.textContent=Math.floor(rem/60)+':'+(rem%60<10?'0':'')+rem%60;clk.style.color=pct>80?'#f87171':pct>60?'#fbbf24':'var(--primary)';}
+      if(lbl)lbl.textContent=PT_SLIDES[i].label+' — '+(PT_SLIDES[i].dur-elapsed)+'s remaining';
+      return;
+    }
+  }
+  clearInterval(ptState.tick);ptState.running=false;
+  document.getElementById('ptBtn').textContent='Done!';
+  document.getElementById('ptSlideLabel').textContent='Presentation complete!';
+  document.getElementById('ptBar').style.width='100%';document.getElementById('ptBar').style.background='#34d399';
+  document.getElementById('ptClock').textContent='0:00';
+  var last=document.getElementById('pts'+(PT_SLIDES.length-1));if(last)last.className='pt-slide done';
+}
+function ptReset(){
+  clearInterval(ptState.tick);ptState={running:false,cur:0,elapsed:0,tick:null};
+  document.getElementById('ptBtn').textContent='▶ Start';
+  var b=document.getElementById('ptBar');if(b){b.style.width='0%';b.style.background='var(--primary)';}
+  var c=document.getElementById('ptClock');if(c)c.textContent='0:00';
+  var l=document.getElementById('ptSlideLabel');if(l)l.textContent='Press ▶ Start — tips for each section appear here';
+  ptBuildSlides();
+}
+
+// ── Audience Simulator ──
+var AUDIENCES={
+  student:{color:'#60a5fa',label:'Students',
+    qa:[{q:'What does your AI actually do?',a:'Use simple analogies — like teaching a dog tricks, but with photos. Show examples they can relate to.'},
+        {q:'Can I try it on my phone?',a:'Talk about what it would take to deploy it — a great opportunity to discuss real-world challenges.'},
+        {q:'What if it is wrong?',a:'Explain that all AI makes mistakes and that is why humans stay in the loop. Show your error examples.'}]},
+  teacher:{color:'#34d399',label:'Teachers',
+    qa:[{q:'How is this different from a Google search?',a:'Explain that AI classifies and decides rather than just retrieves. Use your specific task as the example.'},
+        {q:'Could students misuse this?',a:'Address ethical safeguards proactively. Show your responsible AI checklist.'},
+        {q:'How accurate is it really?',a:'Be honest about your accuracy score and what types of errors it makes. Teachers appreciate transparency.'}]},
+  engineer:{color:'#a78bfa',label:'Engineers',
+    qa:[{q:'What architecture did you use?',a:'Describe your classifier type, feature engineering, and training approach. Be specific about parameters.'},
+        {q:'How did you handle class imbalance?',a:'Show your dataset balance. Discuss precision vs recall trade-offs.'},
+        {q:'What is your training/test split?',a:'Explain your validation methodology and why your accuracy estimate is reliable or its limitations.'}]},
+  investor:{color:'#fbbf24',label:'Investors',
+    qa:[{q:'What is the market size?',a:'Research the problem space beforehand. How many people have this problem? What is the cost of the current solution?'},
+        {q:'Who are your competitors?',a:'Show that you know the landscape. What makes your approach different or defensible?'},
+        {q:'What do you need to go to market?',a:'Be ready to discuss data requirements, team, infrastructure cost, and regulatory hurdles.'}]}
+};
+function setAudience(key){
+  var a=AUDIENCES[key];if(!a)return;
+  document.querySelectorAll('.aud-btn').forEach(function(b){b.classList.remove('active');});
+  var keys=['student','teacher','engineer','investor'];
+  var btns=document.querySelectorAll('#audBtns .aud-btn');
+  var idx=keys.indexOf(key);if(btns[idx])btns[idx].classList.add('active');
+  var panel=document.getElementById('audPanel'),hdr=document.getElementById('audHeader'),qas=document.getElementById('audQAs');
+  if(!panel)return;
+  panel.style.display='block';
+  hdr.style.background=a.color+'22';hdr.style.color=a.color;
+  hdr.textContent=a.label+' — Likely questions for your presentation:';
+  qas.innerHTML='';
+  a.qa.forEach(function(qa,i){
+    var div=document.createElement('div');div.className='qa-item';
+    div.style.cssText='opacity:0;transform:translateY(8px);transition:all .3s;';
+    div.innerHTML='<div class="qa-q">Q: '+qa.q+'</div><div class="qa-a">💡 '+qa.a+'</div>';
+    qas.appendChild(div);
+    setTimeout(function(){div.style.opacity='1';div.style.transform='translateY(0)';},100*i+50);
+  });
+}
+
+// ── Bias Simulator ──
+function updateBias(){
+  var sl=document.getElementById('biasSlider');if(!sl)return;
+  var pA=parseInt(sl.value),pB=100-pA;
+  document.getElementById('biasRatioLbl').textContent=pA+'% / '+pB+'%';
+  drawBiasChart('biasDataChart',pA,pB);
+  var predA,predB;
+  if(pA>60){predA=Math.min(98,pA+Math.round((pA-50)*0.6));predB=100-predA;}
+  else if(pB>60){predB=Math.min(98,pB+Math.round((pB-50)*0.6));predA=100-predB;}
+  else{predA=pA;predB=pB;}
+  drawBiasChart('biasPredChart',predA,predB);
+  var ins=document.getElementById('biasInsight');if(!ins)return;
+  var imb=Math.abs(pA-pB);
+  if(imb<15){
+    ins.style.cssText='background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#34d399;font-size:.8rem;padding:.6rem .9rem;border-radius:8px;border:1px solid;line-height:1.5;';
+    ins.innerHTML='<strong>Balanced dataset!</strong> With near 50/50 distribution, the model learns both classes equally well. This is the gold standard for responsible AI.';
+  } else if(imb<35){
+    ins.style.cssText='background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3);color:#fbbf24;font-size:.8rem;padding:.6rem .9rem;border-radius:8px;border:1px solid;line-height:1.5;';
+    ins.innerHTML='<strong>Mild imbalance detected.</strong> Your model will lean toward the majority class. Consider oversampling the minority class or adjusting the decision threshold when presenting.';
+  } else {
+    ins.style.cssText='background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3);color:#f87171;font-size:.8rem;padding:.6rem .9rem;border-radius:8px;border:1px solid;line-height:1.5;';
+    ins.innerHTML='<strong>Severe imbalance!</strong> The model will almost always predict the majority class. Always show BOTH accuracy AND precision/recall in your presentation to expose this.';
+  }
+}
+function drawBiasChart(id,pA,pB){
+  var cv=document.getElementById(id);if(!cv)return;
+  var ctx=cv.getContext('2d');var W=cv.offsetWidth||200,H=80;
+  cv.width=W;cv.height=H;
+  ctx.fillStyle='#0d1f35';ctx.fillRect(0,0,W,H);
+  var bW=36,gap=20,mH=H-28;
+  var hA=Math.max(4,Math.round(mH*pA/100)),hB=Math.max(4,Math.round(mH*pB/100));
+  var sx=(W-(bW*2+gap))/2;
+  ctx.fillStyle='#60a5fa';ctx.beginPath();ctx.roundRect(sx,H-20-hA,bW,hA,3);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText(pA+'%',sx+bW/2,H-22-hA);
+  ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='9px sans-serif';ctx.fillText('A',sx+bW/2,H-6);
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.roundRect(sx+bW+gap,H-20-hB,bW,hB,3);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='bold 10px sans-serif';
+  ctx.fillText(pB+'%',sx+bW+gap+bW/2,H-22-hB);
+  ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='9px sans-serif';ctx.fillText('B',sx+bW+gap+bW/2,H-6);
+}
+
+// ── Responsible AI Checklist ──
+var RA_ITEMS=[
+  {t:'Checked for bias — training data represents diverse real-world cases',i:'⚖️'},
+  {t:'Defined who might be harmed if the model makes a wrong prediction',i:'🛡️'},
+  {t:'Tested on data the model has never seen before (held-out test set)',i:'🧪'},
+  {t:'Documented what the model can and cannot do (scope and limitations)',i:'📄'},
+  {t:'Added a way for users to flag or appeal incorrect decisions',i:'🚩'},
+  {t:'System is transparent about its confidence level (no silent failures)',i:'🔍'},
+  {t:'Privacy checked — training data has no sensitive personal information',i:'🔒'},
+  {t:'Planned for human oversight before any real-world deployment',i:'👤'}
+];
+var raChecked=[];
+function buildRAChecklist(){
+  var c=document.getElementById('raChecklist');if(!c)return;
+  c.innerHTML='';
+  RA_ITEMS.forEach(function(item,i){
+    var div=document.createElement('div');div.className='ra-item';div.id='rai'+i;
+    div.addEventListener('click',function(){toggleRA(i);});
+    div.innerHTML='<div class="ra-box" id="rabox'+i+'"></div><div class="ra-text">'+item.i+' '+item.t+'</div>';
+    c.appendChild(div);
+  });
+}
+function toggleRA(i){
+  var idx=raChecked.indexOf(i);
+  if(idx===-1){raChecked.push(i);}else{raChecked.splice(idx,1);}
+  var checked=raChecked.indexOf(i)!==-1;
+  var item=document.getElementById('rai'+i),box=document.getElementById('rabox'+i);
+  if(item)item.className='ra-item'+(checked?' checked':'');
+  if(box)box.textContent=checked?'✓':'';
+  var n=raChecked.length,tot=RA_ITEMS.length,pct=Math.round(n/tot*100);
+  var bar=document.getElementById('raBar'),score=document.getElementById('raScore');
+  if(bar)bar.style.width=pct+'%';if(score)score.textContent=n+' / '+tot;
+  var res=document.getElementById('raResult');if(!res)return;
+  if(n===tot){res.style.display='block';res.style.cssText='display:block;background:rgba(52,211,153,.12);border:1.5px solid rgba(52,211,153,.4);color:#34d399;font-size:.85rem;font-weight:600;padding:.7rem 1rem;border-radius:8px;text-align:center;margin-bottom:.5rem;';res.textContent='Perfect score! Your AI project is ethically sound and ready to present.';}
+  else if(n>=5){res.style.display='block';res.style.cssText='display:block;background:rgba(251,191,36,.08);border:1.5px solid rgba(251,191,36,.3);color:#fbbf24;font-size:.85rem;font-weight:600;padding:.7rem 1rem;border-radius:8px;text-align:center;margin-bottom:.5rem;';res.textContent='Good progress! Review the unchecked items before presenting to a real audience.';}
+  else{res.style.display='none';}
+}
+
+// ── Presentation Story Arc ──
+var PRES_SECTIONS=[
+  {
+    t:'Hook',time:'30s',emoji:'🎣',color:'#0891B2',
+    goal:'Grab attention in the first 10 seconds.',
+    say:['Open with a striking number, a real story, or a bold question.','Do NOT start with "Hi, my name is..." — start with the problem.','Example: "Every minute, 500 farmers make a crop decision with no data."'],
+    tip:'Your audience decides in the first 15 seconds whether to pay attention. Make it count.',
+    slide:{title:'The Hook',body:'Big number or story\n\n"[Striking fact about your problem]"\n\n— then pause.'}
+  },
+  {
+    t:'The Problem',time:'1 min',emoji:'🔍',color:'#7C3AED',
+    goal:'Make the audience feel the problem personally.',
+    say:['Name a real person, place, or situation — not a generic statistic.','What is it costing? Time, money, safety, fairness, lives?','Why is AI the right tool here — not a spreadsheet or a checklist?'],
+    tip:'Audiences forget numbers. They remember people. Put a face on the problem.',
+    slide:{title:'The Problem',body:'WHO has it?\n[Specific person or group]\n\nWHAT does it cost?\n[Time / money / safety]\n\nWHY AI?\n[Why now, why this approach]'}
+  },
+  {
+    t:'Your Data',time:'1 min',emoji:'📊',color:'#059669',
+    goal:'Show your evidence and be honest about its limits.',
+    say:['How many examples? How were they collected and labelled?','Show 2–3 real examples on screen — make the data tangible.','Address class balance: was your dataset fair across categories?'],
+    tip:'Data is your evidence. If your data has a weakness, name it — it builds far more trust than hiding it.',
+    slide:{title:'The Data',body:'Total samples: ___\nClass A: ___ | Class B: ___\n\n[Show 3 real examples]\n\nCollection method: ___'}
+  },
+  {
+    t:'Results & Demo',time:'1.5 min',emoji:'🏆',color:'#D97706',
+    goal:'Prove it works — and prove you understand when it fails.',
+    say:['State accuracy clearly in plain English, not just a percentage.','Walk through one correct prediction AND one wrong one.','A live demo or worked example is 10x more convincing than a slide of numbers.'],
+    tip:'Showing a mistake is a strength, not a weakness. It proves you tested rigorously.',
+    slide:{title:'Results',body:'Accuracy: ___%\n\n✅ Correct: [example]\n❌ Wrong: [example]\n\nWhat the confusion matrix tells us:'}
+  },
+  {
+    t:'Next Steps',time:'1 min',emoji:'🚀',color:'#DC2626',
+    goal:'Show you are thinking beyond the demo.',
+    say:['What would you do with more data or more time?','What ethical risks did you identify — who could be harmed?','What permissions, reviews, or tests are needed before real deployment?'],
+    tip:'Ending with next steps signals you are thinking like an engineer, not just a student.',
+    slide:{title:'Limitations & Next Steps',body:'Known limitations:\n• ___\n\nEthical risks:\n• ___\n\nPath to deployment:\n• ___'}
+  }
+];
+var presRead=[];
+var presActive=-1;
+function buildPresStructure(){
+  var arc=document.getElementById('presArc');if(!arc)return;
+  arc.innerHTML='';
+  // Build node row
+  var row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:0;width:100%;';
+  PRES_SECTIONS.forEach(function(s,i){
+    // Connector line (before node except first)
+    if(i>0){
+      var line=document.createElement('div');line.className='arc-line';line.id='arcline'+i;
+      line.style.cssText='flex:1;height:3px;background:var(--border);transition:background .4s;';
+      row.appendChild(line);
+    }
+    // Node
+    var node=document.createElement('div');node.className='arc-node';node.id='arcnode'+i;
+    node.style.cssText='display:flex;flex-direction:column;align-items:center;gap:.3rem;cursor:pointer;z-index:1;';
+    var circle=document.createElement('div');circle.id='arcc'+i;
+    circle.style.cssText='width:52px;height:52px;border-radius:50%;border:3px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:all .25s;flex-shrink:0;';
+    circle.textContent=s.emoji;
+    var lbl=document.createElement('div');
+    lbl.style.cssText='font-size:.65rem;font-weight:700;color:var(--fg3);text-align:center;width:60px;line-height:1.2;transition:color .25s;';
+    lbl.textContent=s.t;
+    var time=document.createElement('div');
+    time.style.cssText='font-size:.6rem;color:var(--fg3);opacity:.7;';
+    time.textContent=s.time;
+    node.appendChild(circle);node.appendChild(lbl);node.appendChild(time);
+    node.addEventListener('click',function(){presOpenSection(i);});
+    row.appendChild(node);
+  });
+  arc.appendChild(row);
+}
+function presOpenSection(i){
+  var s=PRES_SECTIONS[i];
+  // Mark as read
+  if(presRead.indexOf(i)===-1)presRead.push(i);
+  // Update node styles
+  PRES_SECTIONS.forEach(function(_,j){
+    var c=document.getElementById('arcc'+j);
+    var isRead=presRead.indexOf(j)!==-1;
+    var isActive=j===i;
+    if(c){
+      c.style.borderColor=isActive?PRES_SECTIONS[j].color:isRead?'rgba(52,211,153,.6)':'var(--border)';
+      c.style.background=isActive?PRES_SECTIONS[j].color+'22':isRead?'rgba(52,211,153,.08)':'var(--surface2)';
+      c.style.transform=isActive?'scale(1.15)':'scale(1)';
+      c.style.boxShadow=isActive?'0 0 16px '+PRES_SECTIONS[j].color+'55':'none';
+    }
+    // Line leading to j
+    if(j>0){
+      var ln=document.getElementById('arcline'+j);
+      if(ln)ln.style.background=(isRead&&presRead.indexOf(j-1)!==-1)?'rgba(52,211,153,.5)':'var(--border)';
+    }
+  });
+  presActive=i;
+  // Build detail panel
+  var panel=document.getElementById('presPanel');
+  if(!panel)return;
+  panel.style.display='block';
+  panel.style.borderColor=s.color+'55';
+  panel.innerHTML='';
+  // Header bar
+  var hdr=document.createElement('div');
+  hdr.style.cssText='background:'+s.color+'18;border-bottom:1px solid '+s.color+'30;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;';
+  hdr.innerHTML='<span style="font-size:1.6rem;">'+s.emoji+'</span>'
+    +'<div><div style="font-weight:700;font-size:.95rem;color:'+s.color+';">'+s.t+'</div>'
+    +'<div style="font-size:.75rem;color:var(--fg3);">'+s.goal+'</div></div>'
+    +'<div style="margin-left:auto;font-size:.7rem;background:'+s.color+'22;color:'+s.color+';padding:.2rem .55rem;border-radius:12px;font-weight:700;">'+s.time+'</div>';
+  panel.appendChild(hdr);
+  // Two-column body
+  var body=document.createElement('div');
+  body.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:0;';
+  // Left: talking points
+  var left=document.createElement('div');
+  left.style.cssText='padding:.85rem 1rem;border-right:1px solid var(--border);';
+  left.innerHTML='<div style="font-size:.72rem;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;">What to say</div>'
+    +'<div style="display:flex;flex-direction:column;gap:.4rem;">'
+    +s.say.map(function(pt){return '<div style="display:flex;gap:.5rem;font-size:.8rem;color:var(--fg2);line-height:1.4;"><span style="color:'+s.color+';font-weight:700;flex-shrink:0;">›</span><span>'+pt+'</span></div>';}).join('')
+    +'</div>'
+    +'<div style="margin-top:.65rem;padding:.5rem .7rem;background:'+s.color+'10;border-radius:7px;border-left:3px solid '+s.color+';font-size:.75rem;font-style:italic;color:var(--fg2);line-height:1.4;">'+s.tip+'</div>';
+  // Right: mock slide
+  var right=document.createElement('div');
+  right.style.cssText='padding:.85rem 1rem;';
+  var slide=document.createElement('div');
+  slide.style.cssText='background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:.75rem;aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:center;font-family:var(--mono);';
+  slide.innerHTML='<div style="font-size:.7rem;font-weight:700;color:'+s.color+';border-bottom:1.5px solid '+s.color+'40;padding-bottom:.35rem;margin-bottom:.45rem;">'+s.slide.title+'</div>'
+    +'<div style="font-size:.65rem;color:var(--fg2);line-height:1.5;white-space:pre-line;">'+s.slide.body+'</div>';
+  var cap=document.createElement('div');
+  cap.style.cssText='font-size:.65rem;color:var(--fg3);text-align:center;margin-top:.35rem;';
+  cap.textContent='Mock slide layout';
+  right.appendChild(slide);right.appendChild(cap);
+  body.appendChild(left);body.appendChild(right);
+  panel.appendChild(body);
+  // Nav buttons
+  var nav=document.createElement('div');
+  nav.style.cssText='display:flex;justify-content:space-between;padding:.6rem 1rem;border-top:1px solid var(--border);background:var(--surface2);';
+  var prev=document.createElement('button');
+  prev.className='btn btn-outline btn-sm';prev.textContent='← Previous';
+  prev.disabled=(i===0);
+  prev.addEventListener('click',function(){if(i>0)presOpenSection(i-1);});
+  var next=document.createElement('button');
+  next.className='btn btn-primary btn-sm';
+  next.textContent=i<PRES_SECTIONS.length-1?'Next →':'All done ✓';
+  next.style.background=s.color;next.style.borderColor=s.color;
+  next.addEventListener('click',function(){if(i<PRES_SECTIONS.length-1)presOpenSection(i+1);else{panel.style.borderColor='rgba(52,211,153,.5)';}});
+  nav.appendChild(prev);nav.appendChild(next);
+  panel.appendChild(nav);
+  // Animate in
+  panel.style.opacity='0';panel.style.transform='translateY(6px)';
+  setTimeout(function(){panel.style.transition='opacity .25s,transform .25s';panel.style.opacity='1';panel.style.transform='translateY(0)';},10);
+}
+
+// Init all 5.6 simulations
+function initSec56(){
+  ptBuildSlides();
+  setTimeout(function(){updateBias();},100);
+  buildRAChecklist();
+  buildPresStructure();
+  // Auto-open first arc node after render
+  setTimeout(function(){presOpenSection(0);},150);
+}
+document.addEventListener('DOMContentLoaded',initSec56);
+
+
+(function(){
+  var btn=document.getElementById('modDropBtn'),menu=document.getElementById('modDropMenu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.classList.toggle('open',o);});
+  document.addEventListener('click',function(){menu.classList.remove('open');btn.classList.remove('open');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.classList.remove('open');btn.classList.remove('open');}});
+})();
+
+/* ══ MODULE 5 QUIZ ══ */
+var QS5=[
+  {q:'Which of the following is a good fit for an AI solution?',opts:['Predicting tomorrow\'s lottery numbers','Detecting diseased crop leaves from photos','Deciding if a new law is morally right','Choosing which colour to paint a room'],ans:1},
+  {q:'What does "garbage in, garbage out" mean in AI?',opts:['AI systems waste energy','Poor-quality training data leads to poor model performance','AI throws away bad predictions','Garbage collection in programming'],ans:1},
+  {q:'In a train / validation / test split, what is the test set used for?',opts:['Training the model weights','Tuning hyperparameters during development','Final unbiased evaluation after all training is done','Storing raw unlabelled data'],ans:2},
+  {q:'What does the loss function measure during training?',opts:['How fast the model runs','How wrong the model\'s predictions are','How many parameters the model has','How large the training dataset is'],ans:1},
+  {q:'Which metric is most useful when false negatives are very costly (e.g., missing a disease)?',opts:['Accuracy','Precision','Recall','Model size'],ans:2}
+];
+var QS5_MS=[
+  {q:'Yang manakah antara berikut sesuai untuk penyelesaian AI?',opts:['Meramal nombor loteri esok','Mengesan daun tanaman yang sakit dari foto','Memutuskan sama ada undang-undang baru itu betul secara moral','Memilih warna cat untuk bilik'],ans:1},
+  {q:'Apakah maksud "garbage in, garbage out" dalam AI?',opts:['Sistem AI membazir tenaga','Data latihan berkualiti rendah menghasilkan prestasi model yang lemah','AI membuang ramalan yang buruk','Pengumpulan sampah dalam pengaturcaraan'],ans:1},
+  {q:'Dalam pembahagian latih / validasi / ujian, apakah kegunaan set ujian?',opts:['Melatih pemberat model','Menala hiperparameter semasa pembangunan','Penilaian tidak berat sebelah selepas semua latihan selesai','Menyimpan data mentah tanpa label'],ans:2},
+  {q:'Apakah yang diukur oleh fungsi kerugian semasa latihan?',opts:['Kelajuan model berjalan','Tahap kesalahan ramalan model','Bilangan parameter model','Saiz dataset latihan'],ans:1},
+  {q:'Metrik manakah paling berguna apabila positif palsu sangat mahal (contoh: terlepas penyakit)?',opts:['Ketepatan (Accuracy)','Ketepatan (Precision)','Ingatan (Recall)','Saiz model'],ans:2}
+];
+var QS5_EN_bak=JSON.parse(JSON.stringify(QS5));
+var q5Idx=0,q5Score=0;
+
+function quiz5Init(){q5Idx=0;q5Score=0;render5Q();}
+function render5Q(){
+  document.getElementById('qProg5').innerHTML=QS5.map(function(_,i){return '<div class="q-dot '+(i<q5Idx?'done':i===q5Idx?'cur':'')+'"></div>';}).join('');
+  var area=document.getElementById('quizArea5');
+  if(q5Idx>=QS5.length){
+    var isBMs=(document.documentElement.lang==='ms');
+    area.innerHTML='<div class="callout callout-green"><p>'+(isBMs?'Kuiz selesai! Skor: ':'Quiz complete! Score: ')+'<strong>'+q5Score+'/'+QS5.length+'</strong>. '+(isBMs?(q5Score>=4?'Cemerlang!':q5Score>=3?'Kerja bagus.':'Semak bahagian di atas.'):(q5Score>=4?'Excellent!':q5Score>=3?'Good work.':'Review the sections above.'))+'</p></div><button class="btn btn-outline btn-sm" onclick="quiz5Init()" style="margin-top:.5rem">'+(isBMs?'Cuba Semula':'Retake')+'</button>';
+    return;
+  }
+  var q=QS5[q5Idx];
+  area.innerHTML='<div class="quiz-q">Q'+(q5Idx+1)+'. '+q.q+'</div><div class="quiz-opts">'+q.opts.map(function(o,i){return '<button class="quiz-opt" onclick="quiz5Ans('+i+')">'+o+'</button>';}).join('')+'</div><div id="q5fb"></div>';
+}
+function quiz5Ans(c){
+  var q=QS5[q5Idx];
+  var isBM=(document.documentElement.lang==='ms');
+  document.querySelectorAll('.quiz-opt').forEach(function(o){o.onclick=null;});
+  document.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct');
+  var fb=document.getElementById('q5fb');
+  if(c===q.ans){q5Score++;document.querySelectorAll('.quiz-opt')[c].classList.add('correct');fb.innerHTML='<div class="quiz-fb ok">&#10003; '+(isBM?'Betul!':'Correct!')+'</div>';}
+  else{document.querySelectorAll('.quiz-opt')[c].classList.add('wrong');fb.innerHTML='<div class="quiz-fb no">&#10007; '+(isBM?'Jawapan ialah "'+q.opts[q.ans]+'".':'The answer is "'+q.opts[q.ans]+'".')+'</div>';}
+  setTimeout(function(){q5Idx++;render5Q();},1600);
+}
+quiz5Init();
+
+function renderLang(lang){
+  QS5=(lang==='ms'?QS5_MS:QS5_EN_bak);
+  quiz5Init();
+}
+
+/* ── Bilingual toggle ── */
+function setLang(lang){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('ai_adv_lang',lang);}catch(e){}
+  /* attribute-based */
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML=lang==='ms'?(el.getAttribute('data-ms')||el.getAttribute('data-en')):el.getAttribute('data-en');
+  });
+  /* span-based (rich HTML content) */
+  document.querySelectorAll('.lang-en').forEach(function(el){ el.style.display=lang==='ms'?'none':'inline'; });
+  document.querySelectorAll('.lang-ms').forEach(function(el){ el.style.display=lang==='ms'?'inline':'none'; });
+  var btn=document.getElementById('langToggle');
+  if(btn) btn.textContent=lang==='ms'?'EN':'BM';
+  if(typeof renderLang==='function') renderLang(lang);
+}
+(function(){
+  var _l='en';
+  try{_l=localStorage.getItem('ai_adv_lang')||'en';}catch(e){}
+  if(_l==='ms') setLang('ms');
+})();
+
+/* ── Show active student chip ── */
+function updateStudentChip() {
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    var name = s.student_name || s.name || '';
+    var matric = s.student_matric || s.matric || '';
+    if (!name) return;
+    var chip = document.getElementById('activeStudentChip');
+    var avatar = document.getElementById('chipAvatar');
+    var chipNameEl = document.getElementById('chipName');
+    if (chip) {
+      avatar.textContent = name.charAt(0).toUpperCase();
+      chipNameEl.textContent = name + (matric ? ' · ' + matric : '');
+      chip.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+window.addEventListener('load', updateStudentChip);
+</script>
+</body>
+</html>

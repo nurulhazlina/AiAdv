@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Adventure — Pre-Program Survey</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* ── Tokens ── */
+:root{
+  --primary:#0891b2;--accent:#7c3aed;--green:#16a34a;--red:#dc2626;
+  --bg:#f0f9ff;--surface:#ffffff;--surface2:#f8fafc;--border:#e2e8f0;
+  --fg:#0f172a;--fg2:#334155;--fg3:#64748b;--muted:#94a3b8;
+  --hero-from:#1e1b4b;--hero-to:#0c4a6e;
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f172a;--surface:#1e293b;--surface2:#0f172a;--border:#334155;
+  --fg:#f1f5f9;--fg2:#cbd5e1;--fg3:#94a3b8;--muted:#64748b;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#0f172a;--border:#334155;
+  --fg:#f1f5f9;--fg2:#cbd5e1;--fg3:#94a3b8;--muted:#64748b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;font-size:15px;}
+/* ── Header ── */
+.hero{background:linear-gradient(135deg,var(--hero-from),var(--hero-to));color:#fff;padding:2.2rem 1.2rem 1.8rem;text-align:center;position:relative;}
+.hero h1{font-size:1.55rem;font-weight:700;line-height:1.3;margin-bottom:.5rem;}
+.hero .sub{font-size:.9rem;color:rgba(255,255,255,.75);max-width:520px;margin:0 auto .9rem;}
+.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;font-size:.72rem;font-weight:600;padding:.2rem .75rem;letter-spacing:.04em;margin-bottom:.7rem;}
+.lang-toggle-btn{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.45);color:#fff;font-size:.78rem;font-weight:700;padding:.3rem .7rem;border-radius:999px;cursor:pointer;transition:background .2s;}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.35);}
+/* ── Layout ── */
+.container{max-width:760px;margin:0 auto;padding:1.2rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.4rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.card-title{font-size:1.05rem;font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem;}
+.card-title .icon{font-size:1.1rem;}
+.card-sub{font-size:.82rem;color:var(--fg3);margin-bottom:1rem;}
+/* ── Form ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1rem;}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr;}}
+.form-group{display:flex;flex-direction:column;gap:.3rem;}
+.form-group label{font-size:.82rem;font-weight:600;color:var(--fg2);}
+.form-group input,.form-group select,.form-group textarea{
+  font-family:inherit;font-size:.88rem;padding:.5rem .7rem;
+  border:1.5px solid var(--border);border-radius:8px;
+  background:var(--surface2);color:var(--fg);outline:none;transition:border .15s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.full-width{grid-column:1/-1;}
+/* ── Progress ── */
+.prog-bar-wrap{background:var(--border);border-radius:999px;height:6px;margin-bottom:1.2rem;}
+.prog-bar{background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;height:6px;transition:width .4s;}
+/* ── Module headers ── */
+.mod-header{display:flex;align-items:center;gap:.7rem;padding:.6rem .9rem;border-radius:10px;margin:1.4rem 0 .9rem;font-weight:700;font-size:.88rem;}
+.mod-m1{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
+.mod-m2{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+.mod-m3{background:#fdf4ff;color:#7c3aed;border:1px solid #e9d5ff;}
+.mod-m4{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.mod-m5{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+.mod-m6{background:#f0fdfa;color:#0f766e;border:1px solid #99f6e4;}
+@media(prefers-color-scheme:dark){
+  .mod-m1{background:#1e3a5f;color:#93c5fd;border-color:#3b82f6;}
+  .mod-m2{background:#14532d;color:#86efac;border-color:#22c55e;}
+  .mod-m3{background:#3b0764;color:#d8b4fe;border-color:#a855f7;}
+  .mod-m4{background:#431407;color:#fdba74;border-color:#f97316;}
+  .mod-m5{background:#450a0a;color:#fca5a5;border-color:#ef4444;}
+  .mod-m6{background:#042f2e;color:#5eead4;border-color:#14b8a6;}
+}
+/* ── MCQ ── */
+.q-block{margin-bottom:1.2rem;padding:1rem 1.1rem;border:1px solid var(--border);border-radius:10px;background:var(--surface2);}
+.q-block:hover{border-color:var(--primary);}
+.q-num{font-size:.72rem;font-weight:700;color:var(--primary);letter-spacing:.06em;margin-bottom:.35rem;}
+.q-stem{font-size:.9rem;font-weight:600;color:var(--fg);margin-bottom:.7rem;line-height:1.5;}
+.mcq-opts{display:flex;flex-direction:column;gap:.4rem;}
+.mcq-opt{display:flex;align-items:flex-start;gap:.55rem;cursor:pointer;padding:.45rem .55rem;border-radius:7px;border:1.5px solid transparent;transition:all .15s;font-size:.84rem;line-height:1.45;}
+.mcq-opt:hover{border-color:var(--primary);background:rgba(8,145,178,.06);}
+.mcq-opt.selected{border-color:var(--primary);background:rgba(8,145,178,.1);}
+.mcq-opt input[type=radio]{margin-top:.15rem;accent-color:var(--primary);flex-shrink:0;}
+/* ── Open-ended ── */
+.q-open{margin-bottom:1rem;}
+.q-open label{font-size:.88rem;font-weight:600;color:var(--fg);display:block;margin-bottom:.4rem;line-height:1.5;}
+.q-open .optional{font-size:.75rem;font-weight:400;color:var(--muted);margin-left:.4rem;}
+.q-open textarea{width:100%;font-family:inherit;font-size:.86rem;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--fg);outline:none;transition:border .15s;resize:vertical;min-height:90px;}
+.q-open textarea:focus{border-color:var(--accent);}
+.wc{font-size:.72rem;color:var(--muted);text-align:right;margin-top:.2rem;}
+/* ── Consent ── */
+.consent-box{background:linear-gradient(135deg,rgba(8,145,178,.07),rgba(124,58,237,.07));border:1px solid rgba(8,145,178,.3);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1.4rem;}
+.consent-box h3{font-size:.9rem;font-weight:700;margin-bottom:.5rem;color:var(--primary);}
+.consent-box p{font-size:.8rem;color:var(--fg2);margin-bottom:.4rem;line-height:1.55;}
+.consent-check{display:flex;align-items:flex-start;gap:.5rem;margin-top:.8rem;}
+.consent-check input{margin-top:.2rem;accent-color:var(--primary);}
+.consent-check label{font-size:.82rem;font-weight:600;color:var(--fg);cursor:pointer;line-height:1.45;}
+/* ── Submit ── */
+.submit-wrap{text-align:center;padding:1.2rem 0 2rem;}
+.btn-submit{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;border-radius:999px;padding:.85rem 2.4rem;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.02em;}
+.btn-submit:hover{opacity:.9;}
+.btn-submit:disabled{opacity:.45;cursor:not-allowed;}
+.msg{margin-top:.8rem;font-size:.85rem;text-align:center;}
+.msg.ok{color:var(--green);}
+.msg.err{color:var(--red);}
+/* ── Progress banner ── */
+.prog-banner{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem;font-size:.8rem;color:var(--fg3);}
+.prog-banner strong{color:var(--primary);}
+/* ── Utility ── */
+.lang-ms{display:none;}
+.section-tag{font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:999px;background:rgba(8,145,178,.12);color:var(--primary);margin-left:.4rem;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <button class="lang-toggle-btn" id="langBtn" onclick="toggleLang()">BM</button>
+  <div class="badge" data-en="🔬 Research Survey · AI Adventure 2025" data-ms="🔬 Kaji Selidik Penyelidikan · AI Adventure 2025">🔬 Research Survey · AI Adventure 2025</div>
+  <h1 data-en="Pre-Program Survey" data-ms="Kaji Selidik Pra-Program">Pre-Program Survey</h1>
+  <p class="sub" data-en="Complete this survey BEFORE the program begins. Your honest answers help us measure your learning journey." data-ms="Lengkapkan kaji selidik ini SEBELUM program bermula. Jawapan jujur anda membantu kami mengukur perjalanan pembelajaran anda.">Complete this survey BEFORE the program begins. Your honest answers help us measure your learning journey.</p>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="container">
+
+  <!-- Consent -->
+  <div class="consent-box">
+    <h3 data-en="📋 Informed Consent & Data Privacy" data-ms="📋 Persetujuan Termaklum & Privasi Data">📋 Informed Consent & Data Privacy</h3>
+    <p data-en="This survey is part of a research study on AI education effectiveness conducted by Dr. Hazlina Hassan, Faculty of Computing, UMPSA. Your participation is voluntary and you may withdraw at any time." data-ms="Kaji selidik ini adalah sebahagian daripada kajian tentang keberkesanan pendidikan AI yang dijalankan oleh Dr. Hazlina Hassan, Fakulti Komputeran, UMPSA. Penyertaan anda adalah sukarela dan anda boleh menarik diri pada bila-bila masa.">This survey is part of a research study on AI education effectiveness conducted by Dr. Hazlina Hassan, Faculty of Computing, UMPSA. Your participation is voluntary and you may withdraw at any time.</p>
+    <p data-en="All data is collected only for research purposes, stored securely, and will be reported in aggregate form. Your identity will not be disclosed in any publication." data-ms="Semua data dikumpul untuk tujuan penyelidikan sahaja, disimpan dengan selamat, dan akan dilaporkan dalam bentuk agregat. Identiti anda tidak akan didedahkan dalam sebarang penerbitan.">All data is collected only for research purposes, stored securely, and will be reported in aggregate form. Your identity will not be disclosed in any publication.</p>
+    <div class="consent-check">
+      <input type="checkbox" id="consent" onchange="checkConsent()">
+      <label for="consent" data-en="I understand and agree to participate voluntarily in this research survey. ✱" data-ms="Saya faham dan bersetuju untuk menyertai kaji selidik penyelidikan ini secara sukarela. ✱">I understand and agree to participate voluntarily in this research survey. ✱</label>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Identity -->
+  <div class="card" id="sec-identity">
+    <div class="card-title"><span class="icon">👤</span> <span data-en="Student Information" data-ms="Maklumat Pelajar">Student Information</span></div>
+    <p class="card-sub" data-en="All fields marked ✱ are required. This information links your pre and post survey responses." data-ms="Semua medan bertanda ✱ adalah wajib. Maklumat ini menghubungkan respons kaji selidik pra dan pasca anda.">All fields marked ✱ are required. This information links your pre and post survey responses.</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label data-en="Full Name ✱" data-ms="Nama Penuh ✱">Full Name ✱</label>
+        <input type="text" id="f-name" placeholder="e.g. Ahmad bin Ali">
+      </div>
+      <div class="form-group">
+        <label data-en="Matric / Student No. ✱" data-ms="No. Matrik / Pelajar ✱">Matric / Student No. ✱</label>
+        <input type="text" id="f-matric" placeholder="e.g. 240001">
+      </div>
+      <div class="form-group">
+        <label data-en="MyKid / IC No. ✱" data-ms="No. MyKid / IC ✱">MyKid / IC No. ✱</label>
+        <input type="text" id="f-mykid" placeholder="e.g. 100201-14-1234">
+      </div>
+      <div class="form-group">
+        <label data-en="Gender ✱" data-ms="Jantina ✱">Gender ✱</label>
+        <select id="f-gender">
+          <option value="">— select / pilih —</option>
+          <option value="Male" data-en="Male" data-ms="Lelaki">Male</option>
+          <option value="Female" data-en="Female" data-ms="Perempuan">Female</option>
+          <option value="Prefer not to say" data-en="Prefer not to say" data-ms="Tidak mahu nyatakan">Prefer not to say</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-en="Age ✱" data-ms="Umur ✱">Age ✱</label>
+        <input type="number" id="f-age" min="10" max="99" placeholder="e.g. 16">
+      </div>
+      <div class="form-group">
+        <label data-en="Home State ✱" data-ms="Negeri Asal ✱">Home State ✱</label>
+        <select id="f-state">
+          <option value="">— select / pilih —</option>
+          <option>Johor</option><option>Kedah</option><option>Kelantan</option>
+          <option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option>
+          <option>Perak</option><option>Perlis</option><option>Pulau Pinang</option>
+          <option>Sabah</option><option>Sarawak</option><option>Selangor</option>
+          <option>Terengganu</option><option>W.P. Kuala Lumpur</option>
+          <option>W.P. Labuan</option><option>W.P. Putrajaya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-en="School Name ✱" data-ms="Nama Sekolah ✱">School Name ✱</label>
+        <input type="text" id="f-school-name" placeholder="e.g. SMK Sri Pahang">
+      </div>
+      <div class="form-group">
+        <label data-en="School Code ✱" data-ms="Kod Sekolah ✱">School Code ✱</label>
+        <input type="text" id="f-school-code" placeholder="e.g. BEA1234">
+      </div>
+      <div class="form-group">
+        <label data-en="Phone No. ✱" data-ms="No. Telefon ✱">Phone No. ✱</label>
+        <input type="tel" id="f-phone" placeholder="e.g. 011-12345678">
+      </div>
+      <div class="form-group">
+        <label data-en="Email ✱" data-ms="E-mel ✱">Email ✱</label>
+        <input type="email" id="f-email" placeholder="e.g. ahmad@student.edu.my">
+      </div>
+    </div>
+    <p id="id-err" class="msg err" style="display:none;text-align:left;margin-top:.6rem;" data-en="⚠ Please fill in all required fields." data-ms="⚠ Sila isi semua medan wajib.">⚠ Please fill in all required fields.</p>
+  </div>
+
+  <!-- SECTION 2: Knowledge Check (MCQ) -->
+  <div class="card" id="sec-mcq">
+    <div class="card-title"><span class="icon">🧠</span> <span data-en="Knowledge Check" data-ms="Semak Pengetahuan">Knowledge Check</span> <span class="section-tag" data-en="30 Questions" data-ms="30 Soalan">30 Questions</span></div>
+    <p class="card-sub" data-en="Select ONE best answer for each question. There are no right or wrong answers for scoring purposes — just answer honestly based on what you know NOW." data-ms="Pilih SATU jawapan terbaik bagi setiap soalan. Tiada jawapan betul atau salah untuk tujuan pemarkahan — jawab dengan jujur berdasarkan apa yang anda tahu SEKARANG.">Select ONE best answer for each question. There are no right or wrong answers for scoring purposes — just answer honestly based on what you know NOW.</p>
+
+    <!-- Progress -->
+    <div class="prog-banner" id="mcq-prog">
+      <span>📊</span>
+      <span data-en="Answered:" data-ms="Dijawab:">Answered:</span>
+      <strong id="ans-count">0</strong> / 30
+    </div>
+
+    <!-- MCQ rendered by JS -->
+    <div id="mcq-container"></div>
+  </div>
+
+  <!-- SECTION 3: Expectations (open-ended) -->
+  <div class="card" id="sec-open">
+    <div class="card-title"><span class="icon">💬</span> <span data-en="Pre-Program Expectations" data-ms="Jangkaan Pra-Program">Pre-Program Expectations</span></div>
+    <p class="card-sub" data-en="These questions help us understand your starting point. Write in English or Bahasa Malaysia — whichever you prefer." data-ms="Soalan-soalan ini membantu kami memahami titik permulaan anda. Tulis dalam Bahasa Inggeris atau Bahasa Malaysia — mana-mana yang anda suka.">These questions help us understand your starting point. Write in English or Bahasa Malaysia — whichever you prefer.</p>
+
+    <div class="q-open">
+      <label data-en="1. What do you hope to learn or gain from the AI Adventure program?" data-ms="1. Apakah yang anda harapkan untuk dipelajari atau diperolehi daripada program AI Adventure?">1. What do you hope to learn or gain from the AI Adventure program?</label>
+      <textarea id="open1" placeholder="Write your answer here... / Tulis jawapan anda di sini..." oninput="countW('open1','wc1',10)"></textarea>
+      <div class="wc" id="wc1">0 / 10 words min</div>
+    </div>
+
+    <div class="q-open">
+      <label data-en="2. Have you used any AI tools or apps before (e.g. ChatGPT, Siri, Google Translate, face recognition)? If yes, describe your experience." data-ms="2. Pernahkah anda menggunakan mana-mana alat atau aplikasi AI sebelum ini (cth. ChatGPT, Siri, Google Translate, pengecaman wajah)? Jika ya, ceritakan pengalaman anda.">2. Have you used any AI tools or apps before (e.g. ChatGPT, Siri, Google Translate, face recognition)? If yes, describe your experience.</label>
+      <textarea id="open2" placeholder="Write your answer here... / Tulis jawapan anda di sini..." oninput="countW('open2','wc2',0)"></textarea>
+      <div class="wc" id="wc2">0 words</div>
+    </div>
+
+    <div class="q-open">
+      <label data-en="3. How do you think AI might be useful in your future studies or career?" data-ms="3. Bagaimana anda fikir AI mungkin berguna dalam pengajian atau kerjaya anda pada masa hadapan?">3. How do you think AI might be useful in your future studies or career?</label>
+      <textarea id="open3" placeholder="Write your answer here... / Tulis jawapan anda di sini..." oninput="countW('open3','wc3',10)"></textarea>
+      <div class="wc" id="wc3">0 / 10 words min</div>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-wrap">
+    <button class="btn-submit" id="btn-submit" onclick="submitSurvey()" disabled>
+      <span data-en="✔ Submit Pre-Program Survey" data-ms="✔ Hantar Kaji Selidik Pra-Program">✔ Submit Pre-Program Survey</span>
+    </button>
+    <div class="msg" id="submit-msg"></div>
+  </div>
+
+</div><!-- /container -->
+
+<script src="data-collect.js"></script>
+<script>
+// ── MCQ Data ─────────────────────────────────────────────────────────────────
+var MCQ = [
+  // Module 1 — Why AI?
+  {mod:1, en:{stem:"What is the fundamental difference between traditional programming and machine learning?",opts:["Traditional programming requires humans to write all the rules; machine learning learns rules automatically from data.","Traditional programming is faster at making predictions; machine learning is always slower.","Traditional programming uses more data; machine learning uses less data to work.","Traditional programming works online only; machine learning works offline only."],ans:0},
+   ms:{stem:"Apakah perbezaan asas antara pengaturcaraan tradisional dan pembelajaran mesin?",opts:["Pengaturcaraan tradisional memerlukan manusia menulis semua peraturan; pembelajaran mesin mempelajari peraturan secara automatik daripada data.","Pengaturcaraan tradisional lebih pantas membuat ramalan; pembelajaran mesin sentiasa lebih perlahan.","Pengaturcaraan tradisional menggunakan lebih banyak data; pembelajaran mesin menggunakan lebih sedikit data.","Pengaturcaraan tradisional berfungsi dalam talian sahaja; pembelajaran mesin berfungsi di luar talian sahaja."],ans:0}},
+  {mod:1, en:{stem:"In supervised learning, every training example must include a:",opts:["Very large amount of raw data","Label (the correct answer for that example)","Hidden layer with many neurons","Reward signal from the environment"],ans:1},
+   ms:{stem:"Dalam pembelajaran terselia, setiap contoh latihan mesti mengandungi:",opts:["Jumlah data mentah yang sangat besar","Label (jawapan betul bagi contoh tersebut)","Lapisan tersembunyi dengan banyak neuron","Isyarat ganjaran daripada persekitaran"],ans:1}},
+  {mod:1, en:{stem:"Which type of machine learning learns patterns from data WITHOUT any labels?",opts:["Supervised learning","Transfer learning","Unsupervised learning","Deep learning"],ans:2},
+   ms:{stem:"Jenis pembelajaran mesin manakah yang mempelajari corak daripada data TANPA sebarang label?",opts:["Pembelajaran terselia","Pembelajaran pindahan","Pembelajaran tak terselia","Pembelajaran mendalam"],ans:2}},
+  {mod:1, en:{stem:"In machine learning, a 'feature' is best described as:",opts:["The final prediction or decision made by the model","A measurable piece of information about an example (e.g. height, test score, word count)","The total number of training examples used to build the model","A type of layer inside a neural network"],ans:1},
+   ms:{stem:"Dalam pembelajaran mesin, 'ciri' (feature) paling tepat digambarkan sebagai:",opts:["Ramalan atau keputusan akhir yang dibuat oleh model","Maklumat yang boleh diukur tentang sesuatu contoh (cth. tinggi, markah ujian, bilangan perkataan)","Jumlah keseluruhan contoh latihan yang digunakan untuk membina model","Sejenis lapisan di dalam rangkaian neural"],ans:1}},
+  {mod:1, en:{stem:"A system that automatically classifies emails as 'spam' or 'not spam' is an example of:",opts:["Reinforcement learning where the system gets rewards","Unsupervised clustering of email content","Supervised classification learning from labelled examples","A traditional rule-based program with hand-coded filters"],ans:2},
+   ms:{stem:"Sistem yang mengklasifikasikan e-mel secara automatik sebagai 'spam' atau 'bukan spam' adalah contoh:",opts:["Pembelajaran pengukuhan di mana sistem mendapat ganjaran","Pengelompokan tak terselia kandungan e-mel","Pengelasan terselia yang belajar daripada contoh berlabel","Program berasaskan peraturan tradisional dengan penapis dikodkan oleh tangan"],ans:2}},
+
+  // Module 2 — Types of ML
+  {mod:2, en:{stem:"In reinforcement learning, an agent learns by:",opts:["Copying answers directly from a labelled training dataset","Receiving rewards or penalties based on its actions in an environment","Grouping similar data points into clusters without guidance","Reading a set of fixed rules programmed by a human expert"],ans:1},
+   ms:{stem:"Dalam pembelajaran pengukuhan, ejen belajar dengan:",opts:["Menyalin jawapan terus daripada dataset latihan berlabel","Menerima ganjaran atau penalti berdasarkan tindakannya dalam persekitaran","Mengumpulkan titik data yang serupa tanpa panduan","Membaca set peraturan tetap yang diprogramkan oleh pakar manusia"],ans:1}},
+  {mod:2, en:{stem:"K-means clustering, which groups data points by similarity without any labels, is an example of:",opts:["Supervised learning","Reinforcement learning","Transfer learning","Unsupervised learning"],ans:3},
+   ms:{stem:"Pengelompokan K-means, yang mengumpulkan titik data mengikut persamaan tanpa sebarang label, adalah contoh:",opts:["Pembelajaran terselia","Pembelajaran pengukuhan","Pembelajaran pindahan","Pembelajaran tak terselia"],ans:3}},
+  {mod:2, en:{stem:"What does 'overfitting' mean in machine learning?",opts:["The model is too simple and cannot capture the patterns in the training data","The model memorises the training data perfectly but performs poorly on new, unseen data","The model uses too many features during the training process","The model takes too long to train because the dataset is too large"],ans:1},
+   ms:{stem:"Apakah maksud 'overfitting' (terlalu sepadan) dalam pembelajaran mesin?",opts:["Model terlalu ringkas dan tidak dapat menangkap corak dalam data latihan","Model menghafal data latihan dengan sempurna tetapi berprestasi buruk pada data baharu yang tidak pernah dilihat","Model menggunakan terlalu banyak ciri semasa proses latihan","Model mengambil masa terlalu lama untuk dilatih kerana dataset terlalu besar"],ans:1}},
+  {mod:2, en:{stem:"Which machine learning task is best suited for predicting a continuous numerical value, such as tomorrow's temperature?",opts:["Classification","Clustering","Regression","Generative modelling"],ans:2},
+   ms:{stem:"Tugas pembelajaran mesin manakah yang paling sesuai untuk meramalkan nilai berangka berterusan, seperti suhu esok?",opts:["Pengelasan","Pengelompokan","Regresi","Pemodelan generatif"],ans:2}},
+  {mod:2, en:{stem:"The BEST reason to divide your dataset into training, validation, and test sets is to:",opts:["Speed up the training process by using less data at each step","Ensure the model is evaluated on data it has never seen before, giving an honest performance estimate","Reduce the total amount of data needed to build the model","Make the model simpler and easier to understand by others"],ans:1},
+   ms:{stem:"Sebab TERBAIK untuk membahagikan dataset kepada set latihan, pengesahan, dan ujian adalah untuk:",opts:["Mempercepatkan proses latihan dengan menggunakan lebih sedikit data pada setiap langkah","Memastikan model dinilai pada data yang tidak pernah dilihat sebelumnya, memberikan anggaran prestasi yang jujur","Mengurangkan jumlah keseluruhan data yang diperlukan untuk membina model","Menjadikan model lebih ringkas dan lebih mudah difahami oleh orang lain"],ans:1}},
+
+  // Module 3 — Neural Networks
+  {mod:3, en:{stem:"In a neural network, raw input data first enters the:",opts:["Hidden layer, where initial pattern detection happens","Output layer, which produces the first prediction","Input layer, which passes raw features into the network","Activation layer, which applies the non-linear function"],ans:2},
+   ms:{stem:"Dalam rangkaian neural, data input mentah pertama sekali memasuki:",opts:["Lapisan tersembunyi, di mana pengesanan corak awal berlaku","Lapisan output, yang menghasilkan ramalan pertama","Lapisan input, yang menghantar ciri mentah ke dalam rangkaian","Lapisan pengaktifan, yang menerapkan fungsi tidak linear"],ans:2}},
+  {mod:3, en:{stem:"What is the MAIN role of an activation function in a neural network's hidden layer?",opts:["To store the neuron's learned weights between training steps","To introduce non-linearity so the network can learn complex, real-world patterns","To count the total number of training examples processed so far","To connect the input layer directly to the output layer, skipping hidden processing"],ans:1},
+   ms:{stem:"Apakah peranan UTAMA fungsi pengaktifan dalam lapisan tersembunyi rangkaian neural?",opts:["Untuk menyimpan pemberat yang dipelajari neuron antara langkah latihan","Untuk memperkenalkan bukan-lineariti supaya rangkaian dapat mempelajari corak yang kompleks dan nyata","Untuk mengira jumlah contoh latihan yang telah diproses setakat ini","Untuk menghubungkan lapisan input terus ke lapisan output, melangkau pemprosesan tersembunyi"],ans:1}},
+  {mod:3, en:{stem:"During backpropagation in neural network training, the error signal travels:",opts:["Forward from the input layer toward the output layer","Randomly across all layers simultaneously without a fixed direction","Only through the input layer to adjust the initial weights","Backward from the output layer toward the input layer to update weights"],ans:3},
+   ms:{stem:"Semasa perambatan ke belakang (backpropagation) dalam latihan rangkaian neural, isyarat ralat bergerak:",opts:["Ke hadapan dari lapisan input ke arah lapisan output","Secara rawak merentasi semua lapisan secara serentak tanpa arah tetap","Hanya melalui lapisan input untuk melaraskan pemberat awal","Ke belakang dari lapisan output ke arah lapisan input untuk mengemas kini pemberat"],ans:3}},
+  {mod:3, en:{stem:"In a neural network, a 'weight' is best described as:",opts:["The number of neurons contained in a single hidden layer","A numerical value that determines how strongly one neuron influences another","The total amount of training data used to build the model","The name given to the last layer that produces the final answer"],ans:1},
+   ms:{stem:"Dalam rangkaian neural, 'pemberat' (weight) paling tepat digambarkan sebagai:",opts:["Bilangan neuron yang terdapat dalam satu lapisan tersembunyi","Nilai berangka yang menentukan seberapa kuat satu neuron mempengaruhi neuron yang lain","Jumlah keseluruhan data latihan yang digunakan untuk membina model","Nama yang diberikan kepada lapisan terakhir yang menghasilkan jawapan akhir"],ans:1}},
+  {mod:3, en:{stem:"'Deep learning' refers to neural networks that:",opts:["Use only a single hidden layer to keep the model simple and fast","Are trained exclusively on very small, carefully curated datasets","Have many hidden layers, allowing them to learn highly complex representations","Can only process and analyse text-based data, not images or audio"],ans:2},
+   ms:{stem:"'Pembelajaran mendalam' (deep learning) merujuk kepada rangkaian neural yang:",opts:["Menggunakan hanya satu lapisan tersembunyi untuk memastikan model ringkas dan pantas","Dilatih secara eksklusif pada dataset yang sangat kecil dan dipilih dengan teliti","Mempunyai banyak lapisan tersembunyi, membolehkan mereka mempelajari perwakilan yang sangat kompleks","Hanya boleh memproses dan menganalisis data berasaskan teks, bukan imej atau audio"],ans:2}},
+
+  // Module 4 — AI Applications, GenAI & Ethics
+  {mod:4, en:{stem:"What does 'LLM' stand for in the context of Artificial Intelligence?",opts:["Layered Learning Machine, a type of supervised learning algorithm","Large Language Model, a generative AI trained on massive text data","Local Learning Method, an AI that works without internet connection","Logical Learning Module, a rule-based system for expert reasoning"],ans:1},
+   ms:{stem:"Apakah maksud 'LLM' dalam konteks Kecerdasan Buatan?",opts:["Layered Learning Machine, sejenis algoritma pembelajaran terselia","Large Language Model, AI generatif yang dilatih pada data teks yang sangat besar","Local Learning Method, AI yang berfungsi tanpa sambungan internet","Logical Learning Module, sistem berasaskan peraturan untuk penaakulan pakar"],ans:1}},
+  {mod:4, en:{stem:"When writing a prompt for a Large Language Model, which approach generally produces the BEST results?",opts:["Using as few words as possible to avoid confusing the model","Writing entirely in CAPITAL LETTERS so the model pays special attention","Providing clear context, specifying a role, and giving a well-defined task","Asking as many unrelated questions as possible in a single prompt"],ans:2},
+   ms:{stem:"Ketika menulis arahan (prompt) untuk Model Bahasa Besar, pendekatan manakah yang umumnya menghasilkan keputusan TERBAIK?",opts:["Menggunakan kata-kata sesedikit mungkin untuk mengelakkan kekeliruan model","Menulis sepenuhnya dalam HURUF BESAR supaya model memberi perhatian khusus","Memberikan konteks yang jelas, menentukan peranan, dan memberikan tugasan yang ditetapkan dengan baik","Bertanya seberapa banyak soalan tidak berkaitan yang mungkin dalam satu arahan"],ans:2}},
+  {mod:4, en:{stem:"TinyML refers to:",opts:["A simplified version of machine learning designed to be taught to young children","Running machine learning models on small, low-power embedded devices like microcontrollers","A machine learning algorithm specifically designed for very small datasets","A miniature version of a large language model with fewer parameters"],ans:1},
+   ms:{stem:"TinyML merujuk kepada:",opts:["Versi pembelajaran mesin yang dipermudahkan yang direka untuk diajar kepada kanak-kanak","Menjalankan model pembelajaran mesin pada peranti terbenam kecil dan berkuasa rendah seperti mikropengawal","Algoritma pembelajaran mesin yang direka khas untuk dataset yang sangat kecil","Versi mini model bahasa besar dengan parameter yang lebih sedikit"],ans:1}},
+  {mod:4, en:{stem:"Algorithmic bias in AI most commonly occurs when:",opts:["The model is trained on data that does not fairly represent all groups of people","The model contains too many hidden layers, making it overly complex","The training process takes too long due to insufficient computing resources","The same AI model is used across too many different industries or applications"],ans:0},
+   ms:{stem:"Berat sebelah algoritma dalam AI paling kerap berlaku apabila:",opts:["Model dilatih pada data yang tidak mewakili semua kumpulan orang secara adil","Model mengandungi terlalu banyak lapisan tersembunyi, menjadikannya terlalu kompleks","Proses latihan mengambil masa terlalu lama akibat sumber pengkomputeran yang tidak mencukupi","Model AI yang sama digunakan merentasi terlalu banyak industri atau aplikasi yang berbeza"],ans:0}},
+  {mod:4, en:{stem:"Which statement BEST describes 'Responsible AI'?",opts:["AI that is exclusively used by licensed researchers and government scientists","AI systems that are optimised for maximum speed and lowest energy consumption","AI designed to be fair, transparent, explainable, and accountable to all stakeholders","AI that is made freely available for everyone to use at no cost"],ans:2},
+   ms:{stem:"Kenyataan manakah yang PALING TEPAT menggambarkan 'AI yang Bertanggungjawab'?",opts:["AI yang digunakan secara eksklusif oleh penyelidik berlesen dan saintis kerajaan","Sistem AI yang dioptimumkan untuk kelajuan maksimum dan penggunaan tenaga terendah","AI yang direka untuk menjadi adil, telus, boleh dijelaskan, dan bertanggungjawab kepada semua pihak berkepentingan","AI yang disediakan secara percuma untuk digunakan oleh semua orang"],ans:2}},
+
+  // Module 5 — Build Your Own AI
+  {mod:5, en:{stem:"Why must the test set NEVER be used during model training or validation?",opts:["Because test data files are too large to process efficiently during training","Because it must be kept as an unbiased, unseen measure of the final model's real-world performance","Because test data always contains too many missing values and corrupted entries","Because it is reserved for mandatory government review before any AI is released"],ans:1},
+   ms:{stem:"Mengapa set ujian TIDAK BOLEH digunakan semasa latihan atau pengesahan model?",opts:["Kerana fail data ujian terlalu besar untuk diproses dengan cekap semasa latihan","Kerana ia mesti disimpan sebagai ukuran yang tidak berat sebelah dan tidak dilihat bagi prestasi sebenar model akhir","Kerana data ujian sentiasa mengandungi terlalu banyak nilai yang hilang dan entri yang rosak","Kerana ia dikhaskan untuk semakan kerajaan wajib sebelum sebarang AI dikeluarkan"],ans:1}},
+  {mod:5, en:{stem:"A student photographs 1,000 durian fruits for her AI project, but all photos were taken at the same farm on the same sunny day. What is the MAIN problem with her dataset?",opts:["There are simply too many photos — a dataset of 1,000 is always too large for a student project","The dataset lacks diversity and may not represent durian fruits in different conditions, farms, or lighting","The photos should have been taken indoors under controlled lighting for consistency","Durian recognition is far too simple a problem to require machine learning at all"],ans:1},
+   ms:{stem:"Seorang pelajar mengambil 1,000 gambar buah durian untuk projek AI-nya, tetapi semua gambar diambil di ladang yang sama pada hari cerah yang sama. Apakah masalah UTAMA dengan datasetnya?",opts:["Terdapat terlalu banyak gambar — dataset 1,000 sentiasa terlalu besar untuk projek pelajar","Dataset kurang kepelbagaian dan mungkin tidak mewakili buah durian dalam keadaan, ladang, atau pencahayaan yang berbeza","Gambar sepatutnya diambil di dalam bangunan di bawah pencahayaan terkawal untuk konsistensi","Pengecaman durian adalah masalah yang terlalu mudah dan tidak memerlukan pembelajaran mesin langsung"],ans:1}},
+  {mod:5, en:{stem:"What is the purpose of a VALIDATION set during model development?",opts:["To provide additional training examples to improve the model's accuracy further","To measure the model's final performance before it is officially released","To tune model settings (hyperparameters) and select the best model version before final testing","To automatically generate new, synthetic training data for data augmentation"],ans:2},
+   ms:{stem:"Apakah tujuan set PENGESAHAN semasa pembangunan model?",opts:["Untuk menyediakan contoh latihan tambahan bagi meningkatkan ketepatan model lebih lanjut","Untuk mengukur prestasi akhir model sebelum ia dikeluarkan secara rasmi","Untuk melaraskan tetapan model (hyperparameter) dan memilih versi model terbaik sebelum ujian akhir","Untuk menjana data latihan sintetik baharu secara automatik untuk penambahan data"],ans:2}},
+  {mod:5, en:{stem:"A medical AI is built to detect a serious infectious disease. Which evaluation metric should the team PRIORITISE to minimise the number of missed diagnoses?",opts:["Accuracy — the overall percentage of correct predictions across all patients","Speed — how quickly the model can process and analyse each patient's test results","Recall / Sensitivity — maximising the fraction of actual disease cases correctly identified","Precision — ensuring that most patients flagged as positive truly have the disease"],ans:2},
+   ms:{stem:"AI perubatan dibina untuk mengesan penyakit berjangkit yang serius. Metrik penilaian manakah yang perlu DIPRIORITIKAN oleh pasukan untuk meminimumkan bilangan diagnosis yang terlepas?",opts:["Ketepatan — peratusan keseluruhan ramalan betul merentasi semua pesakit","Kelajuan — seberapa cepat model dapat memproses dan menganalisis keputusan ujian setiap pesakit","Daya panggil / Kepekaan — memaksimumkan pecahan kes penyakit sebenar yang dikenal pasti dengan betul","Ketepatan ramalan — memastikan kebanyakan pesakit yang ditanda positif benar-benar menghidapi penyakit"],ans:2}},
+  {mod:5, en:{stem:"Building a 'prototype' or MVP (Minimum Viable Product) for an AI project allows you to:",opts:["Skip the data collection and labelling phase entirely, saving significant time and cost","Test your core idea quickly with real users before committing to building the full system","Guarantee that the final AI system will work perfectly without any further improvements","Avoid the need for a training dataset by using hard-coded rules as a temporary placeholder"],ans:1},
+   ms:{stem:"Membina 'prototaip' atau MVP (Produk Berdaya Maju Minimum) untuk projek AI membolehkan anda:",opts:["Melangkau fasa pengumpulan dan pelabelan data sepenuhnya, menjimatkan masa dan kos yang besar","Menguji idea teras anda dengan cepat bersama pengguna sebenar sebelum komited untuk membina sistem penuh","Menjamin bahawa sistem AI akhir akan berfungsi dengan sempurna tanpa sebarang penambahbaikan selanjutnya","Mengelakkan keperluan dataset latihan dengan menggunakan peraturan dikodkan keras sebagai pengganti sementara"],ans:1}},
+
+  // Module 6 — Trends, Careers & Future
+  {mod:6, en:{stem:"Which of the following BEST describes 'multimodal AI'?",opts:["AI that can only process and generate text, like a standard chatbot","AI that runs simultaneously on multiple computers for faster processing","AI that can understand and generate multiple types of data, such as text, images, and audio together","AI that is deployed and used in multiple different countries around the world"],ans:2},
+   ms:{stem:"Manakah yang PALING TEPAT menggambarkan 'AI multimodal'?",opts:["AI yang hanya boleh memproses dan menjana teks, seperti chatbot standard","AI yang dijalankan serentak pada beberapa komputer untuk pemprosesan yang lebih pantas","AI yang boleh memahami dan menjana pelbagai jenis data, seperti teks, imej, dan audio secara bersama","AI yang digunakan dan digunakan di pelbagai negara di seluruh dunia"],ans:2}},
+  {mod:6, en:{stem:"An 'AI Ethics Researcher' primarily works on:",opts:["Writing the core algorithms and software code for new AI systems","Ensuring that AI systems are designed and deployed in ways that are fair, transparent, and do not cause harm","Collecting and labelling the large datasets needed to train AI models","Selling and marketing AI products and solutions to businesses and governments"],ans:1},
+   ms:{stem:"'Penyelidik Etika AI' terutamanya bekerja pada:",opts:["Menulis algoritma teras dan kod perisian untuk sistem AI baharu","Memastikan sistem AI direka dan dilaksanakan dengan cara yang adil, telus, dan tidak menyebabkan kemudaratan","Mengumpul dan melabelkan dataset besar yang diperlukan untuk melatih model AI","Menjual dan memasarkan produk dan penyelesaian AI kepada perniagaan dan kerajaan"],ans:1}},
+  {mod:6, en:{stem:"Which skill is considered FOUNDATIONAL across almost all AI-related careers, regardless of the specific role?",opts:["Playing complex strategy video games to develop reinforcement learning intuition","Memorising the names, versions, and release dates of all major AI tools and frameworks","Data literacy — the ability to understand, work with, interpret, and communicate meaningfully with data","Advanced university-level mathematics, specifically real analysis and abstract algebra"],ans:2},
+   ms:{stem:"Kemahiran manakah yang dianggap ASAS merentasi hampir semua kerjaya berkaitan AI, tanpa mengira peranan khusus?",opts:["Bermain permainan video strategi yang kompleks untuk membina intuisi pembelajaran pengukuhan","Menghafal nama, versi, dan tarikh keluaran semua alat dan rangka kerja AI utama","Literasi data — keupayaan untuk memahami, bekerja dengan, mentafsir, dan berkomunikasi dengan bermakna menggunakan data","Matematik peringkat universiti lanjutan, khususnya analisis nyata dan aljabar abstrak"],ans:2}},
+  {mod:6, en:{stem:"Generative AI (such as image generators and AI chatbots) produces new content by:",opts:["Copying and directly reusing existing images or text found on the internet without modification","Learning statistical patterns from large amounts of training data to generate new, original content","Following a strict, manually written set of rules programmed by human content creators","Connecting to live internet databases in real-time to find and retrieve ready-made answers"],ans:1},
+   ms:{stem:"AI Generatif (seperti penjana imej dan chatbot AI) menghasilkan kandungan baharu dengan:",opts:["Menyalin dan menggunakan semula secara langsung imej atau teks sedia ada yang terdapat di internet tanpa pengubahsuaian","Mempelajari corak statistik daripada data latihan dalam jumlah besar untuk menjana kandungan baharu dan asli","Mengikuti set peraturan yang ditulis secara manual dan ketat yang diprogramkan oleh pencipta kandungan manusia","Menghubungkan ke pangkalan data internet langsung dalam masa nyata untuk mencari dan mendapatkan jawapan siap sedia"],ans:1}},
+  {mod:6, en:{stem:"When designing an AI solution for a school-based problem, the MOST IMPORTANT first step is to:",opts:["Immediately choose the most advanced and powerful AI technology currently available","Start collecting as much data as possible right away before defining anything else","Clearly define the problem, understand the users' needs, and determine whether AI is actually the right solution","Build a working prototype app as quickly as possible so users can start testing it immediately"],ans:2},
+   ms:{stem:"Ketika mereka bentuk penyelesaian AI untuk masalah berasaskan sekolah, langkah pertama yang PALING PENTING ialah:",opts:["Segera memilih teknologi AI yang paling canggih dan berkuasa yang tersedia pada masa ini","Mula mengumpul data sebanyak mungkin segera sebelum menentukan perkara lain","Mendefinisikan masalah dengan jelas, memahami keperluan pengguna, dan menentukan sama ada AI sebenarnya penyelesaian yang tepat","Membina aplikasi prototaip yang berfungsi secepat mungkin supaya pengguna boleh mula mengujinya segera"],ans:2}}
+];
+
+var MOD_LABEL_EN = ['','Module 1 · Why AI?','Module 2 · Types of Machine Learning','Module 3 · Neural Networks','Module 4 · AI Applications, GenAI & Ethics','Module 5 · Building AI','Module 6 · Trends, Careers & Future'];
+var MOD_LABEL_MS = ['','Modul 1 · Kenapa AI?','Modul 2 · Jenis Pembelajaran Mesin','Modul 3 · Rangkaian Neural','Modul 4 · Aplikasi AI, AI Generatif & Etika','Modul 5 · Membina AI','Modul 6 · Trend, Kerjaya & Masa Depan'];
+var MOD_CLS = ['','mod-m1','mod-m2','mod-m3','mod-m4','mod-m5','mod-m6'];
+var answers = new Array(30).fill(-1);
+var currentLang = 'en';
+
+// ── Render MCQ ────────────────────────────────────────────────
+function renderMCQ() {
+  var lang = currentLang;
+  var c = document.getElementById('mcq-container');
+  var html = '';
+  var lastMod = 0;
+  MCQ.forEach(function(q, i) {
+    if (q.mod !== lastMod) {
+      lastMod = q.mod;
+      var lbl = lang === 'ms' ? MOD_LABEL_MS[q.mod] : MOD_LABEL_EN[q.mod];
+      html += '<div class="mod-header '+MOD_CLS[q.mod]+'">📌 ' + lbl + '</div>';
+    }
+    var d = lang === 'ms' ? q.ms : q.en;
+    var optsHtml = '';
+    d.opts.forEach(function(opt, j) {
+      var sel = answers[i] === j ? ' selected' : '';
+      optsHtml += '<label class="mcq-opt'+sel+'" onclick="pickAns('+i+','+j+',this)">'
+        + '<input type="radio" name="q'+i+'" value="'+j+'"'+(answers[i]===j?' checked':'')+'>'
+        + ' <span>'+opt+'</span></label>';
+    });
+    html += '<div class="q-block" id="qb'+i+'">'
+      + '<div class="q-num">'+(lang==='ms'?'SOALAN':'QUESTION')+' '+(i+1)+' / 30</div>'
+      + '<div class="q-stem">'+d.stem+'</div>'
+      + '<div class="mcq-opts">'+optsHtml+'</div>'
+      + '</div>';
+  });
+  c.innerHTML = html;
+  updateProgBar();
+}
+
+function pickAns(qIdx, optIdx, clickedEl) {
+  answers[qIdx] = optIdx;
+  var block = document.getElementById('qb' + qIdx);
+  block.querySelectorAll('.mcq-opt').forEach(function(el) { el.classList.remove('selected'); });
+  clickedEl.classList.add('selected');
+  block.querySelectorAll('input[type=radio]').forEach(function(r,j){ r.checked = (j === optIdx); });
+  updateProgBar();
+  checkSubmitReady();
+}
+
+function updateProgBar() {
+  var n = answers.filter(function(a){ return a >= 0; }).length;
+  document.getElementById('ans-count').textContent = n;
+}
+
+// ── Language Toggle ───────────────────────────────────────────
+function toggleLang() {
+  currentLang = (currentLang === 'en') ? 'ms' : 'en';
+  document.documentElement.lang = currentLang;
+  document.getElementById('langBtn').textContent = currentLang === 'ms' ? 'EN' : 'BM';
+  try { localStorage.setItem('ai_adv_lang', currentLang); } catch(e){}
+  setLang(currentLang);
+  renderMCQ();
+}
+
+function setLang(lang) {
+  document.querySelectorAll('[data-en]').forEach(function(el) {
+    el.innerHTML = lang === 'ms' ? (el.getAttribute('data-ms') || el.getAttribute('data-en')) : el.getAttribute('data-en');
+  });
+  document.querySelectorAll('.lang-en').forEach(function(el) { el.style.display = lang === 'ms' ? 'none' : ''; });
+  document.querySelectorAll('.lang-ms').forEach(function(el) { el.style.display = lang === 'ms' ? 'inline' : 'none'; });
+  // Update placeholders for open-ended
+  var ph = lang === 'ms' ? 'Tulis jawapan anda di sini...' : 'Write your answer here...';
+  document.querySelectorAll('#sec-open textarea').forEach(function(ta) { ta.placeholder = ph; });
+  // Consent label
+  var el = document.querySelector('label[for="consent"]');
+  if (el) el.innerHTML = lang === 'ms'
+    ? 'Saya faham dan bersetuju untuk menyertai kaji selidik penyelidikan ini secara sukarela. ✱'
+    : 'I understand and agree to participate voluntarily in this research survey. ✱';
+}
+
+// ── Word counter ──────────────────────────────────────────────
+function countW(taId, wcId, minW) {
+  var txt = document.getElementById(taId).value.trim();
+  var w = txt ? txt.split(/\s+/).filter(Boolean).length : 0;
+  var el = document.getElementById(wcId);
+  if (minW > 0) {
+    el.textContent = w + ' / ' + minW + ' words min';
+    el.style.color = w >= minW ? 'var(--green)' : 'var(--red)';
+  } else {
+    el.textContent = w + ' words';
+    el.style.color = 'var(--muted)';
+  }
+  checkSubmitReady();
+}
+
+// ── Consent gate ──────────────────────────────────────────────
+function checkConsent() {
+  checkSubmitReady();
+}
+
+function checkSubmitReady() {
+  var consent = document.getElementById('consent').checked;
+  var mcqDone = answers.filter(function(a){ return a >= 0; }).length === 30;
+  var o1 = wordCount('open1') >= 10;
+  var o3 = wordCount('open3') >= 10;
+  document.getElementById('btn-submit').disabled = !(consent && mcqDone && o1 && o3);
+}
+
+function wordCount(id) {
+  var txt = (document.getElementById(id)||{}).value||'';
+  return txt.trim() ? txt.trim().split(/\s+/).filter(Boolean).length : 0;
+}
+
+// ── Validate identity ─────────────────────────────────────────
+function getIdentity() {
+  var fields = ['f-name','f-matric','f-mykid','f-gender','f-age','f-state','f-school-name','f-school-code','f-phone','f-email'];
+  for (var i = 0; i < fields.length; i++) {
+    var v = document.getElementById(fields[i]).value.trim();
+    if (!v) return null;
+  }
+  return {
+    name: document.getElementById('f-name').value.trim(),
+    matric: document.getElementById('f-matric').value.trim(),
+    mykid: document.getElementById('f-mykid').value.trim(),
+    gender: document.getElementById('f-gender').value,
+    age: document.getElementById('f-age').value,
+    home_state: document.getElementById('f-state').value,
+    school_name: document.getElementById('f-school-name').value.trim(),
+    school_code: document.getElementById('f-school-code').value.trim(),
+    phone: document.getElementById('f-phone').value.trim(),
+    email: document.getElementById('f-email').value.trim()
+  };
+}
+
+// ── Submit ────────────────────────────────────────────────────
+function submitSurvey() {
+  var identity = getIdentity();
+  if (!identity) {
+    document.getElementById('id-err').style.display = 'block';
+    document.getElementById('id-err').innerHTML = currentLang === 'ms'
+      ? '⚠ Sila isi semua medan maklumat pelajar.' : '⚠ Please fill in all student information fields.';
+    document.getElementById('sec-identity').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  document.getElementById('id-err').style.display = 'none';
+
+  if (!document.getElementById('consent').checked) {
+    alert(currentLang === 'ms' ? 'Sila berikan persetujuan termaklum dahulu.' : 'Please provide informed consent first.');
+    return;
+  }
+
+  var unanswered = answers.filter(function(a){return a<0;}).length;
+  if (unanswered > 0) {
+    alert(currentLang === 'ms'
+      ? 'Masih ada ' + unanswered + ' soalan yang belum dijawab. Sila lengkapkan semua soalan.'
+      : 'You have ' + unanswered + ' unanswered questions. Please answer all questions.');
+    return;
+  }
+
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = currentLang === 'ms' ? '⏳ Menghantar...' : '⏳ Submitting...';
+
+  // Build MCQ responses
+  var mcqResp = answers.map(function(a, i) {
+    return { q: i+1, mod: MCQ[i].mod, selected: a, correct: MCQ[i].en.ans };
+  });
+  var score = mcqResp.filter(function(r){ return r.selected === r.correct; }).length;
+
+  var payload = {
+    step: 'pre',
+    student: identity,
+    mcq_responses: mcqResp,
+    mcq_score_pre: score,
+    open1_expectation: document.getElementById('open1').value.trim(),
+    open2_prior_tools: document.getElementById('open2').value.trim(),
+    open3_future_vision: document.getElementById('open3').value.trim(),
+    lang_used: currentLang
+  };
+
+  // Store SID & matric in sessionStorage for post-survey link
+  try {
+    sessionStorage.setItem('ai_adv_matric', identity.matric);
+    sessionStorage.setItem('ai_adv_name', identity.name);
+  } catch(e) {}
+
+  if (window.AiAdv && window.AiAdv.submit) {
+    window.AiAdv.submit('student2-pre', payload)
+      .then(function(res) { onSubmitDone(res, identity.matric); })
+      .catch(function() { onSubmitDone({status:'error'}); });
+  } else {
+    // Fallback: log to console (URL not configured)
+    console.log('[AI Adventure Pre-Survey] Payload:', JSON.stringify(payload, null, 2));
+    onSubmitDone({status:'no-url'}, identity.matric);
+  }
+}
+
+function onSubmitDone(res, matric) {
+  var msg = document.getElementById('submit-msg');
+  var btn = document.getElementById('btn-submit');
+  if (res.status === 'ok') {
+    msg.className = 'msg ok';
+    msg.innerHTML = currentLang === 'ms'
+      ? '✅ Kaji selidik pra-program berjaya dihantar! Terima kasih, <strong>' + (matric||'') + '</strong>. Simpan nombor matrik anda untuk kaji selidik pasca-program.'
+      : '✅ Pre-program survey submitted! Thank you, <strong>' + (matric||'') + '</strong>. Keep your matric number for the post-program survey.';
+    btn.textContent = currentLang === 'ms' ? '✅ Dihantar' : '✅ Submitted';
+  } else if (res.status === 'no-url') {
+    msg.className = 'msg ok';
+    msg.innerHTML = currentLang === 'ms'
+      ? '📋 Data dilog (URL skrip belum dikonfigurasi). Hubungi penyelidik.'
+      : '📋 Data logged (Apps Script URL not configured). Please contact the researcher.';
+    btn.textContent = currentLang === 'ms' ? '✅ Dilog' : '✅ Logged';
+  } else {
+    msg.className = 'msg err';
+    msg.innerHTML = currentLang === 'ms'
+      ? '⚠ Ralat semasa menghantar. Sila cuba lagi atau hubungi penyelidik.'
+      : '⚠ Submission error. Please try again or contact the researcher.';
+    btn.disabled = false;
+    btn.innerHTML = currentLang === 'ms' ? '✔ Hantar Kaji Selidik Pra-Program' : '✔ Submit Pre-Program Survey';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────
+(function init() {
+  try {
+    var saved = localStorage.getItem('ai_adv_lang');
+    if (saved) { currentLang = saved; }
+  } catch(e) {}
+  if (currentLang === 'ms') {
+    document.documentElement.lang = 'ms';
+    document.getElementById('langBtn').textContent = 'EN';
+    setLang('ms');
+  }
+  renderMCQ();
+})();
+</script>
+</body>
+</html>

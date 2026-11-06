@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Adventure — UMPSA STEM Lab</title>
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Index-page only styles ── */
+    .hero-home h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+
+    .course-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .stat-item { color: rgba(255,255,255,0.85); }
+    .stat-num {
+      font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      display: block;
+    }
+    .stat-desc {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.04em;
+    }
+
+    /* Registration notice */
+    .reg-notice {
+      background: rgba(37,99,235,0.1);
+      border: 1px solid rgba(37,99,235,0.3);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 0.88rem;
+    }
+    .reg-notice .reg-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .reg-notice strong { color: var(--blue); }
+    .reg-notice a { color: var(--blue); font-weight: 600; }
+    .reg-notice.hidden { display: none; }
+
+    /* Section heading */
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .section-heading h2 { margin: 0; }
+    .section-heading .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* Overall progress row */
+    .overall-progress {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .overall-progress .label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+    .overall-progress .track { flex: 1; min-width: 120px; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+    .overall-progress .fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue)); border-radius: 4px; transition: width 0.6s ease; }
+    .overall-progress .pct { font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; font-size: 1rem; font-weight: 900; color: var(--primary); font-variant-numeric: tabular-nums; }
+
+    /* Explorer bridge note */
+    .bridge-note {
+      background: rgba(124,58,237,0.06);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2.5rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .bridge-note strong { color: var(--purple); }
+
+    /* ── Module dropdown nav ── */
+    .nav-drop-wrap{position:relative;display:inline-block;}
+    .nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;letter-spacing:.01em;}
+    .nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(8,145,178,.25);border-color:#0891B2;color:#fff;}
+    .nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+    .nav-drop-btn.open .arr{transform:rotate(180deg);}
+    .nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+    .nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+    .nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+    .nav-drop-menu a:hover{background:rgba(8,145,178,.18);color:#fff;}
+    .nav-drop-menu a.cur{color:#0891B2;font-weight:700;}
+    .nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+    .nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+  
+/* ── Lang toggle ── */
+
+/* ── Dual-language spans ── */
+.lang-ms { display: none; }
+
+.lang-toggle-btn{
+  background:rgba(255,255,255,.09);
+  border:1.5px solid rgba(255,255,255,.22);
+  color:#e2e8f0;
+  border-radius:20px;
+  padding:3px 12px;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:background .2s,border-color .2s;
+  white-space:nowrap;
+  align-self:center;
+}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);}
+
+
+/* ── Registration Gate Overlay ── */
+#reg-gate{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0c1a2e 0%,#0f3460 60%,#1a1a4e 100%);display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+#reg-gate.hidden{display:none;}
+.gate-box{background:#1e293b;border:1px solid #334155;border-radius:18px;padding:2rem 1.8rem 1.8rem;width:100%;max-width:580px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.gate-logo{text-align:center;margin-bottom:1.2rem;}
+.gate-logo .badge{display:inline-block;background:rgba(8,145,178,.2);border:1px solid rgba(8,145,178,.4);border-radius:999px;font-size:.72rem;font-weight:700;padding:.2rem .8rem;letter-spacing:.05em;color:#38bdf8;}
+.gate-logo h2{font-size:1.5rem;font-weight:700;margin:.5rem 0 .3rem;background:linear-gradient(135deg,#38bdf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gate-logo p{font-size:.82rem;color:#94a3b8;}
+.gate-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;}
+.gate-group{display:flex;flex-direction:column;gap:.25rem;}
+.gate-group.full{grid-column:1/-1;}
+.gate-group label{font-size:.74rem;font-weight:600;color:#94a3b8;letter-spacing:.02em;}
+.gate-group input,.gate-group select{font-family:inherit;font-size:.86rem;padding:.48rem .7rem;border:1.5px solid #334155;border-radius:8px;background:#0f172a;color:#f1f5f9;outline:none;transition:border .15s;width:100%;}
+.gate-group input:focus,.gate-group select:focus{border-color:#0891b2;}
+.gate-group select option{background:#1e293b;}
+.gate-err{font-size:.78rem;color:#dc2626;margin:.3rem 0;display:none;}
+.gate-submit{width:100%;background:linear-gradient(135deg,#0891b2,#7c3aed);color:#fff;border:none;border-radius:999px;padding:.8rem 1.5rem;font-size:.92rem;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:.3rem;}
+.gate-submit:hover{opacity:.88;}
+.gate-submit:disabled{opacity:.4;cursor:not-allowed;}
+.gate-privacy{font-size:.7rem;color:#64748b;text-align:center;margin-top:.7rem;line-height:1.5;}
+.gate-msg{text-align:center;font-size:.82rem;margin-top:.5rem;color:#16a34a;}
+@media(max-width:460px){.gate-grid{grid-template-columns:1fr;}}
+
+.module-card{cursor:pointer;}
+.module-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.35);transition:transform .18s,box-shadow .18s;}
+
+/* ── Switch Student button ── */
+#switchStudentBtn{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.55);font-size:.72rem;font-weight:600;cursor:pointer;padding:.25rem .65rem;border-radius:6px;font-family:inherit;letter-spacing:.03em;transition:background .15s,color .15s,border-color .15s;white-space:nowrap;}
+#switchStudentBtn:hover{background:rgba(220,38,38,.25);border-color:rgba(220,38,38,.6);color:#fca5a5;}
+
+/* ── Active student chip ── */
+#activeStudentChip{display:none;align-items:center;gap:.4rem;background:rgba(8,145,178,.18);border:1px solid rgba(8,145,178,.4);border-radius:999px;padding:.22rem .75rem .22rem .5rem;font-size:.72rem;color:#67e8f9;white-space:nowrap;max-width:180px;}
+#activeStudentChip .chip-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0;}
+#activeStudentChip .chip-name{overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+</style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+<!-- ═══ REGISTRATION GATE ═══ -->
+<div id="reg-gate">
+  <div class="gate-box">
+    <div class="gate-logo">
+      <div class="badge">🤖 AI Adventure 2025 · UMPSA STEM Lab</div>
+      <h2 data-en="Welcome! Register to Begin" data-ms="Selamat Datang! Daftar untuk Memulakan">Welcome! Register to Begin</h2>
+      <p data-en="Please fill in your details to access the AI Adventure modules." data-ms="Sila isi maklumat anda untuk mengakses modul AI Adventure.">Please fill in your details to access the AI Adventure modules.</p>
+    </div>
+    <div class="gate-grid">
+      <div class="gate-group full">
+        <label data-en="Full Name ✱" data-ms="Nama Penuh ✱">Full Name ✱</label>
+        <input type="text" id="g-name" placeholder="e.g. Ahmad bin Ali">
+      </div>
+      <div class="gate-group">
+        <label data-en="Matric / Student No. ✱" data-ms="No. Matrik / Pelajar ✱">Matric / Student No. ✱</label>
+        <input type="text" id="g-matric" placeholder="e.g. 240001">
+      </div>
+      <div class="gate-group">
+        <label data-en="MyKid / MyKad ✱" data-ms="MyKid / MyKad ✱">MyKid / MyKad ✱</label>
+        <input type="text" id="g-mykid" placeholder="e.g. 071203010001">
+      </div>
+      <div class="gate-group">
+        <label data-en="Gender ✱" data-ms="Jantina ✱">Gender ✱</label>
+        <select id="g-gender">
+          <option value="">— Select —</option>
+          <option value="M">Male / Lelaki</option>
+          <option value="F">Female / Perempuan</option>
+        </select>
+      </div>
+      <div class="gate-group">
+        <label data-en="Age ✱" data-ms="Umur ✱">Age ✱</label>
+        <input type="number" id="g-age" min="10" max="25" placeholder="e.g. 16">
+      </div>
+      <div class="gate-group">
+        <label data-en="Home State ✱" data-ms="Negeri Asal ✱">Home State ✱</label>
+        <select id="g-state">
+          <option value="">— Select —</option>
+          <option>Johor</option><option>Kedah</option><option>Kelantan</option>
+          <option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option>
+          <option>Perak</option><option>Perlis</option><option>Pulau Pinang</option>
+          <option>Sabah</option><option>Sarawak</option><option>Selangor</option>
+          <option>Terengganu</option><option>W.P. Kuala Lumpur</option>
+          <option>W.P. Labuan</option><option>W.P. Putrajaya</option>
+        </select>
+      </div>
+      <div class="gate-group full">
+        <label data-en="School Name / Institution ✱" data-ms="Nama Sekolah / Institusi ✱">School Name / Institution ✱</label>
+        <input type="text" id="g-school-name" placeholder="e.g. SMK Semambu">
+      </div>
+      <div class="gate-group">
+        <label data-en="School Code" data-ms="Kod Sekolah">School Code</label>
+        <input type="text" id="g-school-code" placeholder="e.g. BEA3045">
+      </div>
+      <div class="gate-group">
+        <label data-en="Phone No." data-ms="No. Telefon">Phone No.</label>
+        <input type="tel" id="g-phone" placeholder="e.g. 0123456789">
+      </div>
+      <div class="gate-group full">
+        <label data-en="Email Address" data-ms="Alamat E-mel">Email Address</label>
+        <input type="email" id="g-email" placeholder="e.g. ahmad@student.edu.my">
+      </div>
+    </div>
+    <p class="gate-err" id="gate-err">⚠ Please fill in all required fields (✱). / Sila isi semua medan wajib (✱).</p>
+    <button class="gate-submit" id="gate-submit-btn" onclick="gateRegister()">✔ Register &amp; Enter AI Adventure →</button>
+    <div class="gate-msg" id="gate-msg"></div>
+    <p class="gate-privacy">Your data is kept confidential and used for educational research only. / Data anda dirahsiakan dan digunakan untuk tujuan penyelidikan pendidikan sahaja.</p>
+  </div>
+</div>
+
+<!-- ═══ CHEVRON STRIP ═══ -->
+<div class="chev-strip" aria-label="UMPSA STEM Lab">
+  <span>See</span>
+  <span>Think</span>
+  <span>Explore</span>
+  <span>Marvel</span>
+</div>
+
+<!-- ═══ NAVIGATION ═══ -->
+<header class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand">
+      <em>AI</em>&nbsp;Adventure
+      <span class="brand-sub">UMPSA STEM Lab</span>
+    </a>
+    <nav>
+      <a href="index.html" class="active">Home</a>
+      <div class="nav-drop-wrap"><button class="nav-drop-btn" id="modDropBtn">Modules <span class="arr">▾</span></button><div class="nav-drop-menu" id="modDropMenu"><a href="module-1.html"><span class="mn">M1</span>Why AI?</a>
+<a href="module-2.html"><span class="mn">M2</span>Supervised Learning</a>
+<a href="module-3.html"><span class="mn">M3</span>Unsupervised Learning</a>
+<a href="module-4.html"><span class="mn">M4</span>Reinforcement Learning</a>
+<a href="module-5.html"><span class="mn">M5</span>Build Your Own AI</a>
+<a href="module-6.html"><span class="mn">M6</span>What's Next in AI?</a>
+<div class="sep-line"></div>
+<a href="index.html"><span class="mn">🏠</span>Home</a></div></div>
+    
+  <div id="activeStudentChip"><div class="chip-avatar" id="chipAvatar"></div><span class="chip-name" id="chipName"></span></div>
+  <button id="switchStudentBtn" onclick="switchStudent()" title="Clear registration and start fresh">⇄ Switch Student</button>
+  <button id="langToggle" class="lang-toggle-btn" onclick="setLang(document.documentElement.lang==='ms'?'en':'ms')" title="Tukar Bahasa / Switch Language">BM</button>
+</nav>
+  </div>
+</header>
+<!-- ── CHROME FILE:// WARNING BANNER ── -->
+<div id="chromeBanner" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:.78rem;text-align:center;padding:.45rem 1rem;line-height:1.5;">
+  ⚠️ <strong>Chrome restricts local file access.</strong> Progress tracking and navigation work best in <strong>Firefox</strong> — right-click the file → <em>Open With → Firefox</em>.
+  <button onclick="document.getElementById('chromeBanner').style.display='none'" style="margin-left:.8rem;background:rgba(255,255,255,.15);border:none;color:#fca5a5;border-radius:4px;padding:1px 8px;cursor:pointer;font-size:.78rem;">✕</button>
+</div>
+<script>
+(function(){
+  var isChrome=/Chrome/.test(navigator.userAgent)&&!/Edg|OPR|Firefox/.test(navigator.userAgent);
+  var isFile=location.protocol==='file:';
+  if(isChrome&&isFile)document.getElementById('chromeBanner').style.display='block';
+})();
+</script>
+
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-inner wrap">
+    <div class="hero-eyebrow">✦ UMPSA STEM Lab &nbsp;·&nbsp; Engineering Education Initiative</div>
+    <h1 class="hero-home" data-en="Explore the World of<br><em>Artificial Intelligence</em>" data-ms="Terokai Dunia<br><em>Kecerdasan Buatan</em>">Explore the World of<br><em>Artificial Intelligence</em></h1>
+    <p class="subtitle"><span data-en="A self-contained learning journey through AI and Machine Learning — from the basics of how machines learn, all the way to deploying a neural network on a tiny chip. No prior coding experience required." data-ms="Perjalanan pembelajaran lengkap tentang AI dan Pembelajaran Mesin — dari asas cara mesin belajar, hingga ke pemasangan rangkaian neural pada cip kecil. Tiada pengalaman pengaturcaraan diperlukan.">A self-contained learning journey through AI and Machine Learning — from the basics of how machines learn, all the way to deploying a neural network on a tiny chip. No prior coding experience required.</span></p>
+    <div class="pills">
+      <span class="pill pill-teal"><span data-en="6 Modules" data-ms="6 Modul">6 Modules</span></span>
+      <span class="pill pill-blue"><span data-en="Supervised &amp; Unsupervised ML" data-ms="PM Terselia &amp; Tak Terselia">Supervised &amp; Unsupervised ML</span></span>
+      <span class="pill pill-orange"><span data-en="Neural Networks" data-ms="Rangkaian Neural">Neural Networks</span></span>
+      <span class="pill pill-green"><span data-en="TinyML &amp; Edge AI" data-ms="TinyML &amp; AI Tepi">TinyML &amp; Edge AI</span></span>
+      <span class="pill pill-purple"><span data-en="Age 10 +" data-ms="Umur 10+">Age 10 +</span></span>
+    </div>
+    <div class="course-stats">
+      <div class="stat-item"><span class="stat-num">6</span><span class="stat-desc"><span data-en="Modules" data-ms="Modul"><span data-en="Modules" data-ms="Modul">Modules</span></span></span></div>
+      <div class="stat-item"><span class="stat-num">4</span><span class="stat-desc"><span data-en="Tiers per Module" data-ms="Peringkat per Modul">Tiers per Module</span></span></div>
+      <div class="stat-item"><span class="stat-num">60</span><span class="stat-desc"><span data-en="Concept Questions" data-ms="Soalan Konsep">Concept Questions</span></span></div>
+      <div class="stat-item"><span class="stat-num">2</span><span class="stat-desc"><span data-en="Learning Speeds" data-ms="Kelajuan Pembelajaran">Learning Speeds</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MAIN ═══ -->
+<main>
+
+  <!-- Registration notice (shown if not yet registered) -->
+  <div class="reg-notice" id="regNotice">
+    <span class="reg-icon">ℹ️</span>
+    <span>
+      <strong>Register first</strong> to track your progress and save your answers.
+      <a href="index.html"><span data-en="Register now →" data-ms="Daftar sekarang →">Register now →</span></a>
+    </span>
+  </div>
+
+  <!-- Pre-survey CTA -->
+  <div class="cta-banner">
+    <div class="cta-text">
+      <h3><span data-en="📋 Start with the Pre-Survey" data-ms="📋 Mulakan dengan Pra-Tinjauan">📋 Start with the Pre-Survey</span></h3>
+      <p><span data-en="30 questions to map your current AI knowledge before you begin. Takes about 10 minutes." data-ms="30 soalan untuk menilai pengetahuan AI semasa anda sebelum bermula. Mengambil masa lebih kurang 10 minit.">30 questions to map your current AI knowledge before you begin. Takes about 10 minutes.</span></p>
+    </div>
+    <div class="cta-actions">
+      <a href="student2-pre.html" class="btn btn-primary btn-lg"><span data-en="Take Pre-Survey" data-ms="Ambil Pra-Tinjauan">Take Pre-Survey</span></a>
+    </div>
+  </div>
+
+  <!-- Overall progress bar -->
+  <div class="overall-progress" id="overallProgress">
+    <span class="label"><span data-en="Your Progress" data-ms="Kemajuan Anda">Your Progress</span></span>
+    <div class="track"><div class="fill" id="progressFill" style="width:0%"></div></div>
+    <span class="pct" id="progressPct">0 / 6 <span data-en="modules" data-ms="modul">modules</span></span>
+  </div>
+
+  <!-- Bridge note -->
+  <div class="bridge-note">
+    <strong>🔭 Explorer Bridge:</strong> This course stands on its own — no prior modules needed. If you have completed the <em>Python Snake Game</em>, <em>Raspberry Pi HAR Classification</em>, or <em>ESP32 + Edge Impulse</em> modules, look for the <strong>Explorer Bridge</strong> callouts inside each module for direct connections to your earlier work.
+  </div>
+
+  <!-- Module grid -->
+  <div class="section-heading">
+    <h2><span data-en="Course Modules" data-ms="Modul Kursus">Course Modules</span></h2>
+    <span class="hint"><span data-en="Click a module to begin" data-ms="Klik modul untuk mulakan">Click a module to begin</span></span>
+  </div>
+
+  <div class="module-grid" id="moduleGrid">
+
+    <!-- Module 1 -->
+    <div class="module-card" id="card-1" onclick="cardClick(event,'module-1.html')">
+      <div class="module-card-header">
+        <div class="module-num">1</div>
+        <div class="module-card-info">
+          <div class="eyebrow">Foundations</div>
+          <h3><span data-en="What Is Artificial Intelligence?" data-ms="Apakah Kecerdasan Buatan?">What Is Artificial Intelligence?</span></h3>
+        </div>
+      </div>
+      <div class="module-card-body">
+        <p><span data-en="Explore what AI is, how machines learn from data, and discover the three types of Machine Learning — Supervised, Unsupervised, and Reinforcement." data-ms="Terokai apakah AI, cara mesin belajar daripada data, dan ketahui tiga jenis Pembelajaran Mesin — Terselia, Tak Terselia, dan Pengukuhan.">Explore what AI is, how machines learn from data, and discover the three types of Machine Learning — Supervised, Unsupervised, and Reinforcement.</span></p>
+      </div>
+      <div class="module-card-footer">
+        <span class="status-badge available" id="status-1"><span data-en="Available" data-ms="Tersedia">Available</span></span>
+        <div class="module-card-links">
+          <a href="module-1.html"><span data-en="Concept" data-ms="Konsep">Concept</span></a>
+          <a href="activity-1.html"><span data-en="Activity" data-ms="Aktiviti">Activity</span></a>
+          <a href="teacher-1.html" class="teacher"><span data-en="Guide" data-ms="Panduan">Guide</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 2 -->
+    <div class="module-card" id="card-2" onclick="cardClick(event,'module-2.html')">
+      <div class="module-card-header">
+        <div class="module-num blue">2</div>
+        <div class="module-card-info">
+          <div class="eyebrow">Supervised Learning</div>
+          <h3><span data-en="Teaching Machines with Labelled Data" data-ms="Mengajar Mesin dengan Data Berlabel">Teaching Machines with Labelled Data</span></h3>
+        </div>
+      </div>
+      <div class="module-card-body">
+        <p><span data-en="Learn how classification algorithms work — Decision Trees, SVM, Random Forest. Connect to the Raspberry Pi HAR dataset if you have it." data-ms="Ketahui cara algoritma pengelasan berfungsi — Pokok Keputusan, SVM, Hutan Rawak. Sambung ke dataset HAR Raspberry Pi jika ada.">Learn how classification algorithms work — Decision Trees, SVM, Random Forest. Connect to the Raspberry Pi HAR dataset if you have it.</span></p>
+      </div>
+      <div class="module-card-footer">
+        <span class="status-badge available" id="status-2"><span data-en="Available" data-ms="Tersedia">Available</span></span>
+        <div class="module-card-links">
+          <a href="module-2.html"><span data-en="Concept" data-ms="Konsep">Concept</span></a>
+          <a href="activity-2.html"><span data-en="Activity" data-ms="Aktiviti">Activity</span></a>
+          <a href="teacher-2.html" class="teacher"><span data-en="Guide" data-ms="Panduan">Guide</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 3 -->
+    <div class="module-card" id="card-3" onclick="cardClick(event,'module-3.html')">
+      <div class="module-card-header">
+        <div class="module-num orange">3</div>
+        <div class="module-card-info">
+          <div class="eyebrow">Unsupervised Learning</div>
+          <h3><span data-en="Finding Patterns without Labels" data-ms="Mencari Corak Tanpa Label">Finding Patterns without Labels</span></h3>
+        </div>
+      </div>
+      <div class="module-card-body">
+        <p><span data-en="Discover clustering and dimensionality reduction — how machines find hidden structure in unlabelled data without being told what to look for." data-ms="Terokai pengelompokan dan pengurangan dimensi — cara mesin mencari struktur tersembunyi dalam data tanpa label.">Discover clustering and dimensionality reduction — how machines find hidden structure in unlabelled data without being told what to look for.</span></p>
+      </div>
+      <div class="module-card-footer">
+        <span class="status-badge available" id="status-3"><span data-en="Available" data-ms="Tersedia">Available</span></span>
+        <div class="module-card-links">
+          <a href="module-3.html"><span data-en="Concept" data-ms="Konsep">Concept</span></a>
+          <a href="activity-3.html"><span data-en="Activity" data-ms="Aktiviti">Activity</span></a>
+          <a href="teacher-3.html" class="teacher"><span data-en="Guide" data-ms="Panduan">Guide</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 4 -->
+    <div class="module-card" id="card-4" onclick="cardClick(event,'module-4.html')">
+      <div class="module-card-header">
+        <div class="module-num green">4</div>
+        <div class="module-card-info">
+          <div class="eyebrow">Reinforcement Learning</div>
+          <h3><span data-en="Learning by Trial and Reward" data-ms="Belajar Melalui Cuba-Cuba dan Ganjaran">Learning by Trial and Reward</span></h3>
+        </div>
+      </div>
+      <div class="module-card-body">
+        <p><span data-en="Understand how agents learn from consequences — rewards, penalties, and Q-values. Direct link to the Snake Game Q-Learning module." data-ms="Fahami cara ejen belajar daripada akibat — ganjaran, penalti, dan nilai-Q. Hubungan terus ke modul Q-Learning Permainan Ular.">Understand how agents learn from consequences — rewards, penalties, and Q-values. Direct link to the Snake Game Q-Learning module.</span></p>
+      </div>
+      <div class="module-card-footer">
+        <span class="status-badge available" id="status-4"><span data-en="Available" data-ms="Tersedia">Available</span></span>
+        <div class="module-card-links">
+          <a href="module-4.html"><span data-en="Concept" data-ms="Konsep">Concept</span></a>
+          <a href="activity-4.html"><span data-en="Activity" data-ms="Aktiviti">Activity</span></a>
+          <a href="teacher-4.html" class="teacher"><span data-en="Guide" data-ms="Panduan">Guide</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 5 -->
+    <div class="module-card" id="card-5" onclick="cardClick(event,'module-5.html')">
+      <div class="module-card-header">
+        <div class="module-num purple">5</div>
+        <div class="module-card-info">
+          <div class="eyebrow">Applied AI Project</div>
+          <h3><span data-en="Build Your Own AI" data-ms="Bina AI Anda Sendiri">Build Your Own AI</span></h3>
+        </div>
+      </div>
+      <div class="module-card-body">
+        <p><span data-en="Frame a real problem, collect and label data, train a classifier, test it, and present your AI solution — a complete end-to-end project." data-ms="Kenal pasti masalah sebenar, kumpul dan label data, latih pengelas, uji, dan bentangkan penyelesaian AI anda — projek lengkap dari awal hingga akhir.">Frame a real problem, collect and label data, train a classifier, test it, and present your AI solution — a complete end-to-end project.</span></p>
+      </div>
+      <div class="module-card-footer">
+        <span class="status-badge available" id="status-5"><span data-en="Available" data-ms="Tersedia">Available</span></span>
+        <div class="module-card-links">
+          <a href="module-5.html"><span data-en="Concept" data-ms="Konsep">Concept</span></a>
+          <a href="activity-5.html"><span data-en="Activity" data-ms="Aktiviti">Activity</span></a>
+          <a href="teacher-5.html" class="teacher"><span data-en="Guide" data-ms="Panduan">Guide</span></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 6 -->
+    <div class="module-card" id="card-6" onclick="cardClick(event,'module-6.html')">
+      <div class="module-card-header">
+        <div class="module-num red">6</div>
+        <div class="module-card-info">
+          <div class="eyebrow">Future &amp; Careers</div>
+          <h3><span data-en="What's Next in AI?" data-ms="Apa Seterusnya dalam AI?">What's Next in AI?</span></h3>
+        </div>
+      </div>
+      <div class="module-card-body">
+        <p><span data-en="Explore frontier AI trends, discover career pathways that use AI skills, find platforms to keep learning, and set your own next learning goal." data-ms="Terokai trend AI terkini, temui laluan kerjaya yang menggunakan kemahiran AI, cari platform untuk terus belajar, dan tetapkan matlamat pembelajaran anda.">Explore frontier AI trends, discover career pathways that use AI skills, find platforms to keep learning, and set your own next learning goal.</span></p>
+      </div>
+      <div class="module-card-footer">
+        <span class="status-badge available" id="status-6"><span data-en="Available" data-ms="Tersedia">Available</span></span>
+        <div class="module-card-links">
+          <a href="module-6.html"><span data-en="Concept" data-ms="Konsep">Concept</span></a>
+          <a href="activity-6.html"><span data-en="Activity" data-ms="Aktiviti">Activity</span></a>
+          <a href="teacher-6.html" class="teacher"><span data-en="Guide" data-ms="Panduan">Guide</span></a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /module-grid -->
+
+  <!-- Post-survey CTA (shown after modules are done) -->
+  <div class="cta-banner" id="postSurveyCta" style="display:none">
+    <div class="cta-text">
+      <h3><span data-en="🎉 All Modules Complete!" data-ms="🎉 Semua Modul Selesai!">🎉 All Modules Complete!</span></h3>
+      <p><span data-en="Take the Post-Survey to measure how your AI knowledge has grown." data-ms="Ambil Pasca-Tinjauan untuk mengukur pertumbuhan pengetahuan AI anda.">Take the Post-Survey to measure how your AI knowledge has grown.</span></p>
+    </div>
+    <div class="cta-actions">
+      <a href="student2-post.html" class="btn btn-primary btn-lg"><span data-en="Take Post-Survey" data-ms="Ambil Pasca-Tinjauan">Take Post-Survey</span></a>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-sub">UMPSA STEM LAB &middot; AI Adventure</div>
+    <nav class="footer-nav" aria-label="Site navigation">
+      <a href="index.html">Home</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="module-1.html">Module 1</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="module-2.html">Module 2</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="module-3.html">Module 3</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="module-4.html">Module 4</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="module-5.html">Module 5</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="module-6.html">Module 6</a>
+    </nav>
+    <div class="footer-copy">
+      <span>&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education Initiative</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" class="footer-icon-btn" title="Research website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" target="_blank" rel="noopener" class="footer-icon-btn" title="hazlina@umpsa.edu.my">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Student session ──
+  var student = {};
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (raw) student = JSON.parse(raw);
+  } catch(e) {}
+
+  // Hide reg notice if already registered
+  if (student.student_matric) {
+    var rn = document.getElementById('regNotice');
+    if (rn) rn.classList.add('hidden');
+  }
+
+  // ── Module progress from localStorage ──
+  var completedModules = 0;
+  for (var m = 1; m <= 6; m++) {
+    var done = false;
+    try { done = localStorage.getItem('ai_adv_m' + m + '_done') === '1'; } catch(e) {}
+    if (done) {
+      completedModules++;
+      var badge = document.getElementById('status-' + m);
+      if (badge) { badge.textContent = 'Complete'; badge.className = 'status-badge complete'; }
+    }
+  }
+
+  // Update overall progress
+  var pct = Math.round((completedModules / 6) * 100);
+  var fill = document.getElementById('progressFill');
+  var pctEl = document.getElementById('progressPct');
+  if (fill) fill.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = completedModules + ' / 6 modules';
+
+  // Show post-survey CTA when all done
+  if (completedModules === 6) {
+    var ps = document.getElementById('postSurveyCta');
+    if (ps) ps.style.display = 'flex';
+  }
+
+  // ── FACILITATOR EASTER EGG: triple-click SEE chevron ──
+  (function(){
+    var clicks = 0, timer;
+    var seeEl = document.querySelector('.chev-strip span:first-child');
+    if (!seeEl) return;
+    seeEl.style.cursor = 'pointer';
+    seeEl.addEventListener('click', function(){
+      clicks++;
+      clearTimeout(timer);
+      timer = setTimeout(function(){ clicks = 0; }, 600);
+      if (clicks >= 3){ clicks = 0; window.location.href = 'teacher-index.html'; }
+    });
+  })();
+
+(function(){
+  var btn=document.getElementById('modDropBtn'),menu=document.getElementById('modDropMenu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.classList.toggle('open',o);});
+  document.addEventListener('click',function(){menu.classList.remove('open');btn.classList.remove('open');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.classList.remove('open');btn.classList.remove('open');}});
+})();
+
+/* ── Bilingual toggle ── */
+function setLang(lang){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('ai_adv_lang',lang);}catch(e){}
+  /* attribute-based */
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML=lang==='ms'?(el.getAttribute('data-ms')||el.getAttribute('data-en')):el.getAttribute('data-en');
+  });
+  /* span-based (rich HTML content) */
+  document.querySelectorAll('.lang-en').forEach(function(el){ el.style.display=lang==='ms'?'none':''; });
+  document.querySelectorAll('.lang-ms').forEach(function(el){ el.style.display=lang==='ms'?'inline':'none'; });
+  var btn=document.getElementById('langToggle');
+  if(btn) btn.textContent=lang==='ms'?'EN':'BM';
+  if(typeof renderLang==='function') renderLang(lang);
+}
+(function(){
+  var _l='en';
+  try{_l=localStorage.getItem('ai_adv_lang')||'en';}catch(e){}
+  if(_l==='ms') setLang('ms');
+})();
+
+  // ── Registration Gate ──
+  function gateRegister() {
+    var name       = ((document.getElementById('g-name')||{}).value||'').trim();
+    var matric     = ((document.getElementById('g-matric')||{}).value||'').trim();
+    var mykid      = ((document.getElementById('g-mykid')||{}).value||'').trim();
+    var gender     = ((document.getElementById('g-gender')||{}).value||'');
+    var age        = ((document.getElementById('g-age')||{}).value||'').trim();
+    var state      = ((document.getElementById('g-state')||{}).value||'');
+    var schoolName = ((document.getElementById('g-school-name')||{}).value||'').trim();
+    var schoolCode = ((document.getElementById('g-school-code')||{}).value||'').trim();
+    var phone      = ((document.getElementById('g-phone')||{}).value||'').trim();
+    var email      = ((document.getElementById('g-email')||{}).value||'').trim();
+    var errEl = document.getElementById('gate-err');
+    if (!name || !matric || !mykid || !gender || !age || !state || !schoolName) {
+      errEl.style.display = 'block'; return;
+    }
+    errEl.style.display = 'none';
+    document.getElementById('gate-submit-btn').disabled = true;
+    var studentData = {
+      student_name: name, student_matric: matric, student_mykid: mykid,
+      student_gender: gender, student_age: age, student_home_state: state,
+      student_school_name: schoolName, student_school_code: schoolCode,
+      student_phone: phone, student_email: email,
+      registered_at: new Date().toISOString()
+    };
+    try { localStorage.setItem('ai_adv_student', JSON.stringify(studentData)); } catch(e){}
+    var payload = {
+      step: 'register', name: name, matric: matric, mykid: mykid,
+      gender: gender, age: age, home_state: state,
+      school_name: schoolName, school_code: schoolCode, phone: phone, email: email
+    };
+    function openGate() {
+      var msgEl = document.getElementById('gate-msg');
+      if (msgEl) msgEl.textContent = '✅ Registered! Welcome to AI Adventure.';
+      setTimeout(function() {
+        var gate = document.getElementById('reg-gate');
+        if (gate) gate.classList.add('hidden');
+        document.body.style.overflow = '';
+        var rn = document.getElementById('regNotice');
+        if (rn) rn.classList.add('hidden');
+      }, 800);
+    }
+    if (window.AiAdv && window.AiAdv.submit) {
+      window.AiAdv.submit('student-register', payload).then(openGate).catch(openGate);
+    } else {
+      console.log('[AI Adventure Register]', payload);
+      openGate();
+    }
+  }
+
+  // Show gate if not registered
+  (function() {
+    var gate = document.getElementById('reg-gate');
+    if (!gate) return;
+    var registered = false;
+    try {
+      var raw = localStorage.getItem('ai_adv_student');
+      if (raw) { var s = JSON.parse(raw); if (s.student_matric) registered = true; }
+    } catch(e) {}
+    if (registered) {
+      gate.classList.add('hidden');
+      updateStudentChip();
+    } else {
+      document.body.style.overflow = 'hidden';
+      var obs = new MutationObserver(function() {
+        if (gate.classList.contains('hidden')) {
+          document.body.style.overflow = '';
+          updateStudentChip();
+          obs.disconnect();
+        }
+      });
+      obs.observe(gate, { attributes: true, attributeFilter: ['class'] });
+    }
+  })();
+
+
+/* ── Make whole module card clickable ── */
+function cardClick(e, url) {
+  if (e.target.closest('a')) return; // let footer links handle themselves
+  window.location.href = url;
+}
+
+/* ── Switch Student ── */
+function switchStudent() {
+  if (!confirm('Switch to a different student?\nThis will clear the current registration so the next student can register.')) return;
+  localStorage.removeItem('ai_adv_student');
+  // Keep language preference, clear module flags
+  for (var i = 1; i <= 6; i++) localStorage.removeItem('ai_adv_m' + i + '_done');
+  location.reload();
+}
+
+/* ── Show active student chip ── */
+function updateStudentChip() {
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    var name = s.student_name || s.name || '';
+    var matric = s.student_matric || s.matric || '';
+    if (!name) return;
+    var chip = document.getElementById('activeStudentChip');
+    var avatar = document.getElementById('chipAvatar');
+    var chipName = document.getElementById('chipName');
+    if (chip) {
+      avatar.textContent = name.charAt(0).toUpperCase();
+      chipName.textContent = name + (matric ? ' · ' + matric : '');
+      chip.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+
+window.addEventListener("load", updateStudentChip);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base target="_self">
+  <title>Module 6 · Beyond <span data-en="AI Adventure" data-ms="Petualangan AI">AI Adventure</span> — AI Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap">
+  <style>
+:root{
+  --primary:#0891B2;--primary-dark:#0C4A6E;--primary-mid:#0E7490;
+  --nav-bg:#071B2E;--blue:#2563EB;--blue-light:#DBEAFE;
+  --red:#DC2626;--red-light:#FEE2E2;--orange:#F59E0B;--orange-light:#FEF3C7;
+  --green:#059669;--green-light:#D1FAE5;--purple:#7C3AED;--purple-light:#EDE9FE;
+  --ink:#1E293B;--muted:#64748B;--bg:#F0F7FA;--card:#FFFFFF;
+  --line:#CBD5E1;--code-bg:#0F172A;--code-fg:#E2E8F0;color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#07131D;--card:#0C2133;--line:#1A3550;--ink:#DFF0FA;--muted:#7BAFC9;
+  --blue-light:#1E3A5F;--red-light:#450A0A;--orange-light:#451A03;
+  --green-light:#022C22;--purple-light:#2E1065;color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#07131D;--card:#0C2133;--line:#1A3550;--ink:#DFF0FA;--muted:#7BAFC9;
+  --blue-light:#1E3A5F;--red-light:#450A0A;--orange-light:#451A03;
+  --green-light:#022C22;--purple-light:#2E1065;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:'Poppins','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+a{color:var(--primary);}a:hover{color:var(--primary-mid);}
+code,pre{font-family:'Fira Code','Consolas',monospace;font-size:.88em;}
+.wrap{max-width:880px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px));}
+p{margin:0 0 1rem;}p:last-child{margin-bottom:0;}
+h2{font-size:1.35rem;font-weight:800;color:var(--ink);margin:0 0 1rem;text-wrap:balance;line-height:1.3;}
+h3{font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem;}
+
+/* Chevron Strip */
+.chev-strip{display:flex;height:34px;}
+.chev-strip span{flex:1;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fff;user-select:none;}
+.chev-strip span:nth-child(1){background:var(--blue);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);}
+.chev-strip span:nth-child(2){background:var(--red);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(3){background:var(--orange);clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);}
+.chev-strip span:nth-child(4){background:var(--primary);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);}
+
+/* Nav */
+.sitenav{background:var(--nav-bg);position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.5);}
+.sitenav-inner{max-width:880px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px));height:54px;display:flex;align-items:center;gap:1rem;}
+.brand{display:flex;align-items:baseline;gap:.5rem;text-decoration:none;font-size:1.05rem;font-weight:900;color:#fff;flex-shrink:0;}
+.brand em{font-style:normal;color:var(--primary);}
+.brand .brand-sub{font-size:.52em;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.sitenav nav{margin-left:auto;display:flex;align-items:center;}
+.nav-drop-wrap{position:relative;display:inline-block;}
+.nav-drop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:6px;transition:background .15s,color .15s;font-family:inherit;}
+.nav-drop-btn:hover,.nav-drop-btn.open{background:rgba(8,145,178,.25);border-color:var(--primary);color:#fff;}
+.nav-drop-btn .arr{font-size:.55rem;opacity:.7;transition:transform .2s;}
+.nav-drop-btn.open .arr{transform:rotate(180deg);}
+.nav-drop-menu{position:absolute;top:calc(100% + 8px);right:0;width:230px;background:#0b1e33;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:.45rem 0;z-index:9999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;display:block;}
+.nav-drop-menu.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.nav-drop-menu a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.81rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.5rem;transition:background .12s,color .12s;white-space:nowrap;}
+.nav-drop-menu a:hover{background:rgba(8,145,178,.18);color:#fff;}
+.nav-drop-menu a.cur{color:var(--primary);font-weight:700;}
+.nav-drop-menu .sep-line{height:1px;background:rgba(255,255,255,.08);margin:.3rem 0;}
+.nav-drop-menu .mn{opacity:.45;font-size:.69rem;font-weight:700;flex-shrink:0;width:20px;}
+
+/* Footer */
+footer{background:var(--nav-bg);margin-top:4rem;padding:2.5rem max(16px,env(safe-area-inset-left,0px)) 2rem;text-align:center;}
+.footer-inner{max-width:880px;margin:0 auto;}
+.footer-title{font-size:1.35rem;font-weight:900;color:#fff;margin:0 0 .4rem;}
+.footer-sub{font-size:.85rem;color:rgba(255,255,255,.42);letter-spacing:.03em;margin:0 0 1.6rem;}
+
+.footer-copy{font-size:.78rem;color:rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.55rem;}
+.footer-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(8,145,178,.18);border:1.5px solid rgba(8,145,178,.45);color:var(--primary);text-decoration:none;font-size:.88rem;transition:background .15s;}
+.footer-icon-btn:hover{background:rgba(8,145,178,.35);}
+
+/* Hero */
+.module-hero{background:linear-gradient(135deg,#071320 0%,#0a2540 50%,#0e1a3d 100%);padding:3.5rem max(16px,env(safe-area-inset-left,0px));text-align:center;position:relative;overflow:hidden;}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.35;pointer-events:none;}
+.mod-eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--primary);text-transform:uppercase;margin-bottom:.6rem;position:relative;}
+.module-hero h1{font-size:clamp(1.7rem,4vw,2.6rem);color:#fff;margin-bottom:.6rem;font-weight:900;position:relative;text-wrap:balance;}
+.module-hero h1 em{font-style:normal;color:var(--primary);}
+.module-hero .sub{font-size:.95rem;color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 1.4rem;line-height:1.6;position:relative;}
+.module-meta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;}
+.meta-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;color:rgba(255,255,255,.8);font-weight:600;}
+
+/* Progress */
+.prog-bar-wrap{background:var(--card);border-bottom:1px solid var(--line);padding:.55rem 0;}
+.prog-bar-inner{max-width:880px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:1rem;}
+.prog-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.prog-track{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--blue));border-radius:3px;transition:width .6s ease;width:0%;}
+.prog-pct{font-size:.7rem;font-weight:700;color:var(--primary);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+/* Section Badges */
+@keyframes floatBadge{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.section-badge{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;font-size:.62rem;font-weight:900;letter-spacing:.08em;flex-shrink:0;text-transform:uppercase;animation:floatBadge 3s ease-in-out infinite;}
+.badge-see{background:var(--blue);color:#fff;}
+.badge-think{background:var(--red);color:#fff;animation-delay:.8s;}
+.badge-exp{background:var(--orange);color:#fff;animation-delay:1.6s;}
+.badge-marv{background:var(--primary);color:#fff;animation-delay:2.4s;}
+
+/* Accordion */
+main{padding:2rem 0 3rem;}
+.mod-section{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:1.2rem;overflow:hidden;transition:border-color .2s;}
+.mod-section.sec-done{border-color:var(--green);}
+.mod-section-header{display:flex;align-items:center;gap:.75rem;padding:1.2rem 1.5rem;cursor:pointer;user-select:none;transition:background .15s;}
+.mod-section-header:hover{background:rgba(255,255,255,.03);}
+.section-header-text{flex:1;min-width:0;}
+.section-header-text h2{font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .15rem;}
+.section-header-text p{font-size:.78rem;color:var(--muted);margin:0;}
+.sec-meta{display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
+.sec-time{font-size:.7rem;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:2px 9px;white-space:nowrap;}
+.sec-chev{width:20px;height:20px;flex-shrink:0;transition:transform .3s;color:var(--muted);}
+.mod-section.open .sec-chev{transform:rotate(180deg);}
+.mod-section-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid var(--line);}
+.mod-section.open .mod-section-body{display:block;}
+
+/* Content helpers */
+.concept-card{background:rgba(8,145,178,.06);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:1rem 1.1rem;margin:1rem 0;font-size:.9rem;line-height:1.75;color:var(--ink);}
+.concept-card strong{color:var(--ink);font-weight:700;}
+.concept-card em{color:var(--primary);font-style:normal;font-weight:600;}
+.takeaway{background:linear-gradient(135deg,rgba(8,145,178,.08),rgba(37,99,235,.06));border:1px solid rgba(8,145,178,.25);border-radius:10px;padding:1rem 1.1rem;margin:1rem 0 0;font-size:.87rem;line-height:1.65;}
+.takeaway strong{display:block;margin-bottom:4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--primary);font-weight:800;}
+.section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary);margin:1rem 0 .5rem;}
+.got-it-btn{display:inline-flex;align-items:center;gap:6px;margin-top:1rem;padding:.5rem 1.2rem;background:var(--primary);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;transition:all .2s;}
+.got-it-btn:hover{background:var(--primary-mid);transform:translateY(-1px);}
+.got-it-btn.done-btn{background:var(--green);}
+
+/* Quiz */
+.quiz-wrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.5rem;margin-top:1.5rem;}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1.2rem;}
+.quiz-header h2{font-size:1.05rem;font-weight:800;color:var(--ink);margin:0;}
+.quiz-badge{background:var(--primary);color:#fff;border-radius:20px;padding:3px 12px;font-size:.75rem;font-weight:700;}
+.q-block{margin-bottom:1.2rem;}
+.q-text{font-size:.9rem;font-weight:600;margin-bottom:.6rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.35rem;}
+.q-opt{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .9rem;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);cursor:pointer;font-size:.85rem;transition:all .2s;line-height:1.4;}
+.q-opt:hover{border-color:var(--primary);background:rgba(8,145,178,.07);}
+.q-opt.correct{border-color:var(--green);background:rgba(5,150,105,.1);color:var(--green);font-weight:600;}
+.q-opt.wrong{border-color:var(--red);background:rgba(220,38,38,.08);color:var(--red);}
+.q-opt.disabled{pointer-events:none;}
+.q-feedback{font-size:.8rem;margin-top:.5rem;padding:.5rem .75rem;border-radius:6px;}
+.q-feedback.good{background:rgba(5,150,105,.12);color:var(--green);}
+.q-feedback.bad{background:rgba(220,38,38,.08);color:var(--red);}
+.quiz-score{text-align:center;padding:1.2rem;font-size:1.1rem;font-weight:800;color:var(--primary);display:none;}
+.next-mod-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:1rem auto 0;padding:.75rem 2rem;background:linear-gradient(135deg,var(--primary),var(--blue));color:#fff;border:none;border-radius:25px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(8,145,178,.35);transition:all .2s;}
+.next-mod-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(8,145,178,.45);}
+
+/* Reveal anim */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s;}
+.reveal.in-view{opacity:1;transform:none;}
+
+/* ══ 6.1 FLIP CARDS ══ */
+@keyframes popIn{0%{opacity:0;transform:scale(.7) rotateY(-20deg);}100%{opacity:1;transform:scale(1) rotateY(0deg);}}
+.trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.65rem;margin:1rem 0;perspective:1200px;}
+.flip-card{height:140px;cursor:pointer;}
+.flip-card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+.flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
+.flip-card-front,.flip-card-back{position:absolute;inset:0;border-radius:13px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.75rem .6rem;text-align:center;}
+.flip-card-front{background:var(--bg);border:1.5px solid var(--line);transition:border-color .2s;}
+.flip-card:hover .flip-card-front{border-color:var(--primary);}
+.flip-card.flipped .flip-card-front{border-color:var(--primary);}
+.flip-card-back{background:linear-gradient(135deg,rgba(8,145,178,.15),rgba(37,99,235,.08));border:1.5px solid var(--primary);transform:rotateY(180deg);}
+.fc-icon{font-size:1.9rem;margin-bottom:.35rem;}
+.fc-name{font-size:.8rem;font-weight:700;color:var(--ink);}
+.fc-tap{font-size:.62rem;color:var(--muted);margin-top:.3rem;}
+.fc-desc{font-size:.69rem;color:var(--primary);font-weight:600;line-height:1.4;}
+.fc-why{font-size:.64rem;color:var(--muted);margin-top:.35rem;line-height:1.35;}
+.trend-counter{font-size:.78rem;font-weight:700;color:var(--muted);margin:.25rem 0 .75rem;}
+.trend-progress{height:6px;background:var(--line);border-radius:3px;margin-bottom:.75rem;overflow:hidden;}
+.trend-prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--blue));border-radius:3px;transition:width .4s ease;width:0%;}
+
+/* Particle burst */
+.particle{position:fixed;pointer-events:none;border-radius:50%;z-index:9999;animation:particleFly .7s ease-out forwards;}
+@keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:var(--tx,0) var(--ty,0) scale(.2);}}
+
+/* ══ 6.2 CAREER CARDS ══ */
+.career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:.75rem;margin:1rem 0;}
+.career-card{background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:1.1rem;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.career-card::before{content:"";position:absolute;inset:0;background:var(--cc-color,transparent);opacity:0;transition:opacity .25s;}
+.career-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12);}
+.career-card.selected{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 0 0 3px rgba(8,145,178,.2);}
+.career-card.selected::before{opacity:.06;}
+.cc-badge{position:absolute;top:.55rem;right:.55rem;background:var(--primary);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.62rem;font-weight:900;display:none;align-items:center;justify-content:center;}
+.career-card.selected .cc-badge{display:flex;}
+.cc-icon{font-size:2rem;margin-bottom:.45rem;}
+.cc-title{font-size:.88rem;font-weight:800;color:var(--ink);margin-bottom:.3rem;}
+.cc-tools{font-size:.67rem;color:var(--muted);line-height:1.5;margin-bottom:.4rem;}
+.cc-demand{display:inline-block;font-size:.63rem;font-weight:700;padding:1px 7px;border-radius:8px;background:rgba(5,150,105,.14);color:var(--green);}
+
+/* Skill canvas radar */
+.skills-panel{margin-top:.75rem;display:none;}
+.skills-panel.show{display:block;}
+.skills-row{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;}
+.skills-list-col{flex:1;min-width:160px;}
+.skills-canvas-col{flex:0 0 160px;}
+#radarCanvas{border-radius:50%;display:block;}
+.sp-title{font-size:.85rem;font-weight:800;color:var(--ink);margin:0 0 .6rem;}
+.skill-tag{display:inline-block;background:rgba(8,145,178,.12);color:var(--primary);border:1px solid rgba(8,145,178,.25);border-radius:16px;padding:.2rem .65rem;font-size:.73rem;font-weight:600;margin:.2rem .15rem 0 0;}
+.skill-tag.tool{background:rgba(245,158,11,.12);color:var(--orange);border-color:rgba(245,158,11,.3);}
+
+/* ══ 6.3 LEARNING ROADMAP ══ */
+.roadmap-wrap{margin:1rem 0;position:relative;}
+#roadmapSvg{width:100%;height:auto;display:block;}
+.res-tabs{display:flex;gap:.4rem;margin:1.2rem 0 .5rem;flex-wrap:wrap;}
+.res-tab{padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--line);background:var(--bg);color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;}
+.res-tab.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+.res-panel{display:none;}
+.res-panel.active{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:.65rem;}
+.res-card{background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:.85rem;transition:all .2s;position:relative;}
+.res-card:hover{border-color:var(--primary);transform:translateY(-2px);}
+.rc-icon{font-size:1.5rem;margin-bottom:.35rem;}
+.rc-name{font-size:.82rem;font-weight:700;color:var(--ink);}
+.rc-desc{font-size:.7rem;color:var(--muted);margin:.2rem 0 .4rem;line-height:1.4;}
+.rc-level{display:inline-block;font-size:.63rem;font-weight:700;padding:1px 7px;border-radius:8px;}
+.rc-beg{background:rgba(5,150,105,.14);color:var(--green);}
+.rc-int{background:rgba(8,145,178,.14);color:var(--primary);}
+.rc-adv{background:rgba(124,58,237,.14);color:var(--purple);}
+.bm-btn{position:absolute;top:.55rem;right:.55rem;background:none;border:none;cursor:pointer;font-size:.9rem;opacity:.4;transition:opacity .15s;padding:0;}
+.bm-btn:hover{opacity:1;}
+.bm-btn.bookmarked{opacity:1;}
+
+/* ══ 6.4 JOURNEY & REFLECTION ══ */
+.journey-canvas-wrap{background:linear-gradient(135deg,rgba(8,145,178,.06),rgba(37,99,235,.04));border:1px solid var(--line);border-radius:14px;padding:1.2rem;margin:1rem 0;overflow:hidden;}
+#journeyCanvas{display:block;width:100%;max-width:700px;margin:0 auto;}
+
+/* Reflection prompts with typewriter */
+.reflect-card{background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:1rem 1.1rem;margin:.65rem 0;transition:border-color .2s;}
+.reflect-card:focus-within{border-color:var(--primary);}
+.reflect-label{font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--primary);margin-bottom:.45rem;display:flex;align-items:center;gap:.4rem;}
+.typewriter-prompt{font-size:.88rem;color:var(--ink);font-weight:500;line-height:1.6;margin-bottom:.55rem;min-height:1.4em;}
+.cursor{display:inline-block;width:2px;height:1em;background:var(--primary);animation:blink .8s step-end infinite;vertical-align:text-bottom;margin-left:1px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.reflect-ta{width:100%;min-height:72px;padding:.55rem .75rem;background:var(--card);border:1.5px solid var(--line);border-radius:8px;color:var(--ink);font-family:'Poppins',sans-serif;font-size:.83rem;resize:vertical;outline:none;line-height:1.55;transition:border-color .15s;}
+.reflect-ta:focus{border-color:var(--primary);}
+
+/* Goal cards */
+.goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.55rem;margin:.65rem 0;}
+.goal-card{background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:.75rem .85rem;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:.5rem;}
+.goal-card:hover{border-color:var(--primary);transform:translateY(-1px);}
+.goal-card.selected{border-color:var(--primary);background:rgba(8,145,178,.07);box-shadow:0 0 0 3px rgba(8,145,178,.15);}
+.gc-icon{font-size:1.3rem;flex-shrink:0;}
+.gc-text{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.4;}
+.gc-sub{font-size:.67rem;color:var(--muted);margin-top:.15rem;}
+
+/* Animated Certificate */
+.cert-btn{display:inline-flex;align-items:center;gap:6px;margin-top:1rem;padding:.6rem 1.4rem;background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:700;font-size:.88rem;transition:all .2s;box-shadow:0 4px 14px rgba(124,58,237,.3);}
+.cert-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.4);}
+.cert-wrap{display:none;margin-top:1.2rem;animation:certReveal .7s ease both;}
+.cert-wrap.show{display:block;}
+@keyframes certReveal{from{opacity:0;transform:scale(.92) translateY(20px);}to{opacity:1;transform:none;}}
+.cert-card{background:linear-gradient(135deg,#071320 0%,#0a2540 60%,#0d1f3d 100%);border:2px solid var(--primary);border-radius:16px;padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+.cert-card::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(8,145,178,.04) 18px,rgba(8,145,178,.04) 20px);pointer-events:none;}
+.cert-star{position:absolute;pointer-events:none;font-size:1rem;animation:starFloat 2s ease-out forwards;}
+@keyframes starFloat{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(.3);}}
+.cert-title{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.35rem;}
+.cert-name{font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:.15rem;}
+.cert-sub{font-size:.78rem;color:rgba(255,255,255,.45);margin-bottom:1rem;}
+.cert-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem;margin:.8rem 0;}
+.cert-badge{font-size:.72rem;font-weight:700;background:rgba(8,145,178,.2);border:1px solid rgba(8,145,178,.35);color:#7dd3fc;border-radius:20px;padding:.2rem .75rem;}
+.cert-goal{font-size:.85rem;color:rgba(255,255,255,.75);padding:.65rem 1rem;background:rgba(255,255,255,.07);border-radius:8px;margin:.8rem 0;line-height:1.5;}
+.cert-footer{font-size:.7rem;color:rgba(255,255,255,.28);margin-top:1rem;}
+.confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+
+@media(max-width:540px){
+  .career-grid{grid-template-columns:1fr 1fr;}
+  .skills-canvas-col{flex:0 0 120px;}
+  .res-panel.active{grid-template-columns:1fr 1fr;}
+  .goal-grid{grid-template-columns:1fr 1fr;}
+}
+  
+/* ── Lang toggle ── */
+
+/* ── Dual-language spans ── */
+.lang-ms { display: none; }
+
+.lang-toggle-btn{
+  background:rgba(255,255,255,.09);
+  border:1.5px solid rgba(255,255,255,.22);
+  color:#e2e8f0;
+  border-radius:20px;
+  padding:3px 12px;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:background .2s,border-color .2s;
+  white-space:nowrap;
+  align-self:center;
+}
+.lang-toggle-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);}
+.q-block{margin-bottom:1.2rem;}
+.q-text{font-size:.93rem;font-weight:600;margin-bottom:.6rem;line-height:1.5;}
+.q-opts{display:grid;gap:.4rem;}
+.q-opt{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .9rem;border-radius:8px;border:1.5px solid var(--line);cursor:pointer;font-size:.88rem;transition:.2s;background:var(--card);}
+.q-opt:hover{border-color:var(--primary);}
+.q-opt.correct{border-color:#22c55e;background:rgba(34,197,94,.1);}
+.q-opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.1);}
+.q-opt.disabled{cursor:default;}
+.q-feedback{padding:.55rem .8rem;border-radius:8px;font-size:.84rem;margin-top:.5rem;line-height:1.5;}
+.q-feedback.good{background:rgba(34,197,94,.12);color:#15803d;}
+.q-feedback.bad{background:rgba(239,68,68,.12);color:#b91c1c;}
+@media(prefers-color-scheme:dark){.q-feedback.good{color:#4ade80;}.q-feedback.bad{color:#f87171;}}
+
+
+.act-cta-wrap{text-align:center;padding:2.5rem 1rem 1rem;border-top:1px solid rgba(255,255,255,.08);margin-top:2.5rem;}
+.act-cta-label{font-size:.9rem;color:var(--muted,rgba(255,255,255,.5));margin-bottom:1.1rem;}
+.act-cta-btn{display:inline-flex;align-items:center;gap:.7rem;background:var(--primary);color:#fff;font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;padding:.85rem 2rem;border-radius:10px;text-decoration:none;transition:filter .2s,transform .15s;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+.act-cta-btn:hover{filter:brightness(1.12);transform:translateY(-2px);}
+.act-cta-tiers{font-size:.78rem;font-weight:400;opacity:.82;letter-spacing:.02em;}
+
+.module-nav{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:2rem auto 0;max-width:900px;padding:0 max(16px,env(safe-area-inset-left,0px));}
+.module-nav .mn-card{display:block;padding:1.1rem 1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:background .2s;}
+.module-nav .mn-card:hover{background:rgba(255,255,255,.13);}
+.module-nav .mn-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.3rem;}
+.module-nav .mn-title{font-size:.97rem;font-weight:700;color:#fff;}
+.module-nav .mn-next{text-align:right;}
+
+/* ── Active student chip ── */
+#activeStudentChip{display:none;align-items:center;gap:.4rem;background:rgba(8,145,178,.18);border:1px solid rgba(8,145,178,.4);border-radius:999px;padding:.22rem .75rem .22rem .5rem;font-size:.72rem;color:#67e8f9;white-space:nowrap;max-width:180px;}
+#activeStudentChip .chip-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0;}
+#activeStudentChip .chip-name{overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+</style>
+<script src="data-collect.js"></script>
+</head>
+<body>
+
+<div class="chev-strip" aria-label="UMPSA STEM Lab">
+  <span>See</span><span>Think</span><span>Explore</span><span>Marvel</span>
+</div>
+
+<header class="sitenav">
+  <div class="sitenav-inner">
+    <a href="index.html" class="brand"><em>AI</em>&nbsp;Adventure<span class="brand-sub">UMPSA STEM Lab</span></a>
+    <nav>
+      <div class="nav-drop-wrap">
+        <button class="nav-drop-btn" id="modDropBtn">Modules <span class="arr">&#9660;</span></button>
+        <div class="nav-drop-menu" id="modDropMenu">
+          <a href="module-1.html"><span class="mn">M1</span>Why AI?</a>
+          <a href="module-2.html"><span class="mn">M2</span>Supervised Learning</a>
+          <a href="module-3.html"><span class="mn">M3</span>Unsupervised Learning</a>
+          <a href="module-4.html"><span class="mn">M4</span>Reinforcement Learning</a>
+          <a href="module-5.html"><span class="mn">M5</span>Build Your Own AI</a>
+          <a href="module-6.html" class="cur"><span class="mn">M6</span>What&#39;s Next in AI?</a>
+          <div class="sep-line"></div>
+          <a href="index.html"><span class="mn">&#127968;</span>Home</a>
+        </div>
+      </div>
+    
+    <div id="activeStudentChip"><div class="chip-avatar" id="chipAvatar"></div><span class="chip-name" id="chipName"></span></div>
+  <button id="langToggle" class="lang-toggle-btn" onclick="setLang(document.documentElement.lang==='ms'?'en':'ms')" title="Tukar Bahasa / Switch Language">BM</button>
+</nav>
+  </div>
+</header>
+
+<div id="chromeBanner" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:.78rem;text-align:center;padding:.45rem 1rem;line-height:1.5;">
+  &#9888;&#65039; <strong>Chrome restricts local file navigation.</strong> For the best experience use <strong>Firefox</strong> &#8212; right-click file &#8594; Open With &#8594; Firefox.
+  <button onclick="document.getElementById('chromeBanner').style.display='none'" style="margin-left:.8rem;background:rgba(255,255,255,.15);border:none;color:#fca5a5;border-radius:4px;padding:1px 8px;cursor:pointer;font-size:.78rem;">&#10005;</button>
+</div>
+<script>(function(){var ic=/Chrome/.test(navigator.userAgent)&&!/Edg|OPR|Firefox/.test(navigator.userAgent);if(ic&&location.protocol==='file:')document.getElementById('chromeBanner').style.display='block';})();</script>
+
+<section class="module-hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="mod-eyebrow">Module 6 &middot; Beyond AI Adventure</div>
+    <h1>From Learner to <em>AI Creator</em></h1>
+    <p class="sub"><span class="lang-en">You have explored why AI exists, trained models, taught machines to learn and built your own AI. Now discover what comes next &#8212; emerging trends, career pathways, and your own AI journey forward.</span><span class="lang-ms">Anda telah meneroka mengapa AI wujud, melatih model, mengajar mesin untuk belajar dan membina AI anda sendiri. Kini temui apa yang akan datang seterusnya &#8212; trend terkini, laluan kerjaya, dan perjalanan AI anda ke hadapan.</span></p>
+    <div class="module-meta">
+      <span class="meta-chip">&#128218; 4 Sections</span>
+      <span class="meta-chip">&#8987; ~40 min</span>
+      <span class="meta-chip">&#9889; Interactive</span>
+      <span class="meta-chip">&#127775; All Levels</span>
+    </div>
+  </div>
+</section>
+
+<div class="prog-bar-wrap">
+  <div class="prog-bar-inner">
+    <span class="prog-label"><span data-en="Progress" data-ms="Kemajuan">Progress</span></span>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <span class="prog-pct" id="progPct">0%</span>
+  </div>
+</div>
+
+<main>
+<div class="wrap">
+
+<!-- ═══════════════════════════════════════
+     SECTION 6.1  EMERGING AI TRENDS
+═══════════════════════════════════════ -->
+<div class="mod-section reveal" id="sec1">
+  <div class="mod-section-header" onclick="toggleSection('sec1')">
+    <div class="section-badge badge-see">SEE</div>
+    <div class="section-header-text">
+      <h2><span data-en="6.1 Emerging AI Trends" data-ms="6.1 Trend AI Terkini">6.1 Emerging AI Trends</span></h2>
+      <p><span class="lang-en">Flip the cards to discover where AI is heading right now.</span><span class="lang-ms">Balikkan kad untuk temui ke mana AI menuju sekarang.</span></p>
+    </div>
+    <div class="sec-meta">
+      <span class="sec-time">&#8987; 8 min</span>
+      <span class="sec-status" id="st1">&#9711;</span>
+    </div>
+    <svg class="sec-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="mod-section-body">
+    <p style="margin-top:1rem;font-size:.9rem;"><span class="lang-en">AI never stops advancing. Click each card to flip it and reveal the trend and why it matters to you as a future engineer.</span><span class="lang-ms">AI tidak pernah berhenti maju. Klik setiap kad untuk membaliknya dan dedahkan trend serta mengapa ia penting bagi anda sebagai jurutera masa depan.</span></p>
+    <div class="section-label" data-en="📉 8 Frontier Trends — flip every card to unlock the insight!" data-ms="📉 8 Trend Sempadanan — balikkan setiap kad untuk temui pandangan!">&#128201; 8 Frontier Trends &#8212; flip every card to unlock the insight!</div>
+    <div class="trend-counter"><span data-en="Revealed:" data-ms="Didedahkan:">Revealed:</span> <span id="trendCount">0</span> / 8</div>
+    <div class="trend-progress"><div class="trend-prog-fill" id="trendProgFill"></div></div>
+    <div class="trend-grid" id="trendGrid"></div>
+    <div class="takeaway" id="trendTakeaway" style="display:none;animation:certReveal .5s ease both;">
+      <span class="lang-en"><strong>&#128161; Full unlock! Key insight</strong>
+      AI is no longer just predicting labels. Modern AI <em>generates</em>, <em>reasons</em>, <em>acts</em> and <em>explains</em> &#8212; often in real time on tiny devices. Every skill you built in this course applies to these frontiers.</span>
+      <span class="lang-ms"><strong>&#128161; Semua dibuka! Pandangan utama</strong>
+      AI bukan lagi sekadar meramalkan label. AI moden <em>menjana</em>, <em>menaakulkan</em>, <em>bertindak</em> dan <em>menerangkan</em> &#8212; sering secara masa nyata pada peranti kecil. Setiap kemahiran yang anda bina dalam kursus ini terpakai pada sempadan-sempadan ini.</span>
+    </div>
+    <button class="got-it-btn" id="btn1" onclick="markDone(1)" data-en="✓ Got it — mark complete" data-ms="✓ Faham — tandakan selesai">&#10003; Got it &#8212; mark complete</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 6.2  AI CAREERS
+═══════════════════════════════════════ -->
+<div class="mod-section reveal" id="sec2">
+  <div class="mod-section-header" onclick="toggleSection('sec2')">
+    <div class="section-badge badge-think">THINK</div>
+    <div class="section-header-text">
+      <h2><span data-en="6.2 AI Careers and Future Skills" data-ms="6.2 Kerjaya AI dan Kemahiran Masa Depan">6.2 AI Careers and Future Skills</span></h2>
+      <p><span class="lang-en">Select pathways that interest you &#8212; see the skills and radar chart update live.</span><span class="lang-ms">Pilih laluan yang menarik minat anda &#8212; lihat kemahiran dan carta radar dikemas kini secara langsung.</span></p>
+    </div>
+    <div class="sec-meta">
+      <span class="sec-time">&#8987; 10 min</span>
+      <span class="sec-status" id="st2">&#9711;</span>
+    </div>
+    <svg class="sec-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="mod-section-body">
+    <p style="margin-top:1rem;font-size:.9rem;"><span class="lang-en">AI expertise opens doors across many fields &#8212; not just tech. Select up to two pathways that excite you; the skill radar updates to show what you would need to develop.</span><span class="lang-ms">Kepakaran AI membuka pintu merentas pelbagai bidang &#8212; bukan hanya teknologi. Pilih sehingga dua laluan yang mengujakan anda; radar kemahiran dikemas kini untuk menunjukkan apa yang perlu anda kembangkan.</span></p>
+    <div class="section-label" data-en="✨ Select 1–2 pathways that interest you" data-ms="✨ Pilih 1–2 laluan yang menarik minat anda">&#127775; Select 1&#8211;2 pathways that interest you</div>
+    <div class="career-grid" id="careerGrid"></div>
+    <div class="skills-panel" id="skillsPanel">
+      <div class="skills-row">
+        <div class="skills-list-col">
+          <div class="sp-title" id="spTitle" data-en="Your pathway skills" data-ms="Kemahiran laluan anda">Your pathway skills</div>
+          <div class="section-label" style="margin:.25rem 0 .3rem;" data-en="Core skills" data-ms="Kemahiran Teras">Core skills</div>
+          <div id="coreTags"></div>
+          <div class="section-label" style="margin:.6rem 0 .3rem;" data-en="Tools &amp; platforms" data-ms="Alat &amp; Platform">Tools &amp; platforms</div>
+          <div id="toolTags"></div>
+        </div>
+        <div class="skills-canvas-col">
+          <canvas id="radarCanvas" width="160" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="concept-card" style="margin-top:1rem;">
+      <span class="lang-en"><strong>&#127775; The skill that travels everywhere</strong><br>
+      Whatever path you choose, one skill keeps appearing: the ability to <em>frame a problem clearly</em>, select the right AI approach, and explain results to non-technical people. That rare skill makes engineers invaluable to every team.</span>
+      <span class="lang-ms"><strong>&#127775; Kemahiran yang merentas pelbagai bidang</strong><br>
+      Walau apa pun laluan yang anda pilih, satu kemahiran sering muncul: keupayaan untuk <em>menggambarkan masalah dengan jelas</em>, memilih pendekatan AI yang tepat, dan menjelaskan keputusan kepada orang bukan teknikal. Kemahiran langka itu menjadikan jurutera tidak ternilai bagi setiap pasukan.</span>
+    </div>
+    <button class="got-it-btn" id="btn2" onclick="markDone(2)" data-en="✓ Got it — mark complete" data-ms="✓ Faham — tandakan selesai">&#10003; Got it &#8212; mark complete</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 6.3  LEARNING ROADMAP
+═══════════════════════════════════════ -->
+<div class="mod-section reveal" id="sec3">
+  <div class="mod-section-header" onclick="toggleSection('sec3')">
+    <div class="section-badge badge-exp">EXP</div>
+    <div class="section-header-text">
+      <h2><span data-en="6.3 Continuing the AI Learning Journey" data-ms="6.3 Meneruskan Perjalanan Pembelajaran AI">6.3 Continuing the AI Learning Journey</span></h2>
+      <p><span class="lang-en">Animated roadmap + bookmarkable resources to keep growing.</span><span class="lang-ms">Peta jalan beranimasi + sumber yang boleh ditanda buku untuk terus berkembang.</span></p>
+    </div>
+    <div class="sec-meta">
+      <span class="sec-time">&#8987; 8 min</span>
+      <span class="sec-status" id="st3">&#9711;</span>
+    </div>
+    <svg class="sec-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="mod-section-body">
+    <p style="margin-top:1rem;font-size:.9rem;"><span class="lang-en">The best time to take the next step is right now while ideas are fresh. Watch the animated roadmap, then browse and bookmark resources by category.</span><span class="lang-ms">Masa terbaik untuk mengambil langkah seterusnya adalah sekarang semasa idea masih segar. Tonton peta jalan beranimasi, kemudian layari dan tandakan sumber mengikut kategori.</span></p>
+    <div class="roadmap-wrap">
+      <svg id="roadmapSvg" viewBox="0 0 700 110" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="res-tabs" id="resTabs">
+      <button class="res-tab active" onclick="showResTab(0,this)" data-en="📚 Courses" data-ms="📚 Kursus">&#127979; Courses</button>
+      <button class="res-tab" onclick="showResTab(1,this)" data-en="🏆 Challenges" data-ms="🏆 Cabaran">&#127942; Challenges</button>
+      <button class="res-tab" onclick="showResTab(2,this)" data-en="👥 Communities" data-ms="👥 Komuniti">&#128101; Communities</button>
+    </div>
+    <div id="resPanel0" class="res-panel active"></div>
+    <div id="resPanel1" class="res-panel"></div>
+    <div id="resPanel2" class="res-panel"></div>
+    <div id="bmNote" style="font-size:.75rem;color:var(--primary);margin:.6rem 0;display:none;">&#11088; <span id="bmCount">0</span> <span data-en="resource(s) bookmarked — great picks!" data-ms="sumber ditanda buku — pilihan hebat!">resource(s) bookmarked &#8212; great picks!</span></div>
+    <div class="takeaway" style="margin-top:1rem;">
+      <span class="lang-en"><strong>&#128161; Learning tip</strong>
+      Pick ONE resource and spend 30 minutes on it this week. Consistency beats intensity &#8212; a small daily habit compounds into deep expertise over months.</span>
+      <span class="lang-ms"><strong>&#128161; Tip pembelajaran</strong>
+      Pilih SATU sumber dan luangkan 30 minit padanya minggu ini. Konsistensi lebih baik daripada intensiti &#8212; tabiat harian yang kecil berkumpul menjadi kepakaran mendalam dari masa ke masa.</span>
+    </div>
+    <button class="got-it-btn" id="btn3" onclick="markDone(3)" data-en="✓ Got it — mark complete" data-ms="✓ Faham — tandakan selesai">&#10003; Got it &#8212; mark complete</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 6.4  MY AI JOURNEY
+═══════════════════════════════════════ -->
+<div class="mod-section reveal" id="sec4">
+  <div class="mod-section-header" onclick="toggleSection('sec4')">
+    <div class="section-badge badge-marv">MARV</div>
+    <div class="section-header-text">
+      <h2><span data-en="6.4 My AI Journey — Reflection &amp; Next Steps" data-ms="6.4 Perjalanan AI Saya — Refleksi &amp; Langkah Seterusnya">6.4 My AI Journey &#8212; Reflection &amp; Next Steps</span></h2>
+      <p><span class="lang-en">Animated journey map, guided reflection and your personal AI certificate.</span><span class="lang-ms">Peta perjalanan beranimasi, refleksi berpanduan dan sijil AI peribadi anda.</span></p>
+    </div>
+    <div class="sec-meta">
+      <span class="sec-time">&#8987; 12 min</span>
+      <span class="sec-status" id="st4">&#9711;</span>
+    </div>
+    <svg class="sec-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="mod-section-body">
+    <div class="section-label" style="margin-top:1rem;" data-en="🌍 Your animated AI Adventure journey" data-ms="🌍 Perjalanan AI Adventure beranimasi anda">&#127759; Your animated AI Adventure journey</div>
+    <div class="journey-canvas-wrap">
+      <canvas id="journeyCanvas" height="130"></canvas>
+    </div>
+
+    <div class="concept-card">
+      <span class="lang-en"><strong>&#127881; You completed all six modules!</strong><br>
+      You went from understanding <em>why AI exists</em> &#8212; through supervised, unsupervised and reinforcement learning &#8212; to building your own model. That is a genuine AI education delivered in a hands-on adventure.</span>
+      <span class="lang-ms"><strong>&#127881; Anda telah menyelesaikan keenam-enam modul!</strong><br>
+      Anda bermula dari memahami <em>mengapa AI wujud</em> &#8212; melalui pembelajaran berpengawasan, tanpa pengawasan dan pengukuhan &#8212; hingga membina model anda sendiri. Itulah pendidikan AI yang tulen dalam pengembaraan praktikal.</span>
+    </div>
+
+    <div class="section-label" style="margin-top:1.2rem;" data-en="💬 Guided reflection" data-ms="💬 Refleksi Berpanduan">&#128172; Guided reflection</div>
+    <p style="font-size:.83rem;color:var(--muted);margin:.15rem 0 .6rem;"><span class="lang-en">Each prompt appears as you type. Take your time &#8212; these reflections are yours.</span><span class="lang-ms">Setiap gesaan muncul semasa anda menaip. Ambil masa anda &#8212; refleksi ini milik anda.</span></p>
+
+    <div class="reflect-card">
+      <div class="reflect-label">&#129300; Prompt 1</div>
+      <div class="typewriter-prompt" id="tw0"></div>
+      <textarea class="reflect-ta" id="reflectQ0" placeholder="Write your thoughts here..." oninput="saveReflect()"></textarea>
+    </div>
+    <div class="reflect-card">
+      <div class="reflect-label">&#128295; Prompt 2</div>
+      <div class="typewriter-prompt" id="tw1"></div>
+      <textarea class="reflect-ta" id="reflectQ1" placeholder="Write your thoughts here..." oninput="saveReflect()"></textarea>
+    </div>
+    <div class="reflect-card">
+      <div class="reflect-label">&#127919; Prompt 3</div>
+      <div class="typewriter-prompt" id="tw2"></div>
+      <textarea class="reflect-ta" id="reflectQ2" placeholder="Write your thoughts here..." oninput="saveReflect()"></textarea>
+    </div>
+
+    <div class="section-label" style="margin-top:1.2rem;" data-en="🚀 Choose your next learning goal" data-ms="🚀 Pilih matlamat pembelajaran seterusnya">&#128640; Choose your next learning goal</div>
+    <p style="font-size:.83rem;color:var(--muted);margin:.15rem 0 .5rem;"><span class="lang-en">Select the goal that excites you most right now.</span><span class="lang-ms">Pilih matlamat yang paling mengujakan anda sekarang.</span></p>
+    <div class="goal-grid" id="goalGrid"></div>
+
+    <button class="cert-btn" onclick="generateCert()" data-en="🎖 Generate my AI Adventure certificate" data-ms="🎖 Jana sijil AI Adventure saya">&#127941; Generate my AI Adventure certificate</button>
+
+    <div class="cert-wrap" id="certWrap">
+      <div class="cert-card" id="certCard">
+        <div class="cert-title">&#127891; <span data-en="Certificate of Completion" data-ms="Sijil Penyempurnaan">Certificate of Completion</span></div>
+        <div class="cert-name">AI Adventure</div>
+        <div class="cert-sub">UMPSA STEM Lab &middot; 2026</div>
+        <div class="cert-badges" id="certBadges"></div>
+        <div class="cert-goal" id="certGoal"></div>
+        <div class="cert-footer">Completed all 6 modules &middot; Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education</div>
+      </div>
+    </div>
+
+    <button class="got-it-btn" id="btn4" onclick="markDone(4)" style="margin-top:.8rem;" data-en="✓ Complete Module 6 — Adventure Complete!" data-ms="✓ Selesaikan Modul 6 — Pengembaraan Selesai!">&#10003; Complete Module 6 &#8212; Adventure Complete!</button>
+
+    <!-- Quiz -->
+    <div class="quiz-wrap" style="margin-top:1.5rem;">
+      <div class="quiz-header">
+        <h2>&#129504; <span data-en="Final Reflection Quiz" data-ms="Kuiz Refleksi Akhir">Final Reflection Quiz</span></h2>
+        <span class="quiz-badge" data-en="4 questions" data-ms="4 soalan">4 questions</span>
+      </div>
+      <div id="quizContainer"></div>
+      <div class="quiz-score" id="quizScore"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.wrap -->
+
+  <!-- ── ACTIVITY CTA ── -->
+  <div class="act-cta-wrap">
+    <p class="act-cta-label"><span class="lang-en">You've covered all the concepts for Module 6. Time to apply them.</span><span class="lang-ms">Anda telah mempelajari semua konsep untuk Modul 6. Masa untuk mengaplikasikannya.</span></p>
+    <a href="activity-6.html" class="act-cta-btn">
+      <span class="lang-en">Start Activities →</span><span class="lang-ms">Mula Aktiviti →</span>
+      <span class="act-cta-tiers">Tier 1 → 2 → 3 → 4</span>
+    </a>
+  </div>
+
+<div class="module-nav">
+  <a href="module-5.html" class="mn-card mn-prev">
+    <div class="mn-label">Previous</div>
+    <div class="mn-title">← Module 5: Build Your Own AI</div>
+  </a>
+  <a href="index.html" class="mn-card mn-next">
+    <div class="mn-label">Next</div>
+    <div class="mn-title">Home →</div>
+  </a>
+</div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">See &middot; Think &middot; Explore &middot; Marvel</div>
+    <div class="footer-sub">UMPSA STEM LAB &middot; AI Adventure</div>
+    <div class="footer-copy">
+      <span>&copy; 2026 Nurul Hazlina Noordin &middot; UMPSA STEM Lab Engineering Education</span>
+      <a href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" class="footer-icon-btn" title="Research website">&#127760;</a>
+      <a href="mailto:hazlina@umpsa.edu.my" class="footer-icon-btn" title="hazlina@umpsa.edu.my">&#9993;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══ STATE ═══ */
+var state={done:[],quiz:null,bookmarks:[],reflections:['','',''],goal:-1};
+try{var _s=localStorage.getItem('ai_adv_m6');if(_s){var _p=JSON.parse(_s);if(_p)state=Object.assign(state,_p);}}catch(e){}
+function saveState(){try{localStorage.setItem('ai_adv_m6',JSON.stringify(state));}catch(e){}}
+
+/* ═══ PROGRESS ═══ */
+function updateProgress(){
+  var p=Math.round(state.done.length/4*100);
+  document.getElementById('progFill').style.width=p+'%';
+  document.getElementById('progPct').textContent=p+'%';
+}
+function markDone(n){
+  document.getElementById('sec'+n).classList.add('sec-done');
+  document.getElementById('st'+n).textContent='✅';
+  var b=document.getElementById('btn'+n);
+  var isBM=(document.documentElement.lang==='ms');
+  if(b){b.classList.add('done-btn');b.textContent=isBM?'✅ Selesai':'✅ Complete';}
+  if(state.done.indexOf(n)<0)state.done.push(n);
+  saveState();updateProgress();
+}
+state.done.forEach(function(n){markDone(n);});
+updateProgress();
+
+/* ═══ ACCORDION ═══ */
+function toggleSection(id){
+  var sec=document.getElementById(id);
+  var isOpen=sec.classList.contains('open');
+  document.querySelectorAll('.mod-section.open').forEach(function(s){s.classList.remove('open');});
+  if(!isOpen)sec.classList.add('open');
+}
+
+/* ═══ HERO CANVAS ═══ */
+(function(){
+  var cv=document.getElementById('heroCanvas'),ctx=cv.getContext('2d'),pts=[];
+  function resize(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;}
+  resize();
+  for(var i=0;i<60;i++)pts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*2+.5});
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    pts.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>cv.width)p.vx*=-1;
+      if(p.y<0||p.y>cv.height)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(8,145,178,.8)';ctx.fill();
+    });
+    pts.forEach(function(a,i){pts.slice(i+1).forEach(function(b){
+      var d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<90){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle='rgba(8,145,178,'+(1-d/90)*.22+')';ctx.lineWidth=.6;ctx.stroke();}
+    });});
+    requestAnimationFrame(draw);
+  }
+  draw();window.addEventListener('resize',resize);
+})();
+
+/* ═══ SCROLL REVEAL ═══ */
+(function(){
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in-view');});},{threshold:.07});
+  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+})();
+
+/* ═══════════════════════════════════════
+   6.1  FLIP CARDS
+═══════════════════════════════════════ */
+var TRENDS=[
+  {icon:'🤖',name:'Generative AI',desc:'Creates text, images, audio and code from a prompt.',why:'Powers tools like ChatGPT, Midjourney and GitHub Copilot &#8212; used by millions every day.'},
+  {icon:'👁️',name:'Multimodal AI',desc:'One model that sees, hears and reads simultaneously.',why:'GPT-4o and Gemini combine vision, language and audio in a single system &#8212; just like humans.'},
+  {icon:'🕹️',name:'AI Agents',desc:'AI that takes actions: browses, writes files, calls APIs.',why:'Agents complete multi-step tasks autonomously &#8212; the next big shift in how software is built.'},
+  {icon:'📡',name:'Edge AI / TinyML',desc:'Running AI models on tiny devices with no cloud needed.',why:'Fast, private, offline inference on phones and microcontrollers &#8212; critical for IoT and robotics.'},
+  {icon:'🔍',name:'Explainable AI',desc:'Making AI decisions transparent and auditable.',why:'Increasingly required by law (EU AI Act). Engineers who can explain AI are rare and valued.'},
+  {icon:'🏥',name:'AI in Healthcare',desc:'Detecting cancers, predicting proteins, accelerating drugs.',why:'AlphaFold solved a 50-year protein-folding challenge. AI is now a core medical research tool.'},
+  {icon:'🌍',name:'AI for Climate',desc:'Optimising energy grids, weather forecasts, green materials.',why:'Machine learning models cut energy use by 30&#37; in Google data centres. This scales globally.'},
+  {icon:'🤝',name:'Human&#8211;AI Teams',desc:'Humans and AI collaborating, each doing what they do best.',why:'Co-pilots for code, writing, design and research &#8212; the most common AI use case in 2026.'}
+];
+var trendFlipped=0;
+(function(){
+  var grid=document.getElementById('trendGrid');
+  TRENDS.forEach(function(t,i){
+    var fc=document.createElement('div');fc.className='flip-card';
+    fc.innerHTML='<div class="flip-card-inner">'
+      +'<div class="flip-card-front"><div class="fc-icon">'+t.icon+'</div><div class="fc-name">'+t.name+'</div><div class="fc-tap">&#128070; Tap to flip</div></div>'
+      +'<div class="flip-card-back"><div class="fc-icon">'+t.icon+'</div><div class="fc-desc">'+t.desc+'</div><div class="fc-why">'+t.why+'</div></div>'
+      +'</div>';
+    fc.addEventListener('click',function(){
+      var wasFlipped=fc.classList.contains('flipped');
+      fc.classList.toggle('flipped');
+      if(!wasFlipped){
+        trendFlipped++;
+        document.getElementById('trendCount').textContent=trendFlipped;
+        document.getElementById('trendProgFill').style.width=(trendFlipped/8*100)+'%';
+        spawnParticles(fc);
+        if(trendFlipped>=8)document.getElementById('trendTakeaway').style.display='block';
+      }
+    });
+    grid.appendChild(fc);
+  });
+})();
+
+function spawnParticles(el){
+  var rect=el.getBoundingClientRect();
+  var cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+  var colors=['#0891B2','#2563EB','#F59E0B','#059669','#7C3AED'];
+  for(var i=0;i<10;i++){
+    var p=document.createElement('div');p.className='particle';
+    var angle=Math.random()*Math.PI*2,dist=40+Math.random()*60;
+    var tx=Math.cos(angle)*dist+'px',ty=Math.sin(angle)*dist+'px';
+    var sz=4+Math.random()*5;
+    p.style.cssText='left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+colors[i%colors.length]+';--tx:translate('+tx+','+ty+');--ty:0;';
+    document.body.appendChild(p);
+    setTimeout(function(pp){document.body.removeChild(pp);},750,p);
+  }
+}
+
+/* ═══════════════════════════════════════
+   6.2  CAREERS + RADAR
+═══════════════════════════════════════ */
+var CAREERS=[
+  {icon:'🛠️',title:'AI / ML Engineer',color:'#0891B2',
+   core:['Machine Learning','Software Engineering','Data Pipelines','Model Deployment','MLOps'],
+   tools:['Python','TensorFlow','PyTorch','Docker','Kubernetes'],
+   radar:[9,7,5,6,8],demand:'Very high demand'},
+  {icon:'📊',title:'Data Scientist',color:'#2563EB',
+   core:['Statistics','Data Wrangling','Visualisation','Storytelling','Hypothesis Testing'],
+   tools:['Python','R','SQL','Pandas','Tableau'],
+   radar:[6,9,4,7,6],demand:'High demand'},
+  {icon:'⚖️',title:'AI Ethics Researcher',color:'#7C3AED',
+   core:['Critical Thinking','Bias Analysis','Policy Writing','Regulation','Communication'],
+   tools:['Fairlearn','LIME','SHAP','Audit Tools'],
+   radar:[3,7,8,9,5],demand:'Growing fast'},
+  {icon:'🤖',title:'Robotics Engineer',color:'#DC2626',
+   core:['Control Systems','Computer Vision','Embedded AI','Mechanical Design','Signal Processing'],
+   tools:['ROS','C++','Embedded C','OpenCV','CAD'],
+   radar:[7,5,9,4,9],demand:'Specialist demand'},
+  {icon:'🔬',title:'ML Researcher',color:'#F59E0B',
+   core:['Mathematics','Research Methods','Deep Learning Theory','Academic Writing','Experimentation'],
+   tools:['Python','JAX','LaTeX','HPC Clusters'],
+   radar:[9,8,3,8,5],demand:'Academic & industry'},
+  {icon:'🎨',title:'AI Product Designer',color:'#059669',
+   core:['UX Design','Prompt Engineering','User Research','Prototyping','A/B Testing'],
+   tools:['Figma','Framer','GPT APIs','Vercel'],
+   radar:[4,6,7,6,7],demand:'Emerging role'}
+];
+var selectedCareers=[];
+(function(){
+  var grid=document.getElementById('careerGrid');
+  CAREERS.forEach(function(c,i){
+    var d=document.createElement('div');
+    d.className='career-card';
+    d.style.setProperty('--cc-color',c.color);
+    d.innerHTML='<div class="cc-badge">&#10003;</div>'
+      +'<div class="cc-icon">'+c.icon+'</div>'
+      +'<div class="cc-title">'+c.title+'</div>'
+      +'<div class="cc-tools">'+c.tools.join(' &middot; ')+'</div>'
+      +'<span class="cc-demand">&#128200; '+c.demand+'</span>';
+    d.addEventListener('click',function(){
+      var idx=selectedCareers.indexOf(i);
+      if(idx<0){
+        if(selectedCareers.length>=2){var old=selectedCareers.shift();document.querySelectorAll('.career-card')[old].classList.remove('selected');}
+        selectedCareers.push(i);d.classList.add('selected');
+      }else{selectedCareers.splice(idx,1);d.classList.remove('selected');}
+      updateSkillsPanel();
+    });
+    grid.appendChild(d);
+  });
+})();
+
+function updateSkillsPanel(){
+  var panel=document.getElementById('skillsPanel');
+  if(!selectedCareers.length){panel.classList.remove('show');return;}
+  panel.classList.add('show');
+  var allCore=[],allTools=[],combined=[0,0,0,0,0];
+  selectedCareers.forEach(function(i){
+    CAREERS[i].core.forEach(function(s){if(allCore.indexOf(s)<0)allCore.push(s);});
+    CAREERS[i].tools.forEach(function(t){if(allTools.indexOf(t)<0)allTools.push(t);});
+    CAREERS[i].radar.forEach(function(v,ri){combined[ri]=Math.max(combined[ri],v);});
+  });
+  var isBM=(document.documentElement.lang==='ms');
+  var title=selectedCareers.length===1?CAREERS[selectedCareers[0]].title:(isBM?'Laluan gabungan':'Combined pathway');
+  document.getElementById('spTitle').textContent=(isBM?'Kemahiran untuk: ':'Skills for: ')+title;
+  var ct=document.getElementById('coreTags');ct.innerHTML='';
+  allCore.forEach(function(s){var sp=document.createElement('span');sp.className='skill-tag';sp.textContent=s;ct.appendChild(sp);});
+  var tt=document.getElementById('toolTags');tt.innerHTML='';
+  allTools.forEach(function(t){var sp=document.createElement('span');sp.className='skill-tag tool';sp.textContent=t;tt.appendChild(sp);});
+  drawRadar(combined,selectedCareers.length===1?CAREERS[selectedCareers[0]].color:'#0891B2');
+}
+
+function drawRadar(vals,color){
+  var cv=document.getElementById('radarCanvas');
+  var ctx=cv.getContext('2d');
+  var W=160,H=160,cx=80,cy=80,R=60;
+  var n=vals.length;
+  ctx.clearRect(0,0,W,H);
+  function angle(i){return (i/n)*Math.PI*2 - Math.PI/2;}
+  // grid rings
+  [.25,.5,.75,1].forEach(function(f){
+    ctx.beginPath();
+    for(var i=0;i<n;i++){var a=angle(i),r=R*f;ctx[i?'lineTo':'moveTo'](cx+Math.cos(a)*r,cy+Math.sin(a)*r);}
+    ctx.closePath();ctx.strokeStyle='rgba(8,145,178,.18)';ctx.lineWidth=1;ctx.stroke();
+  });
+  // spokes
+  for(var i=0;i<n;i++){
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(angle(i))*R,cy+Math.sin(angle(i))*R);
+    ctx.strokeStyle='rgba(8,145,178,.18)';ctx.lineWidth=1;ctx.stroke();
+  }
+  // fill
+  ctx.beginPath();
+  vals.forEach(function(v,i){var a=angle(i),r=R*(v/10);ctx[i?'lineTo':'moveTo'](cx+Math.cos(a)*r,cy+Math.sin(a)*r);});
+  ctx.closePath();
+  ctx.fillStyle=color+'44';ctx.fill();
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+  // dots
+  vals.forEach(function(v,i){var a=angle(i),r=R*(v/10);
+    ctx.beginPath();ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,4,0,Math.PI*2);
+    ctx.fillStyle=color;ctx.fill();
+  });
+}
+
+/* ═══════════════════════════════════════
+   6.3  ANIMATED ROADMAP + RESOURCES
+═══════════════════════════════════════ */
+(function(){
+  var svg=document.getElementById('roadmapSvg');
+  var stages=['Beginner','Intermediate','Advanced','Expert'];
+  var colors=['#059669','#0891B2','#7C3AED','#F59E0B'];
+  var icons=['🌱','📈','🔬','🚀'];
+  var xs=[90,240,390,540];
+  var desc=['Python basics, ML concepts, Teachable Machine','Kaggle challenges, fast.ai, real projects','Research papers, custom architectures, MLOps','AI research, novel contributions, open-source'];
+
+  // Animated dashed path
+  var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  var d='M '+xs[0]+' 55';
+  for(var i=1;i<4;i++){var mx=(xs[i-1]+xs[i])/2;d+=' C '+mx+' 55 '+mx+' 55 '+xs[i]+' 55';}
+  path.setAttribute('d',d);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke','url(#roadGrad)');
+  path.setAttribute('stroke-width','3');
+  path.setAttribute('stroke-dasharray','8,4');
+  path.setAttribute('stroke-linecap','round');
+  var pathLen=700;
+  path.style.strokeDashoffset=pathLen;
+  path.style.strokeDasharray=pathLen;
+  path.style.animation='drawPath 2s ease forwards .3s';
+
+  var defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML='<linearGradient id="roadGrad" x1="0%" y1="0%" x2="100%" y2="0%">'
+    +'<stop offset="0%" stop-color="#059669"/>'
+    +'<stop offset="33%" stop-color="#0891B2"/>'
+    +'<stop offset="66%" stop-color="#7C3AED"/>'
+    +'<stop offset="100%" stop-color="#F59E0B"/>'
+    +'</linearGradient>'
+    +'<style>@keyframes drawPath{to{stroke-dashoffset:0;}} @keyframes nodePop{from{transform:scale(0);}to{transform:scale(1);}}</style>';
+  svg.appendChild(defs);
+  svg.appendChild(path);
+
+  stages.forEach(function(s,i){
+    var g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('transform','translate('+xs[i]+',55)');
+    g.style.animation='nodePop .4s ease both';
+    g.style.animationDelay=(.5+i*.3)+'s';
+    g.style.transformOrigin=xs[i]+'px 55px';
+
+    var circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('r','22');circle.setAttribute('fill',colors[i]);
+    circle.setAttribute('filter','url(#glow'+i+')');
+
+    var icon=document.createElementNS('http://www.w3.org/2000/svg','text');
+    icon.setAttribute('text-anchor','middle');icon.setAttribute('dominant-baseline','central');
+    icon.setAttribute('font-size','16');icon.textContent=icons[i];
+
+    var label=document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('y','38');label.setAttribute('text-anchor','middle');
+    label.setAttribute('fill',colors[i]);label.setAttribute('font-size','10');
+    label.setAttribute('font-weight','700');label.textContent=s;
+
+    var dtext=document.createElementNS('http://www.w3.org/2000/svg','text');
+    dtext.setAttribute('y','52');dtext.setAttribute('text-anchor','middle');
+    dtext.setAttribute('fill','rgba(127,186,209,.65)');dtext.setAttribute('font-size','7.5');
+    dtext.textContent=desc[i].length>30?desc[i].slice(0,30)+'…':desc[i];
+
+    g.appendChild(circle);g.appendChild(icon);g.appendChild(label);g.appendChild(dtext);
+    svg.appendChild(g);
+  });
+})();
+
+var RES=[
+  [
+    {icon:'🏋️',name:'fast.ai',desc:'Practical deep learning for coders. Free, no maths degree required.',level:'beg'},
+    {icon:'🎓',name:'Coursera ML Spec.',desc:'Andrew Ng Machine Learning Specialisation &#8212; the gold standard intro.',level:'beg'},
+    {icon:'🤗',name:'Hugging Face',desc:'Learn transformers and diffusion models hands-on with free notebooks.',level:'int'},
+    {icon:'📘',name:'DeepLearning.AI',desc:'Short courses on LLMs, MLOps, AI agents and RAG.',level:'int'},
+    {icon:'🔬',name:'Papers With Code',desc:'AI research papers side-by-side with open-source implementations.',level:'adv'},
+    {icon:'🎮',name:'CS50 AI (Harvard)',desc:'Free course: search, knowledge, learning, neural nets.',level:'beg'}
+  ],
+  [
+    {icon:'🏆',name:'Kaggle',desc:'Compete in ML challenges, explore datasets, earn recognition.',level:'int'},
+    {icon:'🌱',name:'TinyML Projects',desc:'Deploy ML on Arduino or Raspberry Pi Pico &#8212; AI on tiny hardware.',level:'int'},
+    {icon:'🖼️',name:'Teachable Machine',desc:'Build image, sound and pose classifiers without writing code.',level:'beg'},
+    {icon:'🤖',name:'AI for Good (ITU)',desc:'UN-backed challenges where AI solves real humanitarian problems.',level:'int'},
+    {icon:'🌐',name:'Reproduce a Paper',desc:'Pick a published result, re-implement it and share your findings.',level:'adv'},
+    {icon:'🏫',name:'School AI Project',desc:'Build an AI tool that solves a real problem in your school or lab.',level:'beg'}
+  ],
+  [
+    {icon:'💬',name:'r/MachineLearning',desc:'Academic AI discussion, paper summaries and research news.',level:'int'},
+    {icon:'🐦',name:'AI on X / Twitter',desc:'Follow @karpathy, @ylecun, @goodfellow_ian for daily insights.',level:'int'},
+    {icon:'🇲🇾',name:'MY AI Community',desc:'Malaysian AI practitioners, meetups and industry events.',level:'beg'},
+    {icon:'🌍',name:'Women in AI',desc:'Global network supporting women in AI research and industry.',level:'beg'},
+    {icon:'🧠',name:'AI Alignment Forum',desc:'Deep discussion on AI safety, alignment and long-term impacts.',level:'adv'},
+    {icon:'📰',name:'The Batch',desc:'Andrew Ng weekly newsletter &#8212; accessible AI news every Wednesday.',level:'beg'}
+  ]
+];
+var bmState=state.bookmarks||[];
+(function(){
+  RES.forEach(function(group,gi){
+    var panel=document.getElementById('resPanel'+gi);
+    group.forEach(function(r,ri){
+      var id='bm_'+gi+'_'+ri;
+      var d=document.createElement('div');d.className='res-card';
+      var lvlClass={beg:'rc-beg',int:'rc-int',adv:'rc-adv'}[r.level];
+      var lvlText={beg:'Beginner',int:'Intermediate',adv:'Advanced'}[r.level];
+      var isBm=bmState.indexOf(id)>=0;
+      d.innerHTML='<button class="bm-btn'+(isBm?' bookmarked':'')+'" title="Bookmark" onclick="toggleBm(this,\''+id+'\')">'+(isBm?'⭐':'☆')+'</button>'
+        +'<div class="rc-icon">'+r.icon+'</div>'
+        +'<div class="rc-name">'+r.name+'</div>'
+        +'<div class="rc-desc">'+r.desc+'</div>'
+        +'<span class="rc-level '+lvlClass+'">'+lvlText+'</span>';
+      panel.appendChild(d);
+    });
+  });
+  updateBmNote();
+})();
+
+function toggleBm(btn,id){
+  var idx=bmState.indexOf(id);
+  if(idx<0){bmState.push(id);btn.textContent='⭐';btn.classList.add('bookmarked');}
+  else{bmState.splice(idx,1);btn.textContent='☆';btn.classList.remove('bookmarked');}
+  state.bookmarks=bmState;saveState();updateBmNote();
+}
+function updateBmNote(){
+  var note=document.getElementById('bmNote');
+  if(bmState.length>0){note.style.display='block';document.getElementById('bmCount').textContent=bmState.length;}
+  else{note.style.display='none';}
+}
+function showResTab(idx,btn){
+  document.querySelectorAll('.res-tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.res-panel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');document.getElementById('resPanel'+idx).classList.add('active');
+}
+
+/* ═══════════════════════════════════════
+   6.4  JOURNEY CANVAS ANIMATION
+═══════════════════════════════════════ */
+(function(){
+  var cv=document.getElementById('journeyCanvas');
+  var ctx=cv.getContext('2d');
+  var W=700,H=130;
+  cv.width=W;cv.height=H;
+  var MODS=[
+    {num:1,icon:'💡',label:'Why AI?',color:'#2563EB'},
+    {num:2,icon:'📈',label:'Supervised',color:'#DC2626'},
+    {num:3,icon:'🔍',label:'Unsupervised',color:'#F59E0B'},
+    {num:4,icon:'🎮',label:'Reinforcement',color:'#7C3AED'},
+    {num:5,icon:'🛠️',label:'Build AI',color:'#059669'},
+    {num:6,icon:'🚀',label:"What's Next",color:'#0891B2'}
+  ];
+  var nodes=MODS.map(function(m,i){return {x:60+i*116,y:65,r:28,m:m,pulse:0,glow:0};});
+  var animT=0,lineProgress=0;
+
+  function drawFrame(){
+    ctx.clearRect(0,0,W,H);
+    animT+=0.02;
+    if(lineProgress<1)lineProgress+=0.008;
+
+    // Animated gradient lines between nodes
+    nodes.forEach(function(n,i){
+      if(i<nodes.length-1){
+        var nx=nodes[i+1];
+        var grad=ctx.createLinearGradient(n.x,n.y,nx.x,nx.y);
+        grad.addColorStop(0,n.m.color);grad.addColorStop(1,nx.m.color);
+        ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(n.x+(nx.x-n.x)*lineProgress,n.y);
+        ctx.strokeStyle=grad;ctx.lineWidth=3;ctx.setLineDash([6,3]);ctx.lineDashOffset=-animT*8;
+        ctx.stroke();ctx.setLineDash([]);
+      }
+    });
+
+    // Nodes with pulse
+    nodes.forEach(function(n,i){
+      var delay=i*.3;
+      var pulse=0.5+0.5*Math.sin(animT*2-delay);
+
+      // Glow ring
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r+8+pulse*4,0,Math.PI*2);
+      ctx.fillStyle=n.m.color+'22';ctx.fill();
+
+      // Circle
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=n.m.color+'33';ctx.fill();
+      ctx.strokeStyle=n.m.color;ctx.lineWidth=2.5;ctx.stroke();
+
+      // Checkmark
+      ctx.beginPath();
+      var cs=10,cx=n.x-cs*.5,cy=n.y-cs*.3;
+      ctx.moveTo(cx,cy+cs*.45);ctx.lineTo(cx+cs*.35,cy+cs*.75);ctx.lineTo(cx+cs*.85,cy);
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+
+      // Icon text
+      ctx.font='14px serif';ctx.textAlign='center';
+      ctx.fillText(n.m.icon,n.x,n.y-16);
+
+      // Label
+      ctx.fillStyle=n.m.color;ctx.font='bold 9px Poppins,sans-serif';ctx.textAlign='center';
+      ctx.fillText(n.m.label,n.x,n.y+n.r+12);
+
+      // Module number
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='bold 9px Poppins,sans-serif';
+      ctx.fillText('M'+n.m.num,n.x,n.y+n.r+23);
+    });
+
+    // "You are here" arrow on M6
+    var last=nodes[5];
+    ctx.beginPath();
+    ctx.moveTo(last.x,last.y-last.r-22);
+    ctx.lineTo(last.x-6,last.y-last.r-32);
+    ctx.lineTo(last.x+6,last.y-last.r-32);
+    ctx.closePath();
+    ctx.fillStyle=last.m.color;ctx.fill();
+    ctx.fillStyle=last.m.color;ctx.font='bold 9px Poppins,sans-serif';ctx.textAlign='center';
+    ctx.fillText('YOU',last.x,last.y-last.r-36);
+
+    requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+
+  // Resize
+  function resizeJourney(){
+    var w=cv.parentElement.clientWidth-40;
+    cv.style.width=Math.min(w,700)+'px';
+  }
+  resizeJourney();window.addEventListener('resize',resizeJourney);
+})();
+
+/* ═══ TYPEWRITER PROMPTS ═══ */
+var PROMPTS=[
+  'What surprised you most about AI during this adventure?',
+  'Which simulation or activity did you enjoy most, and why?',
+  'Where could you use AI to improve something in your own life or work?'
+];
+(function(){
+  PROMPTS.forEach(function(text,i){
+    var el=document.getElementById('tw'+i);
+    var cursor='<span class="cursor"></span>';
+    var idx=0;
+    function type(){
+      if(idx<=text.length){
+        el.innerHTML=text.slice(0,idx)+cursor;idx++;
+        setTimeout(type,30+Math.random()*20);
+      }else{el.innerHTML=text+'<span class="cursor"></span>';}
+    }
+    setTimeout(type,800+i*1200);
+  });
+  // Restore saved reflections
+  [0,1,2].forEach(function(i){
+    var ta=document.getElementById('reflectQ'+i);
+    if(ta&&state.reflections[i])ta.value=state.reflections[i];
+  });
+})();
+function saveReflect(){
+  [0,1,2].forEach(function(i){
+    var ta=document.getElementById('reflectQ'+i);
+    if(ta)state.reflections[i]=ta.value;
+  });
+  saveState();
+}
+
+/* ═══ GOALS ═══ */
+var GOALS=[
+  {icon:'📊',text:'Complete a Kaggle competition',sub:'Apply ML to a real dataset'},
+  {icon:'🤗',text:'Build an NLP project with Hugging Face',sub:'Work with language models'},
+  {icon:'📡',text:'Deploy an Edge AI model',sub:'TinyML on a microcontroller'},
+  {icon:'🎓',text:'Enrol in a university AI course',sub:'Take learning to the next level'},
+  {icon:'🔬',text:'Reproduce an AI research paper',sub:'Understand cutting-edge research'},
+  {icon:'🌍',text:'Build an AI project for social good',sub:'Apply AI to a real problem'},
+  {icon:'🛠️',text:'Contribute to open-source AI',sub:'Join the global AI community'},
+  {icon:'🏫',text:'Teach someone else what you learned',sub:'The best way to master a skill'}
+];
+var selectedGoal=state.goal||-1;
+(function(){
+  var grid=document.getElementById('goalGrid');
+  GOALS.forEach(function(g,i){
+    var d=document.createElement('div');d.className='goal-card'+(selectedGoal===i?' selected':'');
+    d.innerHTML='<div class="gc-icon">'+g.icon+'</div><div><div class="gc-text">'+g.text+'</div><div class="gc-sub">'+g.sub+'</div></div>';
+    d.addEventListener('click',function(){
+      document.querySelectorAll('.goal-card').forEach(function(c){c.classList.remove('selected');});
+      d.classList.add('selected');selectedGoal=i;state.goal=i;saveState();
+    });
+    grid.appendChild(d);
+  });
+})();
+
+/* ═══ CERTIFICATE + CONFETTI ═══ */
+function generateCert(){
+  var wrap=document.getElementById('certWrap');
+  wrap.classList.add('show');
+  var badges=['M1: Why AI?','M2: Supervised','M3: Unsupervised','M4: Reinforcement','M5: Build AI','M6: Beyond AI'];
+  var bc=document.getElementById('certBadges');bc.innerHTML='';
+  badges.forEach(function(b){var sp=document.createElement('span');sp.className='cert-badge';sp.textContent=b;bc.appendChild(sp);});
+  var goalText=selectedGoal>=0?GOALS[selectedGoal].text:'Keep exploring and learning!';
+  document.getElementById('certGoal').innerHTML='&#128640; Next goal: <strong>'+goalText+'</strong>';
+  wrap.scrollIntoView({behavior:'smooth',block:'center'});
+  launchConfetti();
+}
+
+function launchConfetti(){
+  var cv=document.createElement('canvas');cv.className='confetti-canvas';
+  document.body.appendChild(cv);
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  var ctx=cv.getContext('2d');
+  var particles=[];
+  var colors=['#0891B2','#2563EB','#F59E0B','#059669','#7C3AED','#DC2626','#fff'];
+  for(var i=0;i<120;i++){
+    particles.push({
+      x:Math.random()*cv.width,y:-10,
+      vx:(Math.random()-0.5)*4,vy:2+Math.random()*4,
+      w:6+Math.random()*8,h:3+Math.random()*4,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      angle:Math.random()*Math.PI*2,va:(Math.random()-.5)*.15,
+      life:1
+    });
+  }
+  function animate(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var alive=false;
+    particles.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.vy+=0.08;p.angle+=p.va;p.life-=0.012;
+      if(p.life>0&&p.y<cv.height){alive=true;}
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);
+      ctx.globalAlpha=Math.max(0,p.life);
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    if(alive)requestAnimationFrame(animate);
+    else document.body.removeChild(cv);
+  }
+  animate();
+}
+
+/* ═══ QUIZ ═══ */
+var questions=[
+  {q:'Which AI trend involves running models on microcontrollers without cloud connectivity?',
+   opts:['Generative AI','Edge AI / TinyML','Multimodal AI','AI Agents'],ans:1,
+   fb:'Edge AI (TinyML) runs models on tiny devices &#8212; fast, private, offline. Critical for IoT and robotics.'},
+  {q:'A researcher auditing AI systems for bias and transparency is working in which field?',
+   opts:['Data Science','Robotics Engineering','AI Ethics','ML Research'],ans:2,
+   fb:'AI Ethics researchers audit for bias, ensure explainability and shape responsible AI policy.'},
+  {q:'What is the best first step for continuing AI learning after completing this course?',
+   opts:['Read every AI paper published this year','Pick one resource and spend 30 minutes on it this week','Wait until you have a postgraduate degree','Learn 5 new programming languages first'],ans:1,
+   fb:'Consistency beats intensity. A small weekly habit compounds into deep expertise over months.'},
+  {q:'Which skill do AI professionals say is valued across every career pathway?',
+   opts:['Knowing 5+ programming languages','Framing a problem clearly and communicating results','Memorising every ML algorithm','Building neural networks from scratch in C++'],ans:1,
+   fb:'Defining a problem well, choosing the right approach and explaining results to non-technical people &#8212; that skill travels everywhere.'}
+];
+var questions_MS=[
+  {q:'Trend AI manakah yang melibatkan menjalankan model pada mikropengawal tanpa sambungan awan?',
+   opts:['AI Generatif','AI Tepi / TinyML','AI Multimodal','Ejen AI'],ans:1,
+   fb:'AI Tepi (TinyML) menjalankan model pada peranti kecil &#8212; laju, peribadi, luar talian. Kritikal untuk IoT dan robotik.'},
+  {q:'Penyelidik yang mengaudit sistem AI untuk berat sebelah dan ketelusan bekerja dalam bidang manakah?',
+   opts:['Sains Data','Kejuruteraan Robotik','Etika AI','Penyelidikan PM'],ans:2,
+   fb:'Penyelidik Etika AI mengaudit berat sebelah, memastikan kebolehjelasan dan membentuk dasar AI bertanggungjawab.'},
+  {q:'Apakah langkah pertama terbaik untuk meneruskan pembelajaran AI selepas menamatkan kursus ini?',
+   opts:['Baca setiap kertas AI yang diterbitkan tahun ini','Pilih satu sumber dan habiskan 30 minit minggu ini','Tunggu sehingga mempunyai ijazah pascasiswazah','Belajar 5 bahasa pengaturcaraan baharu dahulu'],ans:1,
+   fb:'Konsistensi mengatasi intensiti. Tabiat mingguan kecil berkembang menjadi kepakaran mendalam dalam beberapa bulan.'},
+  {q:'Kemahiran manakah yang dikatakan oleh profesional AI bernilai merentas setiap laluan kerjaya?',
+   opts:['Mengetahui 5+ bahasa pengaturcaraan','Merangka masalah dengan jelas dan menyampaikan keputusan','Menghafal setiap algoritma PM','Membina rangkaian neural dari awal dalam C++'],ans:1,
+   fb:'Mentakrifkan masalah dengan baik, memilih pendekatan yang tepat dan menjelaskan keputusan kepada orang bukan teknikal &#8212; kemahiran itu berguna di mana-mana.'}
+];
+var questions_EN_bak=JSON.parse(JSON.stringify(questions));
+
+function buildQuiz6(){
+  var container=document.getElementById('quizContainer');
+  container.innerHTML='';
+  document.getElementById('quizScore').style.display='none';
+  var correct=0,answered=0;
+  var isBM=(document.documentElement.lang==='ms');
+  questions.forEach(function(q,qi){
+    var block=document.createElement('div');block.className='q-block';
+    block.innerHTML='<div class="q-text">'+(qi+1)+'. '+q.q+'</div>';
+    var opts=document.createElement('div');opts.className='q-opts';
+    q.opts.forEach(function(o,oi){
+      var btn=document.createElement('div');btn.className='q-opt';
+      btn.innerHTML='<span style="font-weight:700;flex-shrink:0;color:var(--muted);">'+'ABCD'[oi]+'.</span> '+o;
+      btn.addEventListener('click',function(){
+        if(btn.classList.contains('disabled'))return;
+        opts.querySelectorAll('.q-opt').forEach(function(b){b.classList.add('disabled');});
+        var ok=oi===q.ans;
+        if(ok){btn.classList.add('correct');correct++;}
+        else{btn.classList.add('wrong');opts.querySelectorAll('.q-opt')[q.ans].classList.add('correct');}
+        var fb=document.createElement('div');fb.className='q-feedback '+(ok?'good':'bad');
+        fb.innerHTML=(ok?(isBM?'&#9989; Betul! ':'&#9989; '):(isBM?'&#10060; Tidak tepat. ':'&#10060; '))+q.fb;
+        block.appendChild(fb);
+        answered++;
+        if(answered===questions.length){setTimeout(function(){
+          var sc=document.getElementById('quizScore');sc.style.display='block';
+          var pct=Math.round(correct/questions.length*100);
+          var msg=isBM?(pct===100?'&#127942; Sempurna!':pct>=75?'&#127775; Cemerlang!':pct>=50?'&#128077; Usaha yang baik!':'&#128218; Teruskan meneroka!')
+                      :(pct===100?'&#127942; Perfect!':pct>=75?'&#127775; Excellent!':pct>=50?'&#128077; Good effort!':'&#128218; Keep exploring!');
+          var homeLabel=isBM?'&#127968; Kembali ke Utama':'&#127968; Return to Home';
+          sc.innerHTML=msg+' '+(isBM?'Skor anda: ':'You scored ')+'<b>'+correct+'/'+questions.length+'</b><br><a href="index.html" class="next-mod-btn" style="margin-top:16px;display:inline-flex;">'+homeLabel+'</a>';
+          if(pct>=75)launchConfetti();
+        },600);}
+      });
+      opts.appendChild(btn);
+    });
+    block.appendChild(opts);container.appendChild(block);
+  });
+}
+buildQuiz6();
+
+/* ═══ DROPDOWN NAV ═══ */
+(function(){
+  var btn=document.getElementById('modDropBtn'),menu=document.getElementById('modDropMenu');
+  if(!btn||!menu)return;
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.classList.toggle('open',o);});
+  document.addEventListener('click',function(){menu.classList.remove('open');btn.classList.remove('open');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.classList.remove('open');btn.classList.remove('open');}});
+})();
+
+/* Auto-open first section */
+document.getElementById('sec1').classList.add('open');
+
+// Module 6 BM data
+var TRENDS_MS=[
+  {id:'genai',title:'AI Generatif',front:'Mencipta kandungan baharu',back:'Model seperti GPT-4 dan Stable Diffusion belajar taburan data dan boleh menghasilkan teks, imej, kod, muzik dan video. Mereka bukan "menghafal" — mereka mempelajari ruang kemungkinan.'},
+  {id:'edge',title:'AI Tepi',front:'AI yang berjalan pada peranti anda',back:'Daripada pemprosesan awan, Edge AI menjalankan model secara terus pada telefon, kamera dan sensor IoT — membolehkan keputusan masa nyata tanpa sambungan internet.'},
+  {id:'multi',title:'AI Multimodal',front:'Melihat, mendengar, membaca — serentak',back:'Model terkini memproses teks, imej, audio dan video bersama-sama. GPT-4V boleh membaca carta, peta, dan foto. AI penjagaan kesihatan menggabungkan imbasan dengan nota klinikal.'},
+  {id:'xai',title:'AI Boleh Terangkan',front:'Memahami keputusan AI',back:'XAI menjawab "mengapa?" — mengenal pasti ciri mana yang mendorong ramalan. Kritikal dalam penjagaan kesihatan, undang-undang dan kewangan di mana keputusan mesti dibenarkan.'},
+  {id:'agentic',title:'AI Agentik',front:'AI yang bertindak, bukan hanya membalas',back:'Ejen AI boleh merancang, menggunakan alat, menyemak kerja sendiri dan menyelesaikan tugasan berbilang langkah secara autonomi. Claude Code dan AutoGPT adalah contoh awal.'},
+  {id:'tinyml',title:'TinyML',front:'ML pada cip yang sangat kecil',back:'Model yang dilatih pada awan boleh dimampatkan (quantisation, pruning) untuk berjalan pada mikropengawal — membolehkan kecerdasan dalam peranti $2 seperti Arduino Nano BLE Sense.'},
+  {id:'sci',title:'AI untuk Sains',front:'Mempercepatkan penemuan saintifik',back:'AlphaFold meramal struktur protein, meningkatkan penemuan ubat. GNNs menjangkakan sifat bahan. AI mereka bentuk eksperimen lebih laju daripada mana-mana pasukan manusia.'},
+  {id:'gov',title:'Tadbir Urus AI',front:'Peraturan, keselamatan, standard',back:'EU AI Act mengklasifikasikan AI mengikut risiko. NIST AI RMF menyediakan rangka kerja tadbir urus. Keselamatan AI mengkaji cara memastikan sistem AI selaras dengan nilai manusia.'},
+];
+var CAREERS_MS=[
+  {title:'Jurutera AI',icon:'⚙️',salary:'RM 8k–20k/bulan',desc:'Membina, melatih dan menggunakan model ML dalam persekitaran pengeluaran. Memerlukan Python, PyTorch/TensorFlow, MLOps.',skills:['Python','PyTorch / TF','Docker / Kubernetes','MLOps']},
+  {title:'Saintis Data',icon:'📊',salary:'RM 6k–15k/bulan',desc:'Menganalisis data, membina model ramalan, dan menyampaikan cerapan kepada pemegang kepentingan.',skills:['Python / R','SQL','Pandas / Scikit-learn','Visualisasi']},
+  {title:'Jurutera Robotik',icon:'🤖',salary:'RM 7k–18k/bulan',desc:'Menggabungkan AI dengan sistem fizikal — automasi, kawalan lengan robot, kenderaan autonomi.',skills:['ROS','C++','Penglihatan Komputer','Kawalan Sistem']},
+  {title:'Penyelidik AI',icon:'🔬',salary:'RM 12k–30k/bulan',desc:'Menerbitkan kertas baharu, menghasilkan algoritma baharu, mendorong sempadan keupayaan AI.',skills:['Matematik mendalam','PyTorch','Penerbitan','Pemikiran kritikal']},
+  {title:'Pereka UX / AI',icon:'🎨',salary:'RM 6k–14k/bulan',desc:'Mereka bentuk antara muka untuk produk AI — memastikan AI berguna, boleh dipercayai dan boleh diakses oleh pengguna.',skills:['Figma','Penyelidikan Pengguna','Reka Bentuk Perbualan','Kebolehcapaian']},
+  {title:'Etikawan AI',icon:'⚖️',salary:'RM 8k–18k/bulan',desc:'Menilai sistem AI untuk berat sebelah, keadilan, privasi dan impak masyarakat.',skills:['Dasar','Penaakulan Etika','Analisis Data','Advokasi']},
+];
+function renderTrends(lang){
+  var cards=document.querySelectorAll('.flip-card');
+  if(!cards.length) return;
+  cards.forEach(function(fc,i){
+    var front=fc.querySelector('.flip-card-front');
+    var back=fc.querySelector('.flip-card-back');
+    if(!front||!back) return;
+    var nameEl=front.querySelector('.fc-name');
+    var tapEl=front.querySelector('.fc-tap');
+    var descEl=back.querySelector('.fc-desc');
+    var whyEl=back.querySelector('.fc-why');
+    if(lang==='ms'){
+      var t=TRENDS_MS[i];if(!t)return;
+      if(nameEl) nameEl.textContent=t.title;
+      if(tapEl) tapEl.textContent='👆 Ketik untuk balikkan';
+      if(descEl) descEl.textContent=t.front;
+      if(whyEl) whyEl.innerHTML=t.back;
+    } else {
+      var t=TRENDS[i];if(!t)return;
+      if(nameEl) nameEl.textContent=t.name;
+      if(tapEl) tapEl.innerHTML='&#128070; Tap to flip';
+      if(descEl) descEl.textContent=t.desc;
+      if(whyEl) whyEl.innerHTML=t.why;
+    }
+  });
+}
+function renderCareers(lang){
+  var cards=document.querySelectorAll('.career-card');
+  if(!cards.length) return;
+  cards.forEach(function(d,i){
+    var titleEl=d.querySelector('.cc-title');
+    var toolsEl=d.querySelector('.cc-tools');
+    var demandEl=d.querySelector('.cc-demand');
+    if(lang==='ms'){
+      var t=CAREERS_MS[i];if(!t)return;
+      if(titleEl) titleEl.textContent=t.title;
+      if(toolsEl) toolsEl.textContent=t.skills.join(' · ');
+      if(demandEl) demandEl.textContent='📈 '+t.salary;
+    } else {
+      var t=CAREERS[i];if(!t)return;
+      if(titleEl) titleEl.textContent=t.title;
+      if(toolsEl) toolsEl.textContent=t.tools.join(' · ');
+      if(demandEl) demandEl.innerHTML='&#128200; '+t.demand;
+    }
+  });
+  if(selectedCareers.length) updateSkillsPanel();
+}
+function renderLang(lang){
+  if(typeof renderTrends==='function') renderTrends(lang);
+  if(typeof renderCareers==='function') renderCareers(lang);
+  questions=(lang==='ms'?questions_MS:questions_EN_bak);
+  if(typeof buildQuiz6==='function') buildQuiz6();
+  /* update textarea placeholders */
+  var ph=lang==='ms'?'Tuliskan fikiran anda di sini...':'Write your thoughts here...';
+  document.querySelectorAll('.reflect-ta').forEach(function(ta){ta.placeholder=ph;});
+}
+
+/* ── Bilingual toggle ── */
+function setLang(lang){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('ai_adv_lang',lang);}catch(e){}
+  /* attribute-based */
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    el.innerHTML=lang==='ms'?(el.getAttribute('data-ms')||el.getAttribute('data-en')):el.getAttribute('data-en');
+  });
+  /* span-based (rich HTML content) */
+  document.querySelectorAll('.lang-en').forEach(function(el){ el.style.display=lang==='ms'?'none':'inline'; });
+  document.querySelectorAll('.lang-ms').forEach(function(el){ el.style.display=lang==='ms'?'inline':'none'; });
+  var btn=document.getElementById('langToggle');
+  if(btn) btn.textContent=lang==='ms'?'EN':'BM';
+  if(typeof renderLang==='function') renderLang(lang);
+}
+(function(){
+  var _l='en';
+  try{_l=localStorage.getItem('ai_adv_lang')||'en';}catch(e){}
+  if(_l==='ms') setLang('ms');
+})();
+
+/* ── Show active student chip ── */
+function updateStudentChip() {
+  try {
+    var raw = localStorage.getItem('ai_adv_student');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    var name = s.student_name || s.name || '';
+    var matric = s.student_matric || s.matric || '';
+    if (!name) return;
+    var chip = document.getElementById('activeStudentChip');
+    var avatar = document.getElementById('chipAvatar');
+    var chipNameEl = document.getElementById('chipName');
+    if (chip) {
+      avatar.textContent = name.charAt(0).toUpperCase();
+      chipNameEl.textContent = name + (matric ? ' · ' + matric : '');
+      chip.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+window.addEventListener('load', updateStudentChip);
+</script>
+</body>
+</html>
