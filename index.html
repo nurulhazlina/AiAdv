@@ -633,9 +633,13 @@ function setLang(lang){
     };
     try { localStorage.setItem('ai_adv_student', JSON.stringify(studentData)); } catch(e){}
     var payload = {
-      step: 'register', name: name, matric: matric, mykid: mykid,
-      gender: gender, age: age, home_state: state,
-      school_name: schoolName, school_code: schoolCode, phone: phone, email: email
+      step: 'register',
+      student: {
+        name: name, matric: matric, mykid: mykid,
+        gender: gender, age: age, home_state: state,
+        school_name: schoolName, institution_name: schoolName,
+        school_code: schoolCode, phone: phone, email: email
+      }
     };
     function openGate() {
       var msgEl = document.getElementById('gate-msg');
