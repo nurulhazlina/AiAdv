@@ -71,8 +71,24 @@
   // Log page entry to Access Log tab on unload
   window.addEventListener('beforeunload', () => {
     const durationSec = Math.round((Date.now() - PAGE_START) / 1000);
-    const institution = window.AiAdv.getInstitution ? window.AiAdv.getInstitution() : '';
     const geo = _geo || {};
+
+    // Pull student identity from localStorage (set at index.html registration)
+    let studentInfo = {};
+    try {
+      const stored = localStorage.getItem('ai_adv_student');
+      if (stored) studentInfo = JSON.parse(stored);
+    } catch(e) {}
+
+    // Also try reading from the page's identity form if on an activity page
+    const idFields = ['id-name','id-matric','id-institution','id-school','id-class'];
+    idFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.value.trim()) {
+        const key = id.replace('id-','').replace('school','school_code').replace('name','name').replace('matric','matric');
+        studentInfo[key] = el.value.trim();
+      }
+    });
 
     const payload = {
       page         : 'access_log',
@@ -80,7 +96,7 @@
       sid          : getSid(),
       referrer     : REFERRER,
       duration_sec : durationSec,
-      student      : { institution_name: institution },
+      student      : studentInfo,
       location     : geo
     };
 
