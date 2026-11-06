@@ -501,10 +501,11 @@ function submitSurvey() {
     lang_used: currentLang
   };
 
-  // Store SID & matric in sessionStorage for post-survey link
+  // Store SID, matric & pre-score in sessionStorage for post-survey link
   try {
     sessionStorage.setItem('ai_adv_matric', identity.matric);
     sessionStorage.setItem('ai_adv_name', identity.name);
+    sessionStorage.setItem('ai_adv_pre_score', score);
   } catch(e) {}
 
   if (window.AiAdv && window.AiAdv.submit) {

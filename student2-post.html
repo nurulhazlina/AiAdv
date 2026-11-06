@@ -511,6 +511,7 @@ function submitSurvey() {
     })(),
     mcq_responses: mcqResp,
     mcq_score_post: score,
+    mcq_score_pre: (function(){ try { var v = sessionStorage.getItem('ai_adv_pre_score'); return v !== null ? Number(v) : ''; } catch(e){ return ''; } })(),
     likert: likertByDim,
     open1_valuable: document.getElementById('open1').value.trim(),
     open2_difficulty: document.getElementById('open2').value.trim(),
