@@ -488,7 +488,27 @@ function submitSurvey() {
 
   var payload = {
     step: 'post',
-    student: { name: name, matric: matric },
+    student: (function() {
+      var extra = {};
+      try {
+        var stored = localStorage.getItem('ai_adv_student');
+        if (stored) {
+          var sd = JSON.parse(stored);
+          extra = {
+            gender        : sd.student_gender   || sd.gender        || '',
+            age           : sd.student_age      || sd.age           || '',
+            mykid         : sd.student_mykid    || sd.mykid         || '',
+            home_state    : sd.student_home_state|| sd.home_state   || '',
+            school_name   : sd.student_school   || sd.school_name   || sd.institution_name || '',
+            school_code   : sd.student_school_code|| sd.school_code || '',
+            institution_name: sd.student_institution || sd.institution_name || '',
+            phone         : sd.student_phone    || sd.phone         || '',
+            email         : sd.student_email    || sd.email         || ''
+          };
+        }
+      } catch(e) {}
+      return Object.assign({ name: name, matric: matric }, extra);
+    })(),
     mcq_responses: mcqResp,
     mcq_score_post: score,
     likert: likertByDim,
